@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/banner.png" alt="dcs2streamdeck: live F/A-18C cockpit state on your Stream Deck" width="1280">
+  <img src="assets/banner.png" alt="dcs2streamdeck by Adam Chesters: live F/A-18C and F-16C cockpit state on your Stream Deck" width="1280">
 </p>
 
 # dcs2streamdeck
