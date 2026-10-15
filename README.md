@@ -18,7 +18,7 @@ The DCS Stream Deck projects I tried had gone quiet. Some no longer worked with 
   <img src="assets/examples.png" alt="Example keys. F/A-18C: APU, Master Caution, L BAR, flaps. F-16C: Master Arm, TO/LDG CONFIG, AOA indexer, gear" width="976">
 </p>
 
-- **DCS Switch**: any switch, button or lever. Shows its real position (ARM/SAFE, EXTEND/RETRACT) and can light up from its own cockpit light.
+- **DCS Switch**: any switch, button or lever. Shows its real position (ARM/SAFE, START 1/OFF/START 2) and can light up from its own cockpit light.
 - **DCS Light**: caution and warning lights in their cockpit colours, plus combined indicators: AOA indexer and landing gear, and on the Hornet also flaps and L BAR.
 - **DCS Dial** (Stream Deck +): turn to set brightness and volume knobs; press to step through a list. Presets for each jet's displays and cockpit lighting.
 - **VR**: a live copy of the deck for an OpenKneeboard Web Dashboard tab, at `http://127.0.0.1:31730/` (F/A-18C) or `http://127.0.0.1:31731/` (F-16C).
@@ -29,7 +29,7 @@ The DCS Stream Deck projects I tried had gone quiet. Some no longer worked with 
 2. Use the Stream Deck app 7.1 or later.
 3. Download the `.streamDeckPlugin` for your jet from [Releases](https://github.com/AdamChesters/dcs2streamdeck/releases) (`dcs2streamdeck-fa18c-…` or `dcs2streamdeck-f16c-…`) and double-click it.
 
-Building from source: [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md).
+One repo for every jet: a folder per jet in `aircraft/`, shared code in `core/`, the Stream Deck plugin in `plugin/` and a standalone desktop app (not released yet) in `app/`. Building from source: [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md).
 
 ## Credits
 
