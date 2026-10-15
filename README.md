@@ -1,8 +1,10 @@
 <p align="center">
-  <img src="assets/banner.png" alt="dcs2streamdeck by Adam Chesters: an F/A-18C and an F-16C at sunset, a Stream Deck + with live cockpit keys, and the glass deck panel in VR" width="1280">
+  <img src="assets/banner.png" alt="dcs2streamdeck alpha version: an F/A-18C and an F-16C at sunset, a Stream Deck + with live cockpit keys, and the glass deck panel in VR" width="1280">
 </p>
 
 # dcs2streamdeck
+
+> **ALPHA VERSION:** join the [Discord](https://discord.gg/fs4WyaQPA) to give feedback, or use the feedback button built into the desktop apps.
 
 Stream Deck keys, lights and dials that show what your jet is actually doing in DCS World.
 
@@ -23,7 +25,14 @@ The DCS Stream Deck projects I tried had gone quiet. Some no longer worked with 
 - **DCS Dial** (Stream Deck +): turn to set brightness and volume knobs; press to step through a list. Presets for each jet's displays and cockpit lighting.
 - **VR**: a live copy of the deck for an OpenKneeboard Web Dashboard tab, at `http://127.0.0.1:31730/` (F/A-18C) or `http://127.0.0.1:31731/` (F-16C).
 
-## Install
+## Plugin or desktop app
+
+- **Stream Deck plugin: integrated.** Runs inside Elgato's Stream Deck app, next to your other plugins, profiles and pages.
+- **Desktop app: lightweight.** Runs on its own and drives the Stream Deck directly, with no Elgato software. It has a deck-only window for OpenKneeboard and a built-in feedback button. Coming soon.
+
+Both come in one version per jet: F/A-18C and F-16C.
+
+## Install the plugin
 
 1. Install [DCS-BIOS](https://github.com/DCS-Skunkworks/dcs-bios/releases) v0.11 or later.
 2. Use the Stream Deck app 7.1 or later.
