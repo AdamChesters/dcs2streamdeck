@@ -2,15 +2,15 @@
  * The deck's brain in the standalone app: key and dial settings, DCS-BIOS link,
  * and the images for every slot. No Electron imports, so it runs in tests.
  */
-import { defaultJsonDir, isOurAircraft, loadAircraftControls, offlineText } from "../../src/core/aircraft.ts";
-import type { Dcs, DialSettings, KeySettings } from "../../src/core/bindings.ts";
-import type { PickerItem } from "../../src/core/catalog.ts";
-import { catalog } from "../../src/core/catalog.ts";
-import { dialRotate, dialView, keyDown, keyLook, keyUp, keyWatches, parseFunctions } from "../../src/core/bindings.ts";
-import { DcsBiosClient } from "../../src/core/dcsbios/client.ts";
-import type { Control, ControlMap } from "../../src/core/dcsbios/controls.ts";
-import type { DialView } from "../../src/core/render.ts";
-import { dialSvg, keySvg } from "../../src/core/render.ts";
+import { defaultJsonDir, isOurAircraft, loadAircraftControls, offlineText } from "../../core/aircraft.ts";
+import type { Dcs, DialSettings, KeySettings } from "../../core/bindings.ts";
+import type { PickerItem } from "../../core/catalog.ts";
+import { catalog } from "../../core/catalog.ts";
+import { dialRotate, dialView, keyDown, keyLook, keyUp, keyWatches, parseFunctions } from "../../core/bindings.ts";
+import { DcsBiosClient } from "../../core/dcsbios/client.ts";
+import type { Control, ControlMap } from "../../core/dcsbios/controls.ts";
+import type { DialView } from "../../core/render.ts";
+import { dialSvg, keySvg } from "../../core/render.ts";
 
 export type Layout = { model: string; columns: number; rows: number; dials: number };
 

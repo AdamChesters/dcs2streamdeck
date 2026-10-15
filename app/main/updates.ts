@@ -9,6 +9,8 @@ import { createWriteStream } from "node:fs";
 import { mkdir, rename, rm } from "node:fs/promises";
 import path from "node:path";
 
+import { AIRCRAFT } from "../../core/aircraft.data.ts";
+
 export const REPO = "AdamChesters/dcs2streamdeck";
 export const RELEASES_PAGE = `https://github.com/${REPO}/releases`;
 const MAX_INSTALLER_BYTES = 512 * 1024 * 1024;
@@ -38,7 +40,7 @@ export type UpdateStatus = {
 };
 
 export function installerName(version: string): string {
-	return `dcs2streamdeck-${version}-Setup.exe`;
+	return `${AIRCRAFT.appId}-${version}-Setup.exe`;
 }
 
 type Version = { numbers: number[]; pre: string[] };

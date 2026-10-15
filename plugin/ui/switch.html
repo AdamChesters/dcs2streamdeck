@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<title>DCS Switch</title>
+	<link rel="stylesheet" href="pi.css" />
+</head>
+<body>
+	<label for="control">Control</label>
+	<input type="search" id="controlSearch" placeholder="Type to search (e.g. apu), then pick below" />
+	<select id="control" data-setting="control"></select>
+	<div class="hint">For a light-only key (e.g. a caution or fault light), leave this as (none) and pick the light below.</div>
+
+	<label for="title">Key text</label>
+	<input type="text" id="title" data-setting="title" placeholder="Empty = control name" />
+
+	<label for="mode">Press does</label>
+	<select id="mode" data-setting="mode">
+		<option value="">Automatic</option>
+		<option value="toggle">Toggle</option>
+		<option value="cycle">Next position (wraps)</option>
+		<option value="momentary">Hold (press 1, release 0)</option>
+		<option value="inc">Step up</option>
+		<option value="dec">Step down</option>
+		<option value="custom">Custom command</option>
+	</select>
+
+	<div id="cycleBox">
+		<label>Positions a press steps through</label>
+		<div id="cycle" class="checks"></div>
+		<div class="hint">Untick spring-loaded positions (e.g. EMERG EXTD). None ticked = all.</div>
+	</div>
+
+	<div id="custom">
+		<label for="press">Command on press</label>
+		<input type="text" id="press" data-setting="press" placeholder="e.g. 2, TOGGLE, INC, +3200" />
+		<label for="release">Command on release (optional)</label>
+		<input type="text" id="release" data-setting="release" placeholder="e.g. 1" />
+	</div>
+
+	<label for="lamp">Light the key from (optional)</label>
+	<input type="search" id="lampSearch" placeholder="Type to search (e.g. caution, l bar, aoa)" />
+	<select id="lamp" data-setting="lamp"></select>
+	<div class="row"><input type="checkbox" id="invert" data-setting="invert" /><label for="invert" style="margin:0">Light when OFF</label></div>
+	<div class="hint">Matches appear in the list as you type; click one, or press Enter for the top match. The text shows the switch; the highlight shows this light. Filled in for you when the switch has its own light. A light with several colours (L BAR) or parts (AOA indexer) shows all of them. Held and magnetic switches stay lit while on and go dark when the jet releases them.</div>
+	<details>
+		<summary>Setup (all keys and dials)</summary>
+		<div class="status" id="status">Waiting for plugin…</div>
+		<label for="jsonDir">DCS-BIOS JSON folder</label>
+		<input type="text" id="jsonDir" data-global="jsonDir" placeholder="Saved Games\DCS\Scripts\DCS-BIOS\doc\json" />
+		<div class="hint">Leave empty for the default folder.</div>
+		<label for="mirrorPort">VR mirror port</label>
+		<input type="number" id="mirrorPort" data-global="mirrorPort" placeholder="__MIRROR_PORT__" />
+		<div class="hint">VR mirror page: <code>http://127.0.0.1:__MIRROR_PORT__/</code> (or your port). Add it as an OpenKneeboard Web Dashboard tab. A new port needs a Stream Deck restart.</div>
+	</details>
+	<script src="pi.js"></script>
+	<script>
+		const $ = (id) => document.getElementById(id);
+		const controls = picker($("control"), $("controlSearch"), (i) => i.key);
+		picker($("lamp"), $("lampSearch"), (i) => i.led || i.key);
+
+		function positionsOf(item) {
+			if (!item || !item.maxValue || item.maxValue < 2) return [];
+			return item.positions ?? Array.from({ length: item.maxValue + 1 }, (_, i) => String(i));
+		}
+
+		function refreshExtras() {
+			const mode = $("mode").value;
+			$("custom").style.display = mode === "custom" ? "" : "none";
+			const positions = positionsOf(controls.item(settings.control));
+			const showCycle = positions.length > 0 && (mode === "" || mode === "cycle");
+			$("cycleBox").style.display = showCycle ? "" : "none";
+			const chosen = new Set(settings.cycle ?? []);
+			$("cycle").replaceChildren(
+				...positions.map((name, i) => {
+					const box = Object.assign(document.createElement("input"), { type: "checkbox", checked: chosen.has(i) });
+					box.addEventListener("change", () => {
+						const picked = [...$("cycle").querySelectorAll("input")].flatMap((b, n) => (b.checked ? [n] : []));
+						saveSetting("cycle", picked);
+					});
+					const label = document.createElement("label");
+					label.append(box, ` ${name}`);
+					return label;
+				}),
+			);
+		}
+
+		// Picking a switch fills in its own light when it has one and none is set.
+		$("control").addEventListener("change", () => {
+			const item = controls.item($("control").value);
+			settings.cycle = [];
+			saveSetting("cycle", []);
+			if (item?.lamp && !settings.lamp) {
+				saveSetting("lamp", item.lamp);
+				$("lamp").value = item.lamp;
+				document.dispatchEvent(new Event("pi-catalog"));
+			}
+			refreshExtras();
+		});
+		$("mode").addEventListener("change", refreshExtras);
+		document.addEventListener("pi-filled", refreshExtras);
+		document.addEventListener("pi-catalog", refreshExtras);
+		refreshExtras();
+	</script>
+</body>
+</html>

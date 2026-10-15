@@ -7,7 +7,7 @@ import dgram from "node:dgram";
 import { createWriteStream, mkdirSync } from "node:fs";
 import path from "node:path";
 
-import { DEFAULT_OPTIONS } from "../src/core/dcsbios/client.ts";
+import { DEFAULT_OPTIONS } from "../core/dcsbios/client.ts";
 
 const [file, seconds] = process.argv.slice(2);
 if (!file) {

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 
-import { AIRCRAFT, DIAL_PRESETS as PRESETS } from "../../../src/core/aircraft.data.ts";
+import { AIRCRAFT, DIAL_PRESETS as PRESETS } from "../../../core/aircraft.data.ts";
 import type { DeckState, DialSettings, KeySettings, PickerItem } from "./api.ts";
 import { api } from "./api.ts";
 import type { Selection } from "./Deck.tsx";
@@ -204,8 +204,8 @@ function KeyEditor({ index, items, initial, onClose }: { index: number; items: P
 			</label>
 			<p className="hint">
 				Matches appear in the list as you type; click one, or press Enter for the top match. The text shows the switch; the
-				highlight shows the light, in its cockpit colour. A light with several colours (L BAR) or parts (AOA indexer) shows all of
-				them. For a light-only key (e.g. L BAR), leave Control as
+				highlight shows the light, in its cockpit colour. A light with several colours or parts (AOA indexer) shows all of
+				them. For a light-only key (e.g. a caution light), leave Control as
 				(none). Held and magnetic switches stay lit while on and go dark when the jet releases them.
 			</p>
 			<footer>

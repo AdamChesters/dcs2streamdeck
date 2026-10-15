@@ -4,8 +4,8 @@ import os from "node:os";
 import path from "node:path";
 import { test } from "node:test";
 
-import { MirrorState, startMirrorServer } from "../src/mirror.ts";
-import { keySvg } from "../src/core/render.ts";
+import { MirrorState, startMirrorServer } from "../plugin/src/mirror.ts";
+import { keySvg } from "../core/render.ts";
 
 test("key image shows state, escapes text and marks DCS offline", () => {
 	const svg = keySvg({ title: "A<B & C", state: "ON", lit: true, live: true });

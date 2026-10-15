@@ -1,14 +1,20 @@
 {
   "name": "dcs2streamdeck",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
+  "imports": {
+    "#aircraft": {
+      "fa18c": "./aircraft/fa18c/aircraft.ts",
+      "f16c": "./aircraft/f16c/aircraft.ts",
+      "default": "./aircraft/fa18c/aircraft.ts"
+    }
+  },
   "scripts": {
-    "build": "node build.mjs",
-    "check": "tsc --noEmit",
-    "test": "node build.mjs && node --test \"test/*.test.ts\"",
-    "pack": "npm run build && streamdeck pack com.adamchesters.dcs2streamdeck.sdPlugin --output dist --force",
-    "validate": "streamdeck validate com.adamchesters.dcs2streamdeck.sdPlugin",
+    "build": "node plugin/build.mjs",
+    "check": "tsc --noEmit && tsc --noEmit --customConditions node,f16c",
+    "test": "node plugin/build.mjs && node tools/test.mjs",
+    "pack": "node plugin/build.mjs --pack",
     "sim": "node tools/fake-dcs.ts",
     "record": "node tools/record.ts"
   },

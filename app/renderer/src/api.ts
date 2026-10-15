@@ -1,5 +1,5 @@
-import type { DialSettings, KeySettings } from "../../../src/core/bindings.ts";
-import type { PickerItem } from "../../../src/core/catalog.ts";
+import type { DialSettings, KeySettings } from "../../../core/bindings.ts";
+import type { PickerItem } from "../../../core/catalog.ts";
 import type { DeckState, Layout } from "../../main/engine.ts";
 import type { UpdateStatus } from "../../main/updates.ts";
 

@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { encodeFrame, ExportParser } from "../src/core/dcsbios/parser.ts";
+import { encodeFrame, ExportParser } from "../core/dcsbios/parser.ts";
 
 const word = (v: number) => new Uint8Array([v & 0xff, v >> 8]);
 

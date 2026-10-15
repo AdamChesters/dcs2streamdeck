@@ -7,7 +7,7 @@ It includes or is built on the open-source projects below. Thank you to their au
 
 | Project | Licence | Use |
 |---|---|---|
-| [DCS-BIOS](https://github.com/DCS-Skunkworks/dcs-bios) (DCS-Skunkworks) | GPL-3.0 | Cockpit data and command interface. The plugin reads the control lists from your DCS-BIOS install at run time. The test fixture in `test/fixtures/` contains control definitions taken from DCS-BIOS. |
+| [DCS-BIOS](https://github.com/DCS-Skunkworks/dcs-bios) (DCS-Skunkworks) | GPL-3.0 | Cockpit data and command interface. The plugin reads the control lists from your DCS-BIOS install at run time. The test fixtures in `aircraft/*/test/fixtures/` contain control definitions taken from DCS-BIOS. |
 | [Elgato Stream Deck](https://docs.elgato.com/streamdeck/sdk/) | Elgato SDK terms | Stream Deck app and plugin interface. |
 | [OpenKneeboard](https://openkneeboard.com) | MIT | Shows the VR mirror page in the headset (separate install). |
 

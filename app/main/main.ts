@@ -1,5 +1,5 @@
 /**
- * dcs2streamdeck standalone app (F/A-18C): Electron main process.
+ * dcs2streamdeck standalone app, one build per aircraft: Electron main process.
  * The Stream Deck itself is driven from the main window's renderer (WebHID);
  * this process owns DCS-BIOS, settings, updates and the windows.
  */
@@ -9,20 +9,24 @@ import path from "node:path";
 
 import { app, BrowserWindow, ipcMain, Menu, session, shell } from "electron";
 
-import type { DialSettings, KeySettings } from "../../src/core/bindings.ts";
+import { AIRCRAFT } from "../../core/aircraft.data.ts";
+import type { DialSettings, KeySettings } from "../../core/bindings.ts";
 import type { DeckConfig, Layout } from "./engine.ts";
 import { Engine } from "./engine.ts";
 import { RELEASES_PAGE, Updater } from "./updates.ts";
 // Shared support component (feedback relay sender).
 import feedback from "../donate/feedback.cjs";
 
-const APP_ID = "dcs2streamdeck";
+const APP_ID = AIRCRAFT.appId;
+const TITLE = `dcs2streamdeck ${AIRCRAFT.name}`;
 const ELGATO_VENDOR_ID = 0x0fd9;
 
 type AppConfig = DeckConfig & { deckWindow?: { open: boolean; bounds?: Electron.Rectangle } };
 
+// Each aircraft's app keeps its own settings (set before the single-instance lock, which lives there).
+app.setPath("userData", path.join(app.getPath("appData"), APP_ID));
 if (!app.requestSingleInstanceLock()) app.quit();
-app.setAppUserModelId("com.adamchesters.dcs2streamdeck");
+app.setAppUserModelId(AIRCRAFT.uuid);
 
 const configPath = () => path.join(app.getPath("userData"), "config.json");
 
@@ -62,10 +66,11 @@ function createMainWindow(): void {
 		height: 680,
 		minWidth: 640,
 		minHeight: 480,
-		title: "dcs2streamdeck F/A-18C",
+		title: TITLE,
 		backgroundColor: "#26282b",
 		webPreferences: { preload, contextIsolation: true, backgroundThrottling: false },
 	});
+	mainWindow.on("page-title-updated", (e) => e.preventDefault());
 	void mainWindow.loadFile(page("index.html"));
 	mainWindow.on("closed", () => {
 		mainWindow = undefined;
@@ -88,10 +93,11 @@ function createDeckWindow(): void {
 		minWidth: 260,
 		minHeight: 165,
 		frame: false,
-		title: "dcs2streamdeck Deck",
+		title: `${TITLE} Deck`,
 		backgroundColor: "#2b2d31",
 		webPreferences: { preload, contextIsolation: true, backgroundThrottling: false },
 	});
+	deckWindow.on("page-title-updated", (e) => e.preventDefault());
 	void deckWindow.loadFile(page("deck.html"));
 	const remember = () => {
 		if (!deckWindow) return;

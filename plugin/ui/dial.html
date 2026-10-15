@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<title>DCS Dial</title>
+	<link rel="stylesheet" href="pi.css" />
+</head>
+<body>
+	<label for="preset">Presets</label>
+	<select id="preset">
+		<option value="">Choose a preset…</option>
+	</select>
+
+	<label for="add">Add a knob</label>
+	<input type="search" id="addSearch" placeholder="Type to search (e.g. dimmer), then pick below" />
+	<div class="row"><select id="add" data-setting="__add"></select><button id="addButton" type="button">Add</button></div>
+
+	<label for="functions">Knobs (press the dial to step through them)</label>
+	<textarea id="functions" data-setting="functions" placeholder="CONTROL_ID | Label | step"></textarea>
+	<div class="hint">One knob per line: <code>CONTROL_ID | Label | step</code>. Label and step are optional. Step is per dial click for 0–65535 knobs (DCS-BIOS default 3200).</div>
+	<details>
+		<summary>Setup (all keys and dials)</summary>
+		<div class="status" id="status">Waiting for plugin…</div>
+		<label for="jsonDir">DCS-BIOS JSON folder</label>
+		<input type="text" id="jsonDir" data-global="jsonDir" placeholder="Saved Games\DCS\Scripts\DCS-BIOS\doc\json" />
+		<div class="hint">Leave empty for the default folder.</div>
+		<label for="mirrorPort">VR mirror port</label>
+		<input type="number" id="mirrorPort" data-global="mirrorPort" placeholder="__MIRROR_PORT__" />
+		<div class="hint">VR mirror page: <code>http://127.0.0.1:__MIRROR_PORT__/</code> (or your port). Add it as an OpenKneeboard Web Dashboard tab. A new port needs a Stream Deck restart.</div>
+	</details>
+	<script src="pi.js"></script>
+	<script>
+		const $ = (id) => document.getElementById(id);
+		const knobs = picker($("add"), $("addSearch"), (i) => i.dial);
+		// The add-picker is not a real setting; keep its choice local.
+		$("add").removeAttribute("data-setting");
+		$("add").dataset.setting = "__add";
+		const label = (id) => id.replace(/_(CTL|SW|KNOB|DIMMER|CONTROL)$/, "").replace(/_/g, " ").slice(0, 14).trim();
+
+		$("addButton").addEventListener("click", () => {
+			const id = $("add").value;
+			if (!id) return;
+			const box = $("functions");
+			box.value = `${box.value.trim()}\n${id} | ${label(id)}`.trim();
+			saveSetting("functions", box.value);
+		});
+		$("add").addEventListener("change", (ev) => ev.stopPropagation());
+		document.addEventListener("pi-catalog", () => {
+			$("preset").replaceChildren(
+				Object.assign(document.createElement("option"), { value: "", textContent: "Choose a preset…" }),
+				...presets.map(([name, value]) => Object.assign(document.createElement("option"), { value, textContent: name })),
+			);
+		});
+		$("preset").addEventListener("change", (ev) => {
+			if (!ev.target.value) return;
+			const box = $("functions");
+			box.value = ev.target.value;
+			saveSetting("functions", box.value);
+			ev.target.value = "";
+		});
+	</script>
+</body>
+</html>

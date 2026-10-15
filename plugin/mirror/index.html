@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>dcs2streamdeck __NAME__ mirror</title>
+<style>
+	/* Transparent page: OpenKneeboard shows only the deck. */
+	html, body { margin: 0; background: transparent; overflow: hidden; }
+	body { font-family: Arial, sans-serif; color: #fff; }
+	.deck { display: inline-flex; flex-direction: column; gap: 10px; padding: 10px; border-radius: 18px; background: #2b2d31; }
+	.keys { display: grid; gap: 10px; }
+	.key { width: 144px; height: 144px; border-radius: 16px; background: rgba(255, 255, 255, 0.06); }
+	.key img { width: 100%; height: 100%; display: block; }
+	.dials { display: grid; gap: 10px; }
+	.dial { box-sizing: border-box; width: 144px; height: 92px; padding: 8px 10px; border-radius: 12px; background: #1d1d1d; display: flex; flex-direction: column; justify-content: space-between; }
+	.dial.empty { background: rgba(255, 255, 255, 0.06); }
+	.dial .t { font-size: 15px; color: #ddd; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+	.dial .v { font-size: 24px; font-weight: bold; }
+	.dial.dead .v { color: #777; font-size: 18px; }
+	.bar { height: 6px; border-radius: 3px; background: #444; overflow: hidden; }
+	.bar i { display: block; height: 100%; background: #4fc06a; }
+	.dots { display: flex; gap: 4px; height: 6px; }
+	.dots b { width: 6px; height: 6px; border-radius: 3px; background: #555; }
+	.dots b.on { background: #fff; }
+	.wait { padding: 12px 16px; font-size: 18px; background: rgba(0, 0, 0, 0.6); border-radius: 10px; display: inline-block; }
+</style>
+</head>
+<body>
+<div id="root"><div class="wait">Waiting for Stream Deck plugin…</div></div>
+<script>
+	// Optional: ?device=<id> picks a deck when several are connected.
+	const want = new URLSearchParams(location.search).get("device");
+	const root = document.getElementById("root");
+
+	function el(tag, cls, children = []) {
+		const e = document.createElement(tag);
+		if (cls) e.className = cls;
+		e.append(...children);
+		return e;
+	}
+
+	function render({ devices, tiles }) {
+		const device = devices.find((d) => d.id === want) || devices.find((d) => d.hasDials) || devices[0];
+		const id = device?.id ?? tiles[0]?.device;
+		const mine = tiles.filter((t) => t.device === id);
+		const columns = device?.columns ?? 4;
+		const rows = device?.rows ?? 2;
+		const hasDials = device?.hasDials ?? mine.some((t) => t.kind === "dial");
+
+		const keys = el("div", "keys");
+		keys.style.gridTemplateColumns = `repeat(${columns}, 144px)`;
+		for (let row = 0; row < rows; row++) {
+			for (let column = 0; column < columns; column++) {
+				const tile = mine.find((t) => t.kind === "key" && t.row === row && t.column === column);
+				const key = el("div", "key");
+				if (tile) {
+					const img = new Image();
+					img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(tile.svg);
+					key.append(img);
+				}
+				keys.append(key);
+			}
+		}
+		const parts = [keys];
+
+		if (hasDials) {
+			const dials = el("div", "dials");
+			dials.style.gridTemplateColumns = `repeat(${columns}, 144px)`;
+			for (let column = 0; column < columns; column++) {
+				const tile = mine.find((t) => t.kind === "dial" && t.column === column);
+				if (!tile) {
+					dials.append(el("div", "dial empty"));
+					continue;
+				}
+				const d = tile.dial;
+				const t = el("div", "t");
+				t.textContent = d.title;
+				const v = el("div", "v");
+				v.textContent = d.value;
+				const fill = el("i");
+				fill.style.width = `${Math.max(0, Math.min(100, d.percent))}%`;
+				const dots = el("div", "dots", d.functions.length > 1 ? d.functions.map((_, i) => el("b", i === d.index ? "on" : "")) : []);
+				dials.append(el("div", d.live ? "dial" : "dial dead", [t, v, el("div", "bar", [fill]), dots]));
+			}
+			parts.push(dials);
+		}
+		root.replaceChildren(el("div", "deck", parts));
+	}
+
+	const events = new EventSource("/events");
+	events.onmessage = (msg) => render(JSON.parse(msg.data));
+	events.onerror = () => root.replaceChildren(Object.assign(el("div", "wait"), { textContent: "Stream Deck plugin not running" }));
+</script>
+</body>
+</html>

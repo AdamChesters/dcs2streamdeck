@@ -6,12 +6,12 @@ import os from "node:os";
 import path from "node:path";
 import { test } from "node:test";
 
-import { DcsBiosClient } from "../../src/core/dcsbios/client.ts";
+import { DcsBiosClient } from "../../core/dcsbios/client.ts";
 import type { DeckConfig, DeckState } from "../main/engine.ts";
 import { Engine } from "../main/engine.ts";
 
 const root = path.resolve(new URL("../..", import.meta.url).pathname);
-const fixture = path.join(root, "test", "fixtures", "controls.json");
+const fixture = path.join(root, "aircraft", "fa18c", "test", "fixtures", "controls.json");
 
 function until(check: () => boolean, ms: number, what: string): Promise<void> {
 	return new Promise((resolve, reject) => {

@@ -1,0 +1,483 @@
+{
+	"CMDS": {
+		"CMDS_CH_AMOUNT": {
+			"category": "CMDS",
+			"control_type": "display",
+			"description": "CMDS CH Amount Display",
+			"identifier": "CMDS_CH_AMOUNT",
+			"inputs": [],
+			"outputs": [
+				{
+					"address": 17832,
+					"address_identifier": "F_16C_50_CMDS_CH_AMOUNT_A",
+					"description": "CMDS CH Amount Display",
+					"max_length": 4,
+					"suffix": "",
+					"type": "string"
+				}
+			]
+		}
+	},
+	"Engine": {
+		"JFS_SW": {
+			"category": "Engine",
+			"control_type": "3Pos_2Command_Switch_OpenClose",
+			"description": "JFS Switch",
+			"identifier": "JFS_SW",
+			"inputs": [
+				{
+					"description": "set the switch position",
+					"interface": "set_state",
+					"max_value": 2
+				}
+			],
+			"outputs": [
+				{
+					"address": 17444,
+					"address_mask_shift_identifier": "F_16C_50_JFS_SW",
+					"description": "switch position -- 0 = Down, 1 = Mid,  2 = Up",
+					"mask": 3,
+					"max_value": 2,
+					"shift_by": 0,
+					"suffix": "",
+					"type": "integer"
+				}
+			],
+			"positions": [
+				"START 1",
+				"OFF",
+				"START 2"
+			]
+		}
+	},
+	"Gear System": {
+		"GEAR_HANDLE": {
+			"category": "Gear System",
+			"control_type": "selector",
+			"description": "LG Handle, UP/DN",
+			"identifier": "GEAR_HANDLE",
+			"inputs": [
+				{
+					"description": "switch to previous or next state",
+					"interface": "fixed_step"
+				},
+				{
+					"description": "set position",
+					"interface": "set_state",
+					"max_value": 1
+				},
+				{
+					"argument": "TOGGLE",
+					"description": "Toggle switch state",
+					"interface": "action"
+				}
+			],
+			"outputs": [
+				{
+					"address": 17436,
+					"address_mask_identifier": "F_16C_50_GEAR_HANDLE_AM",
+					"address_mask_shift_identifier": "F_16C_50_GEAR_HANDLE",
+					"description": "selector position",
+					"mask": 32768,
+					"max_value": 1,
+					"shift_by": 15,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		}
+	},
+	"Interior Lights": {
+		"MAL_IND_LTS_TEST": {
+			"api_variant": "momentary_last_position",
+			"category": "Interior Lights",
+			"control_type": "selector",
+			"description": "MAL & IND LTS Test Button - Push to test",
+			"identifier": "MAL_IND_LTS_TEST",
+			"inputs": [
+				{
+					"description": "switch to previous or next state",
+					"interface": "fixed_step"
+				},
+				{
+					"description": "set position",
+					"interface": "set_state",
+					"max_value": 1
+				},
+				{
+					"argument": "TOGGLE",
+					"description": "Toggle switch state",
+					"interface": "action"
+				}
+			],
+			"outputs": [
+				{
+					"address": 17416,
+					"address_mask_identifier": "F_16C_50_MAL_IND_LTS_TEST_AM",
+					"address_mask_shift_identifier": "F_16C_50_MAL_IND_LTS_TEST",
+					"description": "selector position",
+					"mask": 4096,
+					"max_value": 1,
+					"shift_by": 12,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		},
+		"MASTER_CAUTION": {
+			"api_variant": "momentary_last_position",
+			"category": "Interior Lights",
+			"control_type": "selector",
+			"description": "Master Caution Button - Push to reset",
+			"identifier": "MASTER_CAUTION",
+			"inputs": [
+				{
+					"description": "switch to previous or next state",
+					"interface": "fixed_step"
+				},
+				{
+					"description": "set position",
+					"interface": "set_state",
+					"max_value": 1
+				},
+				{
+					"argument": "TOGGLE",
+					"description": "Toggle switch state",
+					"interface": "action"
+				}
+			],
+			"outputs": [
+				{
+					"address": 17408,
+					"address_mask_identifier": "F_16C_50_MASTER_CAUTION_AM",
+					"address_mask_shift_identifier": "F_16C_50_MASTER_CAUTION",
+					"description": "selector position",
+					"mask": 32768,
+					"max_value": 1,
+					"shift_by": 15,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		},
+		"PRI_CONSOLES_BRT_KNB": {
+			"category": "Interior Lights",
+			"control_type": "limited_dial",
+			"description": "PRIMARY CONSOLES BRT Knob",
+			"identifier": "PRI_CONSOLES_BRT_KNB",
+			"inputs": [
+				{
+					"description": "set the position of the dial",
+					"interface": "set_state",
+					"max_value": 65535
+				},
+				{
+					"description": "turn the dial left or right",
+					"interface": "variable_step",
+					"max_value": 65535,
+					"suggested_step": 3200
+				}
+			],
+			"outputs": [
+				{
+					"address": 17422,
+					"address_identifier": "F_16C_50_PRI_CONSOLES_BRT_KNB_A",
+					"address_mask_shift_identifier": "F_16C_50_PRI_CONSOLES_BRT_KNB",
+					"description": "position of the potentiometer",
+					"mask": 65535,
+					"max_value": 65535,
+					"shift_by": 0,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		},
+		"PRI_INST_PNL_BRT_KNB": {
+			"category": "Interior Lights",
+			"control_type": "limited_dial",
+			"description": "PRIMARY INST PNL BRT Knob",
+			"identifier": "PRI_INST_PNL_BRT_KNB",
+			"inputs": [
+				{
+					"description": "set the position of the dial",
+					"interface": "set_state",
+					"max_value": 65535
+				},
+				{
+					"description": "turn the dial left or right",
+					"interface": "variable_step",
+					"max_value": 65535,
+					"suggested_step": 3200
+				}
+			],
+			"outputs": [
+				{
+					"address": 17424,
+					"address_identifier": "F_16C_50_PRI_INST_PNL_BRT_KNB_A",
+					"address_mask_shift_identifier": "F_16C_50_PRI_INST_PNL_BRT_KNB",
+					"description": "position of the potentiometer",
+					"mask": 65535,
+					"max_value": 65535,
+					"shift_by": 0,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		}
+	},
+	"MMC": {
+		"MASTER_ARM_SW": {
+			"category": "MMC",
+			"control_type": "selector",
+			"description": "MASTER ARM Switch",
+			"identifier": "MASTER_ARM_SW",
+			"inputs": [
+				{
+					"description": "switch to previous or next state",
+					"interface": "fixed_step"
+				},
+				{
+					"description": "set position",
+					"interface": "set_state",
+					"max_value": 2
+				}
+			],
+			"outputs": [
+				{
+					"address": 17446,
+					"address_mask_shift_identifier": "F_16C_50_MASTER_ARM_SW",
+					"description": "selector position",
+					"mask": 49152,
+					"max_value": 2,
+					"shift_by": 14,
+					"suffix": "",
+					"type": "integer"
+				}
+			],
+			"positions": [
+				"MASTER ARM",
+				"OFF",
+				"SIMULATE"
+			]
+		}
+	},
+	"Sensor Panel": {
+		"HDPT_SW_L": {
+			"category": "Sensor Panel",
+			"control_type": "selector",
+			"description": "LEFT HDPT Switch, ON/OFF",
+			"identifier": "HDPT_SW_L",
+			"inputs": [
+				{
+					"description": "switch to previous or next state",
+					"interface": "fixed_step"
+				},
+				{
+					"description": "set position",
+					"interface": "set_state",
+					"max_value": 1
+				},
+				{
+					"argument": "TOGGLE",
+					"description": "Toggle switch state",
+					"interface": "action"
+				}
+			],
+			"outputs": [
+				{
+					"address": 17444,
+					"address_mask_identifier": "F_16C_50_HDPT_SW_L_AM",
+					"address_mask_shift_identifier": "F_16C_50_HDPT_SW_L",
+					"description": "selector position",
+					"mask": 8192,
+					"max_value": 1,
+					"shift_by": 13,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		}
+	},
+	"Warning, Caution and IndicatorLights": {
+		"LIGHT_AOA_DN": {
+			"category": "Warning, Caution and IndicatorLights",
+			"control_type": "led",
+			"description": "AoA Light down (yellow)",
+			"identifier": "LIGHT_AOA_DN",
+			"inputs": [],
+			"outputs": [
+				{
+					"address": 17530,
+					"address_mask_identifier": "F_16C_50_LIGHT_AOA_DN_AM",
+					"address_mask_shift_identifier": "F_16C_50_LIGHT_AOA_DN",
+					"description": "0 if light is off, 1 if light is on",
+					"mask": 8192,
+					"max_value": 1,
+					"shift_by": 13,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		},
+		"LIGHT_AOA_MID": {
+			"category": "Warning, Caution and IndicatorLights",
+			"control_type": "led",
+			"description": "AoA Light mid (green)",
+			"identifier": "LIGHT_AOA_MID",
+			"inputs": [],
+			"outputs": [
+				{
+					"address": 17530,
+					"address_mask_identifier": "F_16C_50_LIGHT_AOA_MID_AM",
+					"address_mask_shift_identifier": "F_16C_50_LIGHT_AOA_MID",
+					"description": "0 if light is off, 1 if light is on",
+					"mask": 4096,
+					"max_value": 1,
+					"shift_by": 12,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		},
+		"LIGHT_AOA_UP": {
+			"category": "Warning, Caution and IndicatorLights",
+			"control_type": "led",
+			"description": "AoA Light up (red)",
+			"identifier": "LIGHT_AOA_UP",
+			"inputs": [],
+			"outputs": [
+				{
+					"address": 17530,
+					"address_mask_identifier": "F_16C_50_LIGHT_AOA_UP_AM",
+					"address_mask_shift_identifier": "F_16C_50_LIGHT_AOA_UP",
+					"description": "0 if light is off, 1 if light is on",
+					"mask": 2048,
+					"max_value": 1,
+					"shift_by": 11,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		},
+		"LIGHT_GEAR_L": {
+			"category": "Warning, Caution and IndicatorLights",
+			"control_type": "led",
+			"description": "Left Gear Light (green)",
+			"identifier": "LIGHT_GEAR_L",
+			"inputs": [],
+			"outputs": [
+				{
+					"address": 17530,
+					"address_mask_identifier": "F_16C_50_LIGHT_GEAR_L_AM",
+					"address_mask_shift_identifier": "F_16C_50_LIGHT_GEAR_L",
+					"description": "0 if light is off, 1 if light is on",
+					"mask": 32768,
+					"max_value": 1,
+					"shift_by": 15,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		},
+		"LIGHT_GEAR_N": {
+			"category": "Warning, Caution and IndicatorLights",
+			"control_type": "led",
+			"description": "Nose Gear Light (green)",
+			"identifier": "LIGHT_GEAR_N",
+			"inputs": [],
+			"outputs": [
+				{
+					"address": 17530,
+					"address_mask_identifier": "F_16C_50_LIGHT_GEAR_N_AM",
+					"address_mask_shift_identifier": "F_16C_50_LIGHT_GEAR_N",
+					"description": "0 if light is off, 1 if light is on",
+					"mask": 16384,
+					"max_value": 1,
+					"shift_by": 14,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		},
+		"LIGHT_GEAR_R": {
+			"category": "Warning, Caution and IndicatorLights",
+			"control_type": "led",
+			"description": "Right Gear Light (green)",
+			"identifier": "LIGHT_GEAR_R",
+			"inputs": [],
+			"outputs": [
+				{
+					"address": 17532,
+					"address_mask_identifier": "F_16C_50_LIGHT_GEAR_R_AM",
+					"address_mask_shift_identifier": "F_16C_50_LIGHT_GEAR_R",
+					"description": "0 if light is off, 1 if light is on",
+					"mask": 1,
+					"max_value": 1,
+					"shift_by": 0,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		},
+		"LIGHT_GEAR_WARN": {
+			"category": "Warning, Caution and IndicatorLights",
+			"control_type": "led",
+			"description": "Gear Warning Light (red)",
+			"identifier": "LIGHT_GEAR_WARN",
+			"inputs": [],
+			"outputs": [
+				{
+					"address": 17532,
+					"address_mask_identifier": "F_16C_50_LIGHT_GEAR_WARN_AM",
+					"address_mask_shift_identifier": "F_16C_50_LIGHT_GEAR_WARN",
+					"description": "0 if light is off, 1 if light is on",
+					"mask": 2,
+					"max_value": 1,
+					"shift_by": 1,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		},
+		"LIGHT_JFS_RUN": {
+			"category": "Warning, Caution and IndicatorLights",
+			"control_type": "led",
+			"description": "JFS RUN Light (green)",
+			"identifier": "LIGHT_JFS_RUN",
+			"inputs": [],
+			"outputs": [
+				{
+					"address": 17532,
+					"address_mask_identifier": "F_16C_50_LIGHT_JFS_RUN_AM",
+					"address_mask_shift_identifier": "F_16C_50_LIGHT_JFS_RUN",
+					"description": "0 if light is off, 1 if light is on",
+					"mask": 32,
+					"max_value": 1,
+					"shift_by": 5,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		},
+		"LIGHT_MASTER_CAUTION": {
+			"category": "Warning, Caution and IndicatorLights",
+			"control_type": "led",
+			"description": "MASTER CAUTION Light (yellow)",
+			"identifier": "LIGHT_MASTER_CAUTION",
+			"inputs": [],
+			"outputs": [
+				{
+					"address": 17530,
+					"address_mask_identifier": "F_16C_50_LIGHT_MASTER_CAUTION_AM",
+					"address_mask_shift_identifier": "F_16C_50_LIGHT_MASTER_CAUTION",
+					"description": "0 if light is off, 1 if light is on",
+					"mask": 1,
+					"max_value": 1,
+					"shift_by": 0,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		}
+	}
+}

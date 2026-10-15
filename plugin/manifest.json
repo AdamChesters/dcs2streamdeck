@@ -1,0 +1,88 @@
+{
+	"$schema": "https://schemas.elgato.com/streamdeck/plugins/manifest.json",
+	"Name": "dcs2streamdeck __NAME__",
+	"Version": "__VERSION__",
+	"Author": "Adam Chesters",
+	"Description": "Control the DCS World __FULL_NAME__ from your Stream Deck through DCS-BIOS, with live switch, light and knob state.",
+	"UUID": "__UUID__",
+	"Category": "dcs2streamdeck __NAME__",
+	"CategoryIcon": "imgs/category",
+	"Icon": "imgs/plugin",
+	"CodePath": "bin/plugin.js",
+	"SDKVersion": 3,
+	"Software": {
+		"MinimumVersion": "7.1"
+	},
+	"OS": [
+		{
+			"Platform": "windows",
+			"MinimumVersion": "10"
+		},
+		{
+			"Platform": "mac",
+			"MinimumVersion": "12"
+		}
+	],
+	"Nodejs": {
+		"Version": "24",
+		"Debug": "enabled"
+	},
+	"Actions": [
+		{
+			"Name": "DCS Switch",
+			"UUID": "__UUID__.switch",
+			"Icon": "imgs/switch",
+			"Tooltip": "Sends a cockpit command and shows the switch state from DCS.",
+			"PropertyInspectorPath": "ui/switch.html",
+			"Controllers": [
+				"Keypad"
+			],
+			"States": [
+				{
+					"Image": "imgs/key",
+					"ShowTitle": true
+				}
+			],
+			"SupportedInMultiActions": true
+		},
+		{
+			"Name": "DCS Light",
+			"UUID": "__UUID__.light",
+			"Icon": "imgs/light",
+			"Tooltip": "Shows a cockpit light or indicator: caution lights, AOA indexer, landing gear and more.",
+			"PropertyInspectorPath": "ui/light.html",
+			"Controllers": [
+				"Keypad"
+			],
+			"States": [
+				{
+					"Image": "imgs/key"
+				}
+			],
+			"SupportedInMultiActions": false
+		},
+		{
+			"Name": "DCS Dial",
+			"UUID": "__UUID__.dial",
+			"Icon": "imgs/dial",
+			"Tooltip": "Turn to adjust a cockpit knob. Press to step to the next knob.",
+			"PropertyInspectorPath": "ui/dial.html",
+			"Controllers": [
+				"Encoder"
+			],
+			"Encoder": {
+				"layout": "$B1",
+				"TriggerDescription": {
+					"Rotate": "Adjust",
+					"Push": "Next knob",
+					"Touch": "Next knob"
+				}
+			},
+			"States": [
+				{
+					"Image": "imgs/key"
+				}
+			]
+		}
+	]
+}

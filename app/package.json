@@ -3,7 +3,7 @@
   "productName": "dcs2streamdeck",
   "version": "0.1.0-alpha.2",
   "private": true,
-  "description": "dcs2streamdeck for the DCS F/A-18C: drives the Stream Deck directly, no Elgato app needed.",
+  "description": "dcs2streamdeck desktop app, one build per aircraft: drives the Stream Deck directly, no Elgato app needed.",
   "author": "Adam Chesters",
   "main": "dist-electron/main.cjs",
   "devDependencies": {
@@ -26,13 +26,10 @@
     "check": "tsc --noEmit -p .",
     "test": "node --test \"test/*.test.ts\"",
     "start": "npm run build && electron .",
-    "dist": "npm run build && electron-builder --win nsis --x64 --publish never"
+    "dist": "npm run build && node dist.mjs"
   },
   "build": {
-    "appId": "com.adamchesters.dcs2streamdeck",
-    "productName": "dcs2streamdeck",
     "copyright": "Adam Chesters",
-    "artifactName": "dcs2streamdeck-${version}-Setup.${ext}",
     "directories": {
       "output": "release",
       "buildResources": "build"
@@ -58,8 +55,7 @@
       "oneClick": true,
       "perMachine": false,
       "runAfterFinish": true,
-      "deleteAppDataOnUninstall": false,
-      "shortcutName": "dcs2streamdeck"
+      "deleteAppDataOnUninstall": false
     }
   }
 }

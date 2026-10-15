@@ -17,5 +17,5 @@
 		"noImplicitOverride": true,
 		"skipLibCheck": true
 	},
-	"include": ["main/**/*.ts", "renderer/src/**/*.ts", "renderer/src/**/*.tsx", "test/**/*.ts", "../src/core/**/*.ts"]
+	"include": ["main/**/*.ts", "renderer/src/**/*.ts", "renderer/src/**/*.tsx", "test/**/*.ts", "../core/**/*.ts", "../aircraft/*/aircraft.ts"]
 }

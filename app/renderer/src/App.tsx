@@ -6,11 +6,12 @@ import type { DeckState, Info, UpdateStatus } from "./api.ts";
 import { api } from "./api.ts";
 import type { Selection } from "./Deck.tsx";
 import { Deck } from "./Deck.tsx";
+import { AIRCRAFT } from "../../../core/aircraft.data.ts";
 import { Editor } from "./Editor.tsx";
 import { DeckLink } from "./hid.ts";
 import logo from "./logo.svg";
 
-const APP_NAME = "dcs2streamdeck";
+const APP_NAME = `dcs2streamdeck ${AIRCRAFT.name}`;
 
 export function App() {
 	const [state, setState] = useState<DeckState>();
@@ -231,7 +232,7 @@ function SettingsDialog({ state, deckName, link, onClose }: { state: DeckState; 
 			</footer>
 			<h3>VR</h3>
 			<p className="muted">
-				Open the deck window from the top bar, then add it in OpenKneeboard as a Window Capture tab named “dcs2streamdeck Deck”. Keep the deck
+				Open the deck window from the top bar, then add it in OpenKneeboard as a Window Capture tab named “{APP_NAME} Deck”. Keep the deck
 				window open (it can sit behind DCS).
 			</p>
 		</Modal>

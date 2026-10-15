@@ -6,28 +6,28 @@
 
 Stream Deck keys, lights and dials that show what your jet is actually doing in DCS World.
 
-**For the DCS F/A-18C Hornet only.** One plugin per aircraft keeps the control lists short; the F-16C has its own: [dcs2streamdeck-f16c](https://github.com/AdamChesters/dcs2streamdeck-f16c).
+**For the DCS F/A-18C Hornet and F-16C Viper.** Each jet has its own plugin, so the control lists stay short. Install the ones you fly; they work side by side.
 
 ## Why
 
-The DCS Stream Deck projects I tried had gone quiet. Some no longer worked with current DCS, and none kept the deck in step with the cockpit: when the jet moved a switch by itself, like the magnetically held APU or launch bar switch, the key kept showing the wrong thing. dcs2streamdeck reads the live cockpit through DCS-BIOS, so the deck always matches the jet.
+The DCS Stream Deck projects I tried had gone quiet. Some no longer worked with current DCS, and none kept the deck in step with the cockpit: when the jet moved a switch by itself, like a magnetically held APU or JFS switch, the key kept showing the wrong thing. dcs2streamdeck reads the live cockpit through DCS-BIOS, so the deck always matches the jet.
 
 ## Examples
 
 <p align="center">
-  <img src="assets/examples.png" alt="Example keys: APU, Master Arm, engine crank, Master Caution, L BAR, AOA indexer, gear and flaps" width="976">
+  <img src="assets/examples.png" alt="Example keys. F/A-18C: APU, Master Caution, L BAR, flaps. F-16C: Master Arm, TO/LDG CONFIG, AOA indexer, gear" width="976">
 </p>
 
 - **DCS Switch**: any switch, button or lever. Shows its real position (ARM/SAFE, EXTEND/RETRACT) and can light up from its own cockpit light.
-- **DCS Light**: caution and warning lights in their cockpit colours, plus combined indicators: AOA indexer, flaps, landing gear and L BAR.
-- **DCS Dial** (Stream Deck +): turn to set brightness and volume knobs; press to step through a list. Presets for the DDIs, cockpit lighting and displays.
-- **VR**: a live copy of the deck at `http://127.0.0.1:31730/` for an OpenKneeboard Web Dashboard tab.
+- **DCS Light**: caution and warning lights in their cockpit colours, plus combined indicators: AOA indexer and landing gear, and on the Hornet also flaps and L BAR.
+- **DCS Dial** (Stream Deck +): turn to set brightness and volume knobs; press to step through a list. Presets for each jet's displays and cockpit lighting.
+- **VR**: a live copy of the deck for an OpenKneeboard Web Dashboard tab, at `http://127.0.0.1:31730/` (F/A-18C) or `http://127.0.0.1:31731/` (F-16C).
 
 ## Install
 
 1. Install [DCS-BIOS](https://github.com/DCS-Skunkworks/dcs-bios/releases) v0.11 or later.
 2. Use the Stream Deck app 7.1 or later.
-3. Download the latest `.streamDeckPlugin` from [Releases](https://github.com/AdamChesters/dcs2streamdeck/releases) and double-click it.
+3. Download the `.streamDeckPlugin` for your jet from [Releases](https://github.com/AdamChesters/dcs2streamdeck/releases) (`dcs2streamdeck-fa18c-…` or `dcs2streamdeck-f16c-…`) and double-click it.
 
 Building from source: [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md).
 

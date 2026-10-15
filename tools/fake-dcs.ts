@@ -1,9 +1,11 @@
 /**
  * Fake DCS: speaks the DCS-BIOS protocol so the plugin can be tested without the game.
  *
- *   node tools/fake-dcs.ts --json <FA-18C_hornet.json> [--magnetic APU_CONTROL_SW:10] [--aircraft FA-18C_hornet]
+ *   node tools/fake-dcs.ts --json <FA-18C_hornet.json> [--magnetic APU_CONTROL_SW:10]
+ *   node --conditions=f16c tools/fake-dcs.ts --json <F-16C_50.json> [--magnetic HDPT_SW_L:10]
  *   node tools/fake-dcs.ts --play <recording.jsonl>
  *
+ * --aircraft sets the aircraft name sent to the plugin (default: the selected aircraft).
  * Sim mode keeps a memory map, applies commands sent to UDP 7778 and sends
  * the export stream to 239.255.50.10:5010 at 30 frames a second.
  * --magnetic ID:seconds drops that switch back to 0 after the delay, like the
@@ -14,16 +16,17 @@ import dgram from "node:dgram";
 import { readFileSync } from "node:fs";
 import { parseArgs } from "node:util";
 
-import { DEFAULT_OPTIONS } from "../src/core/dcsbios/client.ts";
-import type { Control } from "../src/core/dcsbios/controls.ts";
-import { intOutput, loadControls } from "../src/core/dcsbios/controls.ts";
-import { encodeFrame } from "../src/core/dcsbios/parser.ts";
+import { AIRCRAFT } from "../core/aircraft.data.ts";
+import { DEFAULT_OPTIONS } from "../core/dcsbios/client.ts";
+import type { Control } from "../core/dcsbios/controls.ts";
+import { intOutput, loadControls } from "../core/dcsbios/controls.ts";
+import { encodeFrame } from "../core/dcsbios/parser.ts";
 
 const { values } = parseArgs({
 	options: {
 		json: { type: "string" },
 		play: { type: "string" },
-		aircraft: { type: "string", default: "FA-18C_hornet" },
+		aircraft: { type: "string", default: AIRCRAFT.module },
 		magnetic: { type: "string", multiple: true, default: [] },
 		group: { type: "string", default: DEFAULT_OPTIONS.exportGroup },
 		port: { type: "string", default: String(DEFAULT_OPTIONS.exportPort) },
