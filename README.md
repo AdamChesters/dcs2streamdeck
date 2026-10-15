@@ -34,11 +34,13 @@ The DCS Stream Deck projects I tried had gone quiet. Some no longer worked with 
 2. Use the Stream Deck app 7.1 or later.
 3. Download the `.streamDeckPlugin` for your jet from [Releases](https://github.com/AdamChesters/dcs2streamdeck/releases) (`dcs2streamdeck-fa18c-…` or `dcs2streamdeck-f16c-…`) and double-click it.
 
-## Install the desktop app (Windows)
+## Use the desktop app (Windows)
 
 1. Install [DCS-BIOS](https://github.com/DCS-Skunkworks/dcs-bios/releases) v0.11 or later.
-2. Download the installer for your jet from [Releases](https://github.com/AdamChesters/dcs2streamdeck/releases) (`dcs2streamdeck-…-Setup.exe` for the F/A-18C or `dcs2streamdeck-f16c-…-Setup.exe` for the F-16C) and run it. The installers are not code-signed yet, so Windows may show a warning first.
+2. Download the zip for your jet from [Releases](https://github.com/AdamChesters/dcs2streamdeck/releases) (`dcs2streamdeck-fa18c-…-win.zip` or `dcs2streamdeck-f16c-…-win.zip`), unzip it to any folder and run `dcs2streamdeck FA-18C.exe` or `dcs2streamdeck F-16C.exe`. It is not code-signed yet, so Windows may show a warning first.
 3. Close the Elgato Stream Deck app: only one program can drive the deck at a time.
+
+To update, unzip the new version over the old folder; your keys and dials are kept (they live in `%APPDATA%\dcs2streamdeck-fa18c` or `-f16c`). To remove the app, delete its folder and that one.
 
 One repo for every jet: a folder per jet in `aircraft/`, shared code in `core/`, the Stream Deck plugin in `plugin/` and the desktop app in `app/`. Building from source: [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md).
 

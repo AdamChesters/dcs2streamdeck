@@ -49,4 +49,4 @@ npm test
 npm run build
 ```
 
-Windows installers are built on Windows with `npm run dist`.
+Portable Windows zips (`app/release/dcs2streamdeck-<aircraft>-<version>-win.zip`) are built on Windows with `npm run dist`. The app version must match the plugin version in the root `package.json`.

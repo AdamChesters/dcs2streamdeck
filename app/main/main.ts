@@ -3,7 +3,7 @@
  * The Stream Deck itself is driven from the main window's renderer (WebHID);
  * this process owns DCS-BIOS, settings, updates and the windows.
  */
-import { execFile, spawn } from "node:child_process";
+import { execFile } from "node:child_process";
 import { readFileSync, writeFileSync, mkdirSync, renameSync } from "node:fs";
 import path from "node:path";
 
@@ -17,14 +17,16 @@ import { RELEASES_PAGE, Updater } from "./updates.ts";
 // Shared support component (feedback relay sender).
 import feedback from "../donate/feedback.cjs";
 
+// Feedback relay app ID.
 const APP_ID = AIRCRAFT.appId;
 const TITLE = `dcs2streamdeck ${AIRCRAFT.name}`;
 const ELGATO_VENDOR_ID = 0x0fd9;
 
 type AppConfig = DeckConfig & { deckWindow?: { open: boolean; bounds?: Electron.Rectangle } };
 
-// Each aircraft's app keeps its own settings (set before the single-instance lock, which lives there).
-app.setPath("userData", path.join(app.getPath("appData"), APP_ID));
+// Each aircraft's app keeps its own settings, outside the app folder so a new zip keeps them
+// (set before the single-instance lock, which lives there).
+app.setPath("userData", path.join(app.getPath("appData"), `dcs2streamdeck-${AIRCRAFT.id}`));
 if (!app.requestSingleInstanceLock()) app.quit();
 app.setAppUserModelId(AIRCRAFT.uuid);
 
@@ -179,15 +181,6 @@ function registerIpc(): void {
 	);
 	ipcMain.handle("update-status", () => updater.status);
 	ipcMain.handle("update-check", () => updater.check());
-	ipcMain.handle("update-download", () => updater.download());
-	ipcMain.handle("update-cancel", () => updater.cancel());
-	ipcMain.handle("update-install", () => {
-		const installer = updater.status.state === "ready" ? updater.status.installer : undefined;
-		if (!installer) return false;
-		spawn(installer, [], { detached: true, stdio: "ignore", windowsHide: false }).unref();
-		setTimeout(() => app.quit(), 300);
-		return true;
-	});
 }
 
 app.whenReady().then(() => {
@@ -200,7 +193,6 @@ app.whenReady().then(() => {
 	);
 	updater = new Updater({
 		currentVersion: app.getVersion(),
-		downloadDir: path.join(app.getPath("userData"), "updates"),
 		onStatus: (status) => broadcast("update-status", status),
 	});
 	allowStreamDecks();

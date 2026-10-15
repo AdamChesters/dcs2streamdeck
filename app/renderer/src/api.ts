@@ -24,9 +24,6 @@ type Api = {
 	sendFeedback(fields: { name: string; email: string; message: string }): Promise<{ ok: boolean; error?: string }>;
 	updateStatus(): Promise<UpdateStatus>;
 	updateCheck(): Promise<void>;
-	updateDownload(): Promise<void>;
-	updateCancel(): Promise<void>;
-	updateInstall(): Promise<boolean>;
 	onState(listener: (state: DeckState) => void): () => void;
 	onUpdateStatus(listener: (status: UpdateStatus) => void): () => void;
 	onElgato(listener: (running: boolean) => void): () => void;

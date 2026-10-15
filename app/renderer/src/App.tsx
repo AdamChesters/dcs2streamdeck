@@ -90,7 +90,7 @@ export function App() {
 					appId={info.appId}
 					appVersion={info.version}
 					updateStatus={updateText(update)}
-					updateBusy={update?.state === "checking" || update?.state === "downloading"}
+					updateBusy={update?.state === "checking"}
 					updateAvailable={update?.state === "available" ? update.release?.version : ""}
 					checkForUpdates={() => {
 						if (update?.state === "available") setDialog("update");
@@ -119,7 +119,7 @@ function Status({ on, label }: { on: boolean; label: string }) {
 
 function VersionLight({ info, update, onClick }: { info: Info; update?: UpdateStatus; onClick: () => void }) {
 	const state = update?.state;
-	const cls = state === "current" ? "on" : state === "available" || state === "ready" ? "update" : "";
+	const cls = state === "current" ? "on" : state === "available" ? "update" : "";
 	return (
 		<button className="bar-button version" onClick={onClick} title={updateText(update)}>
 			<i className={`dot ${cls}`} />v{info.version}
@@ -135,10 +135,6 @@ function updateText(update?: UpdateStatus): string {
 			return "Up to date.";
 		case "available":
 			return `Version ${update.release?.version} is available.`;
-		case "downloading":
-			return "Downloading the update…";
-		case "ready":
-			return "Update downloaded. Ready to install.";
 		case "failed":
 			return update.message || "Could not check for updates.";
 		default:
@@ -166,11 +162,10 @@ function Modal({ title, onClose, children }: { title: string; onClose: () => voi
 
 function UpdateDialog({ info, update, onClose }: { info: Info; update: UpdateStatus; onClose: () => void }) {
 	const release = update.release;
-	const mb = (bytes: number) => (bytes / 1048576).toFixed(1);
 	return (
 		<Modal title="Updates" onClose={onClose}>
 			<p>
-				Installed: <strong>v{info.version}</strong>
+				This version: <strong>v{info.version}</strong>
 				{release && (
 					<>
 						{" "}
@@ -180,29 +175,19 @@ function UpdateDialog({ info, update, onClose }: { info: Info; update: UpdateSta
 			</p>
 			<p className="muted">{updateText(update)}</p>
 			{update.state === "available" && (
-				<p>Download the Windows installer and update this installation. Your keys and dials are kept. {APP_NAME} closes when the installer opens.</p>
-			)}
-			{update.state === "downloading" && release && (
 				<p>
-					{mb(update.downloaded)} / {mb(release.size)} MB
+					Download the new zip, close {APP_NAME} and unzip it over this folder (or into a new one). Your keys and dials are kept: they
+					are saved in your Windows profile, not in the app folder.
 				</p>
 			)}
 			{release?.notes && <pre className="notes">{release.notes}</pre>}
 			<footer>
-				{(update.state === "available" || (update.state === "failed" && release)) && (
-					<button className="primary" onClick={() => void api.updateDownload()}>
-						Download and install
+				{update.state === "available" && release && (
+					<button className="primary" onClick={() => void api.openExternal(release.zipUrl)}>
+						Download {release.zipName}
 					</button>
 				)}
-				{update.state === "ready" && (
-					<button className="primary" onClick={() => void api.updateInstall()}>
-						Install now
-					</button>
-				)}
-				{update.state === "downloading" && <button onClick={() => void api.updateCancel()}>Cancel download</button>}
-				{update.state !== "downloading" && update.state !== "checking" && (
-					<button onClick={() => void api.updateCheck()}>Check again</button>
-				)}
+				{update.state !== "checking" && <button onClick={() => void api.updateCheck()}>Check again</button>}
 				<button className="ghost" onClick={() => void api.openExternal(release?.page ?? info.releasesPage)}>
 					Open releases
 				</button>

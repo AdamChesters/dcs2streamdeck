@@ -1,9 +1,9 @@
 {
   "name": "dcs2streamdeck-app",
   "productName": "dcs2streamdeck",
-  "version": "0.3.0-alpha",
+  "version": "0.3.1",
   "private": true,
-  "description": "dcs2streamdeck desktop app, one build per aircraft: drives the Stream Deck directly, no Elgato app needed.",
+  "description": "dcs2streamdeck desktop app, one portable zip per aircraft: drives the Stream Deck directly, no Elgato app needed.",
   "author": "Adam Chesters",
   "main": "dist-electron/main.cjs",
   "devDependencies": {
@@ -43,19 +43,13 @@
     "win": {
       "target": [
         {
-          "target": "nsis",
+          "target": "zip",
           "arch": [
             "x64"
           ]
         }
       ],
       "icon": "build/icon.png"
-    },
-    "nsis": {
-      "oneClick": true,
-      "perMachine": false,
-      "runAfterFinish": true,
-      "deleteAppDataOnUninstall": false
     }
   }
 }

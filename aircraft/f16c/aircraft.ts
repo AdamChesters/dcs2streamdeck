@@ -5,8 +5,9 @@
  */
 
 /**
- * DCS-BIOS module (its JSON file name), names, and the IDs of this aircraft's plugin and app.
- * Never change uuid or appId: installed copies update in place by them.
+ * DCS-BIOS module (its JSON file name), names, and IDs. Download files and the app's
+ * settings folder are named dcs2streamdeck-<id>. Never change uuid (installed plugins update
+ * by it) or appId (the feedback relay's app ID).
  */
 export const AIRCRAFT = {
 	id: "f16c",

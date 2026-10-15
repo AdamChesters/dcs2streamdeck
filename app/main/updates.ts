@@ -1,46 +1,35 @@
 /**
- * Self-update from GitHub releases:
- * check at launch (Alpha releases included), show current / update available,
- * then download the Setup.exe, check its size and SHA-256 against GitHub, and run it.
+ * Update check from GitHub releases (Alpha releases included). The app is a portable zip,
+ * so it shows when a newer version is out and links its zip; the user unzips it.
  * No Electron imports, so it runs in tests.
  */
-import { createHash } from "node:crypto";
-import { createWriteStream } from "node:fs";
-import { mkdir, rename, rm } from "node:fs/promises";
-import path from "node:path";
-
 import { AIRCRAFT } from "../../core/aircraft.data.ts";
 
 export const REPO = "AdamChesters/dcs2streamdeck";
 export const RELEASES_PAGE = `https://github.com/${REPO}/releases`;
-const MAX_INSTALLER_BYTES = 512 * 1024 * 1024;
 
 export type Release = {
 	tag: string;
 	version: string;
 	page: string;
 	notes: string;
-	installerName: string;
-	installerUrl: string;
-	size: number;
-	/** Lower-case hex SHA-256 from GitHub's asset digest. */
-	digest: string;
+	/** This app's zip in the release. */
+	zipName: string;
+	zipUrl: string;
 };
 
-export type UpdateState = "checking" | "current" | "available" | "downloading" | "ready" | "failed";
+export type UpdateState = "checking" | "current" | "available" | "failed";
 
 export type UpdateStatus = {
 	state: UpdateState;
 	current: string;
 	release?: Release;
-	/** Bytes downloaded so far. */
-	downloaded: number;
 	message: string;
-	installer?: string;
 };
 
-export function installerName(version: string): string {
-	return `${AIRCRAFT.appId}-${version}-Setup.exe`;
+/** This aircraft's app in a release: dcs2streamdeck-<aircraft>-<version>-win.zip. */
+export function zipName(version: string): string {
+	return `dcs2streamdeck-${AIRCRAFT.id}-${version}-win.zip`;
 }
 
 type Version = { numbers: number[]; pre: string[] };
@@ -78,7 +67,7 @@ type GitHubRelease = {
 	assets?: { name?: string; state?: string; size?: number; browser_download_url?: string; digest?: string }[];
 };
 
-/** Newest non-draft release, with its verified-installable Setup.exe when present. */
+/** Newest non-draft release that has this app's zip (releases without it are skipped). */
 export function newestRelease(list: unknown): Release | undefined {
 	if (!Array.isArray(list)) throw new Error("GitHub did not return a releases list");
 	let newest: Release | undefined;
@@ -89,24 +78,16 @@ export function newestRelease(list: unknown): Release | undefined {
 			parseVersion(tag);
 			if (newest && compareVersions(tag, newest.tag) <= 0) continue;
 			const version = tag.replace(/^v/, "");
-			const release: Release = {
+			const zip = item.assets?.find((a) => a.name === zipName(version) && a.state === "uploaded");
+			if (!zip?.browser_download_url?.startsWith(`${RELEASES_PAGE}/download/`)) continue;
+			newest = {
 				tag,
 				version,
 				page: `${RELEASES_PAGE}/tag/${tag}`,
 				notes: (item.body ?? "").slice(0, 4000),
-				installerName: "",
-				installerUrl: "",
-				size: 0,
-				digest: "",
+				zipName: zip.name!,
+				zipUrl: zip.browser_download_url,
 			};
-			const asset = item.assets?.find((a) => a.name === installerName(version) && a.state === "uploaded");
-			if (asset) {
-				release.installerName = asset.name!;
-				release.installerUrl = asset.browser_download_url ?? "";
-				release.size = typeof asset.size === "number" && asset.size > 0 ? asset.size : 0;
-				release.digest = asset.digest?.startsWith("sha256:") ? asset.digest.slice(7).toLowerCase() : "";
-			}
-			newest = release;
 		} catch {
 			// Ignore malformed or unrelated releases.
 		}
@@ -114,46 +95,21 @@ export function newestRelease(list: unknown): Release | undefined {
 	return newest;
 }
 
-export function installable(r: Release): boolean {
-	return (
-		r.size > 0 &&
-		r.size <= MAX_INSTALLER_BYTES &&
-		/^[0-9a-f]{64}$/.test(r.digest) &&
-		r.installerName === installerName(r.version) &&
-		r.installerUrl === `${RELEASES_PAGE}/download/${r.tag}/${r.installerName}`
-	);
-}
-
-/** Only GitHub's release download and asset hosts may serve the installer. */
-export function allowedDownloadUrl(url: string, redirect: boolean): boolean {
-	if (url.length > 8192 || /[\s\\#]/.test(url)) return false;
-	if (url.startsWith(`${RELEASES_PAGE}/download/`)) return true;
-	return (
-		redirect &&
-		(url.startsWith("https://release-assets.githubusercontent.com/") ||
-			url.startsWith("https://objects.githubusercontent.com/"))
-	);
-}
-
 export type UpdaterOptions = {
 	currentVersion: string;
-	/** Folder for downloads (inside the app's data folder). */
-	downloadDir: string;
 	onStatus: (status: UpdateStatus) => void;
 	/** For tests. */
 	fetch?: typeof fetch;
 	releasesApi?: string;
-	allowUrl?: (url: string, redirect: boolean) => boolean;
 };
 
 export class Updater {
 	status: UpdateStatus;
 	#o: UpdaterOptions;
-	#abort?: AbortController;
 
 	constructor(options: UpdaterOptions) {
 		this.#o = options;
-		this.status = { state: "checking", current: options.currentVersion, downloaded: 0, message: "" };
+		this.status = { state: "checking", current: options.currentVersion, message: "" };
 	}
 
 	#set(patch: Partial<UpdateStatus>): void {
@@ -162,8 +118,7 @@ export class Updater {
 	}
 
 	async check(): Promise<void> {
-		if (this.status.state === "downloading") return;
-		this.#set({ state: "checking", message: "", release: undefined, installer: undefined, downloaded: 0 });
+		this.#set({ state: "checking", message: "", release: undefined });
 		try {
 			const response = await (this.#o.fetch ?? fetch)(
 				this.#o.releasesApi ?? `https://api.github.com/repos/${REPO}/releases?per_page=30`,
@@ -178,61 +133,5 @@ export class Updater {
 		} catch (error) {
 			this.#set({ state: "failed", message: `Could not check for updates: ${(error as Error).message}` });
 		}
-	}
-
-	/** Downloads and verifies the installer. Ends in "ready" or "failed". */
-	async download(): Promise<void> {
-		const release = this.status.release;
-		if (this.status.state !== "available" && this.status.state !== "failed") return;
-		if (!release || !installable(release) || compareVersions(release.version, this.#o.currentVersion) <= 0) {
-			this.#set({ state: "failed", message: "No verified Windows installer is available for this release. Open Releases instead." });
-			return;
-		}
-		this.#abort = new AbortController();
-		this.#set({ state: "downloading", downloaded: 0, message: "" });
-		const folder = path.join(this.#o.downloadDir, `${process.pid}-${Date.now()}`);
-		const partial = path.join(folder, "installer.part");
-		try {
-			await mkdir(folder, { recursive: true });
-			const allow = this.#o.allowUrl ?? allowedDownloadUrl;
-			let url = release.installerUrl;
-			let response: Response | undefined;
-			for (let hop = 0; hop < 5; hop++) {
-				if (!allow(url, hop > 0)) throw new Error("The installer link is not a GitHub release download.");
-				response = await (this.#o.fetch ?? fetch)(url, {
-					redirect: "manual",
-					headers: { "User-Agent": "dcs2streamdeck" },
-					signal: this.#abort.signal,
-				});
-				const next = response.status >= 300 && response.status < 400 ? response.headers.get("location") : null;
-				if (!next) break;
-				url = new URL(next, url).href;
-			}
-			if (!response?.ok || !response.body) throw new Error(`Download failed (${response?.status ?? "no answer"}).`);
-
-			const hash = createHash("sha256");
-			const file = createWriteStream(partial);
-			let received = 0;
-			for await (const chunk of response.body as unknown as AsyncIterable<Uint8Array>) {
-				received += chunk.length;
-				if (received > release.size) throw new Error("The installer download is larger than GitHub reported.");
-				hash.update(chunk);
-				if (!file.write(chunk)) await new Promise<void>((r) => file.once("drain", () => r()));
-				this.#set({ downloaded: received });
-			}
-			await new Promise<void>((resolve, reject) => file.end((err?: Error | null) => (err ? reject(err) : resolve())));
-			if (received !== release.size) throw new Error("The installer download is incomplete. Please retry.");
-			if (hash.digest("hex") !== release.digest) throw new Error("The installer checksum does not match GitHub. Please retry.");
-			const installer = path.join(folder, release.installerName);
-			await rename(partial, installer);
-			this.#set({ state: "ready", installer });
-		} catch (error) {
-			await rm(partial, { force: true });
-			this.#set({ state: "failed", message: (error as Error).message });
-		}
-	}
-
-	cancel(): void {
-		this.#abort?.abort();
 	}
 }
