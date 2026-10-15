@@ -5,25 +5,43 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>dcs2streamdeck __NAME__ mirror</title>
 <style>
-	/* Transparent page: OpenKneeboard shows only the deck. */
+	/* Transparent page: OpenKneeboard shows only the deck, as a glass panel with no knobs. */
 	html, body { margin: 0; background: transparent; overflow: hidden; }
-	body { font-family: Arial, sans-serif; color: #fff; }
-	.deck { display: inline-flex; flex-direction: column; gap: 10px; padding: 10px; border-radius: 18px; background: #2b2d31; }
-	.keys { display: grid; gap: 10px; }
-	.key { width: 144px; height: 144px; border-radius: 16px; background: rgba(255, 255, 255, 0.06); }
-	.key img { width: 100%; height: 100%; display: block; }
-	.dials { display: grid; gap: 10px; }
-	.dial { box-sizing: border-box; width: 144px; height: 92px; padding: 8px 10px; border-radius: 12px; background: #1d1d1d; display: flex; flex-direction: column; justify-content: space-between; }
-	.dial.empty { background: rgba(255, 255, 255, 0.06); }
-	.dial .t { font-size: 15px; color: #ddd; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-	.dial .v { font-size: 24px; font-weight: bold; }
-	.dial.dead .v { color: #777; font-size: 18px; }
-	.bar { height: 6px; border-radius: 3px; background: #444; overflow: hidden; }
-	.bar i { display: block; height: 100%; background: #4fc06a; }
+	body { padding: 14px; font-family: "Segoe UI", Arial, sans-serif; color: #fff; }
+	.deck {
+		display: inline-flex; flex-direction: column; gap: 14px; padding: 18px; border-radius: 28px;
+		background: linear-gradient(155deg, rgba(255, 255, 255, 0.24), rgba(255, 255, 255, 0.08) 38%, rgba(170, 200, 230, 0.06) 70%, rgba(255, 255, 255, 0.14));
+		border: 1px solid rgba(255, 255, 255, 0.4);
+		box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6), inset 0 0 32px rgba(255, 255, 255, 0.08), 0 12px 36px rgba(0, 0, 0, 0.35);
+		backdrop-filter: blur(16px) saturate(1.2);
+	}
+	.keys { display: grid; gap: 14px; }
+	.key {
+		position: relative; width: 144px; height: 144px; border-radius: 16px; background: rgba(8, 10, 14, 0.55);
+		box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.16), 0 4px 10px rgba(0, 0, 0, 0.45);
+	}
+	/* Glossy top half, like a lit glass key. */
+	.key::after { content: ""; position: absolute; inset: 0; border-radius: 16px; background: linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0) 45%); pointer-events: none; }
+	.key img { width: 100%; height: 100%; display: block; border-radius: 16px; }
+	/* One touch strip under the keys, split per dial. */
+	.dials {
+		display: grid; border-radius: 14px; overflow: hidden; background: rgba(6, 10, 16, 0.82);
+		box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+	}
+	.dial { box-sizing: border-box; height: 92px; padding: 10px 14px; display: flex; flex-direction: column; justify-content: space-between; min-width: 0; }
+	.dial + .dial { border-left: 1px solid rgba(255, 255, 255, 0.12); }
+	.dial .t { font-size: 13px; letter-spacing: 0.5px; text-transform: uppercase; color: #cdd7e2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+	.dial .v { font-size: 24px; font-weight: 600; }
+	.dial.dead .v { color: #7b8590; font-size: 18px; }
+	.bar { height: 6px; border-radius: 3px; background: rgba(255, 255, 255, 0.14); overflow: hidden; }
+	.bar i { display: block; height: 100%; border-radius: 3px; background: linear-gradient(90deg, #3d9cff, #d4ecff); box-shadow: 0 0 8px rgba(120, 190, 255, 0.7); }
 	.dots { display: flex; gap: 4px; height: 6px; }
-	.dots b { width: 6px; height: 6px; border-radius: 3px; background: #555; }
+	.dots b { width: 6px; height: 6px; border-radius: 3px; background: rgba(255, 255, 255, 0.25); }
 	.dots b.on { background: #fff; }
-	.wait { padding: 12px 16px; font-size: 18px; background: rgba(0, 0, 0, 0.6); border-radius: 10px; display: inline-block; }
+	.wait {
+		padding: 12px 18px; font-size: 18px; display: inline-block; border-radius: 14px;
+		background: rgba(10, 14, 20, 0.6); border: 1px solid rgba(255, 255, 255, 0.3); backdrop-filter: blur(12px);
+	}
 </style>
 </head>
 <body>
@@ -66,7 +84,7 @@
 
 		if (hasDials) {
 			const dials = el("div", "dials");
-			dials.style.gridTemplateColumns = `repeat(${columns}, 144px)`;
+			dials.style.gridTemplateColumns = `repeat(${columns}, 1fr)`;
 			for (let column = 0; column < columns; column++) {
 				const tile = mine.find((t) => t.kind === "dial" && t.column === column);
 				if (!tile) {
