@@ -7,7 +7,7 @@
 > **ALPHA VERSION:** join the [Discord](https://discord.gg/fs4WyaQPA) to give feedback, or use the feedback button built into the desktop apps.
 
 - **Stream Deck plugin: integrated.** Runs inside Elgato's Stream Deck app, next to your other plugins, profiles and pages.
-- **Desktop app: lightweight.** Runs on its own and drives the Stream Deck directly, with no Elgato software. It has a deck-only window for OpenKneeboard and a built-in feedback button. Coming soon.
+- **Desktop app: lightweight.** Runs on its own and drives the Stream Deck directly, with no Elgato software. It has a deck-only window for OpenKneeboard and a built-in feedback button. Windows only.
 
 Stream Deck keys, lights and dials that show what your jet is actually doing in DCS World.
 
@@ -34,7 +34,13 @@ The DCS Stream Deck projects I tried had gone quiet. Some no longer worked with 
 2. Use the Stream Deck app 7.1 or later.
 3. Download the `.streamDeckPlugin` for your jet from [Releases](https://github.com/AdamChesters/dcs2streamdeck/releases) (`dcs2streamdeck-fa18c-…` or `dcs2streamdeck-f16c-…`) and double-click it.
 
-One repo for every jet: a folder per jet in `aircraft/`, shared code in `core/`, the Stream Deck plugin in `plugin/` and a standalone desktop app (not released yet) in `app/`. Building from source: [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md).
+## Install the desktop app (Windows)
+
+1. Install [DCS-BIOS](https://github.com/DCS-Skunkworks/dcs-bios/releases) v0.11 or later.
+2. Download the installer for your jet from [Releases](https://github.com/AdamChesters/dcs2streamdeck/releases) (`dcs2streamdeck-…-Setup.exe` for the F/A-18C or `dcs2streamdeck-f16c-…-Setup.exe` for the F-16C) and run it. The installers are not code-signed yet, so Windows may show a warning first.
+3. Close the Elgato Stream Deck app: only one program can drive the deck at a time.
+
+One repo for every jet: a folder per jet in `aircraft/`, shared code in `core/`, the Stream Deck plugin in `plugin/` and the desktop app in `app/`. Building from source: [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md).
 
 ## Credits
 
