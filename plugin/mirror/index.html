@@ -9,32 +9,32 @@
 	html, body { margin: 0; background: transparent; overflow: hidden; }
 	body { padding: 14px; font-family: "Segoe UI", Arial, sans-serif; color: #fff; }
 	.deck {
-		display: inline-flex; flex-direction: column; gap: 14px; padding: 18px; border-radius: 28px;
-		background: linear-gradient(155deg, rgba(255, 255, 255, 0.24), rgba(255, 255, 255, 0.08) 38%, rgba(170, 200, 230, 0.06) 70%, rgba(255, 255, 255, 0.14));
-		border: 1px solid rgba(255, 255, 255, 0.4);
-		box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6), inset 0 0 32px rgba(255, 255, 255, 0.08), 0 12px 36px rgba(0, 0, 0, 0.35);
-		backdrop-filter: blur(16px) saturate(1.2);
+		display: inline-flex; flex-direction: column; gap: 18px; padding: 24px; border-radius: 30px;
+		background: linear-gradient(160deg, rgba(235, 242, 250, 0.38), rgba(210, 222, 236, 0.16) 35%, rgba(190, 205, 222, 0.12) 65%, rgba(235, 242, 250, 0.26));
+		border: 1.5px solid rgba(255, 255, 255, 0.5);
+		box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7), inset 0 0 40px rgba(255, 255, 255, 0.1), 0 14px 40px rgba(0, 0, 0, 0.3);
+		backdrop-filter: blur(18px) saturate(1.2);
 	}
-	.keys { display: grid; gap: 14px; }
+	.keys { display: grid; gap: 18px; }
 	.key {
-		position: relative; width: 144px; height: 144px; border-radius: 16px; background: rgba(8, 10, 14, 0.55);
-		box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.16), 0 4px 10px rgba(0, 0, 0, 0.45);
+		position: relative; width: 144px; height: 144px; border-radius: 16px; background: rgba(4, 6, 10, 0.7);
+		box-shadow: 0 0 0 1.5px rgba(255, 255, 255, 0.22), 0 0 14px rgba(150, 200, 255, 0.12), 0 6px 14px rgba(0, 0, 0, 0.5);
 	}
 	/* Glossy top half, like a lit glass key. */
 	.key::after { content: ""; position: absolute; inset: 0; border-radius: 16px; background: linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0) 45%); pointer-events: none; }
 	.key img { width: 100%; height: 100%; display: block; border-radius: 16px; }
 	/* One touch strip under the keys, split per dial. */
 	.dials {
-		display: grid; border-radius: 14px; overflow: hidden; background: rgba(6, 10, 16, 0.82);
-		box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+		display: grid; border-radius: 14px; overflow: hidden; background: rgba(4, 8, 14, 0.85);
+		box-shadow: 0 0 0 1.5px rgba(255, 255, 255, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 6px 14px rgba(0, 0, 0, 0.4);
 	}
 	.dial { box-sizing: border-box; height: 92px; padding: 10px 14px; display: flex; flex-direction: column; justify-content: space-between; min-width: 0; }
 	.dial + .dial { border-left: 1px solid rgba(255, 255, 255, 0.12); }
 	.dial .t { font-size: 13px; letter-spacing: 0.5px; text-transform: uppercase; color: #cdd7e2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-	.dial .v { font-size: 24px; font-weight: 600; }
+	.dial .v { font-size: 22px; font-weight: 600; text-shadow: 0 0 8px rgba(150, 200, 255, 0.35); }
 	.dial.dead .v { color: #7b8590; font-size: 18px; }
-	.bar { height: 6px; border-radius: 3px; background: rgba(255, 255, 255, 0.14); overflow: hidden; }
-	.bar i { display: block; height: 100%; border-radius: 3px; background: linear-gradient(90deg, #3d9cff, #d4ecff); box-shadow: 0 0 8px rgba(120, 190, 255, 0.7); }
+	.bar { height: 7px; border-radius: 4px; background: rgba(255, 255, 255, 0.14); overflow: hidden; }
+	.bar i { display: block; height: 100%; border-radius: 4px; background: linear-gradient(90deg, #2f8cff, #dff1ff); box-shadow: 0 0 10px rgba(120, 190, 255, 0.8); }
 	.dots { display: flex; gap: 4px; height: 6px; }
 	.dots b { width: 6px; height: 6px; border-radius: 3px; background: rgba(255, 255, 255, 0.25); }
 	.dots b.on { background: #fff; }
@@ -58,6 +58,9 @@
 		return e;
 	}
 
+	// Unlit keys a shade darker than on the deck itself, for the glass-panel look.
+	const glass = (svg) => svg.replace(/^(<svg[^>]*><rect [^>]*?fill=")#(?:2a2a2a|161616)"/, "$1#0c0e12\"");
+
 	function render({ devices, tiles }) {
 		const device = devices.find((d) => d.id === want) || devices.find((d) => d.hasDials) || devices[0];
 		const id = device?.id ?? tiles[0]?.device;
@@ -74,7 +77,7 @@
 				const key = el("div", "key");
 				if (tile) {
 					const img = new Image();
-					img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(tile.svg);
+					img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(glass(tile.svg));
 					key.append(img);
 				}
 				keys.append(key);

@@ -1,10 +1,8 @@
 <p align="center">
-  <img src="assets/banner.png" alt="dcs2streamdeck: a glass Stream Deck + with live cockpit keys, floating in the cockpit above the clouds" width="746">
+  <img src="assets/banner.png" alt="dcs2streamdeck by Adam Chesters: an F/A-18C and an F-16C at sunset, a Stream Deck + with live cockpit keys, and the glass deck panel in VR" width="1280">
 </p>
 
 # dcs2streamdeck
-
-by **Adam Chesters**
 
 Stream Deck keys, lights and dials that show what your jet is actually doing in DCS World.
 
