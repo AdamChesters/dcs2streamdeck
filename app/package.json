@@ -1,0 +1,65 @@
+{
+  "name": "dcs2streamdeck-app",
+  "productName": "dcs2streamdeck",
+  "version": "0.1.0-alpha.2",
+  "private": true,
+  "description": "dcs2streamdeck for the DCS F/A-18C: drives the Stream Deck directly, no Elgato app needed.",
+  "author": "Adam Chesters",
+  "main": "dist-electron/main.cjs",
+  "devDependencies": {
+    "@elgato-stream-deck/webhid": "7.8.0",
+    "@types/node": "24.19.1",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "@vitejs/plugin-react": "6.1.2",
+    "electron": "44.7.0",
+    "electron-builder": "26.15.3",
+    "esbuild": "0.28.2",
+    "lucide-react": "1.52.0",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "typescript": "7.0.2",
+    "vite": "8.3.3"
+  },
+  "scripts": {
+    "build": "vite build && node build-main.mjs",
+    "check": "tsc --noEmit -p .",
+    "test": "node --test \"test/*.test.ts\"",
+    "start": "npm run build && electron .",
+    "dist": "npm run build && electron-builder --win nsis --x64 --publish never"
+  },
+  "build": {
+    "appId": "com.adamchesters.dcs2streamdeck",
+    "productName": "dcs2streamdeck",
+    "copyright": "Adam Chesters",
+    "artifactName": "dcs2streamdeck-${version}-Setup.${ext}",
+    "directories": {
+      "output": "release",
+      "buildResources": "build"
+    },
+    "files": [
+      "dist/**",
+      "dist-electron/**",
+      "package.json"
+    ],
+    "asar": true,
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "build/icon.png"
+    },
+    "nsis": {
+      "oneClick": true,
+      "perMachine": false,
+      "runAfterFinish": true,
+      "deleteAppDataOnUninstall": false,
+      "shortcutName": "dcs2streamdeck"
+    }
+  }
+}

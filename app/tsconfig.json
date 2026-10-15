@@ -1,0 +1,21 @@
+{
+	"compilerOptions": {
+		"target": "ES2023",
+		"module": "ESNext",
+		"moduleResolution": "Bundler",
+		"lib": ["ES2023", "DOM", "DOM.Iterable"],
+		"types": ["node", "w3c-web-hid"],
+		"jsx": "react-jsx",
+		"strict": true,
+		"noEmit": true,
+		"allowJs": true,
+		"checkJs": false,
+		"resolveJsonModule": true,
+		"allowImportingTsExtensions": true,
+		"erasableSyntaxOnly": true,
+		"verbatimModuleSyntax": true,
+		"noImplicitOverride": true,
+		"skipLibCheck": true
+	},
+	"include": ["main/**/*.ts", "renderer/src/**/*.ts", "renderer/src/**/*.tsx", "test/**/*.ts", "../src/core/**/*.ts"]
+}

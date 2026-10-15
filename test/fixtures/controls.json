@@ -1,0 +1,535 @@
+{
+	"Auxiliary Power Unit Panel": {
+		"APU_CONTROL_SW": {
+			"category": "Auxiliary Power Unit Panel",
+			"control_type": "action",
+			"description": "APU Control Switch, ON/OFF",
+			"identifier": "APU_CONTROL_SW",
+			"inputs": [
+				{
+					"interface": "fixed_step",
+					"description": "switch to previous or next state"
+				},
+				{
+					"interface": "set_state",
+					"max_value": 1,
+					"description": "set position"
+				},
+				{
+					"interface": "action",
+					"argument": "TOGGLE",
+					"description": "Toggle switch state"
+				}
+			],
+			"outputs": [
+				{
+					"type": "integer",
+					"address": 29890,
+					"mask": 256,
+					"shift_by": 8,
+					"max_value": 1,
+					"suffix": "",
+					"description": "selector position"
+				}
+			]
+		},
+		"ENGINE_CRANK_SW": {
+			"category": "Auxiliary Power Unit Panel",
+			"control_type": "selector",
+			"description": "Engine Crank Switch",
+			"identifier": "ENGINE_CRANK_SW",
+			"inputs": [
+				{
+					"interface": "set_state",
+					"max_value": 2,
+					"description": "set the switch position"
+				}
+			],
+			"outputs": [
+				{
+					"type": "integer",
+					"address": 29890,
+					"mask": 1536,
+					"shift_by": 9,
+					"max_value": 2,
+					"suffix": "",
+					"description": "selector position"
+				}
+			],
+			"positions": [
+				"LEFT",
+				"OFF",
+				"RIGHT"
+			]
+		},
+		"APU_READY_LT": {
+			"category": "Auxiliary Power Unit Panel",
+			"control_type": "led",
+			"description": "APU Ready Light (green)",
+			"identifier": "APU_READY_LT",
+			"inputs": [],
+			"outputs": [
+				{
+					"type": "integer",
+					"address": 29890,
+					"mask": 2048,
+					"shift_by": 11,
+					"max_value": 1,
+					"suffix": "",
+					"description": "0 if light is off, 1 if light is on"
+				}
+			]
+		}
+	},
+	"Left DDI": {
+		"LEFT_DDI_BRT_CTL": {
+			"category": "Left DDI",
+			"control_type": "limited_dial",
+			"description": "Brightness Control Knob",
+			"identifier": "LEFT_DDI_BRT_CTL",
+			"inputs": [
+				{
+					"interface": "set_state",
+					"max_value": 65535,
+					"description": "set the position of the dial"
+				},
+				{
+					"interface": "variable_step",
+					"max_value": 65535,
+					"suggested_step": 3200,
+					"description": "turn the dial left or right"
+				}
+			],
+			"outputs": [
+				{
+					"type": "integer",
+					"address": 29712,
+					"mask": 65535,
+					"shift_by": 0,
+					"max_value": 65535,
+					"suffix": "",
+					"description": "position of the potentiometer"
+				}
+			]
+		},
+		"LEFT_DDI_BRT_SELECT": {
+			"category": "Left DDI",
+			"control_type": "selector",
+			"description": "Brightness Selector Knob",
+			"identifier": "LEFT_DDI_BRT_SELECT",
+			"inputs": [
+				{
+					"interface": "fixed_step",
+					"description": "switch to previous or next state"
+				},
+				{
+					"interface": "set_state",
+					"max_value": 2,
+					"description": "set position"
+				}
+			],
+			"outputs": [
+				{
+					"type": "integer",
+					"address": 29710,
+					"mask": 6,
+					"shift_by": 1,
+					"max_value": 2,
+					"suffix": "",
+					"description": "selector position"
+				}
+			],
+			"positions": [
+				"OFF",
+				"NIGHT",
+				"DAY"
+			]
+		}
+	},
+	"Integrated Fuel/Engine Indicator (IFEI)": {
+		"IFEI_MODE_BTN": {
+			"category": "Integrated Fuel/Engine Indicator (IFEI)",
+			"control_type": "selector",
+			"description": "Mode Button",
+			"identifier": "IFEI_MODE_BTN",
+			"inputs": [
+				{
+					"interface": "fixed_step",
+					"description": "switch to previous or next state"
+				},
+				{
+					"interface": "set_state",
+					"max_value": 1,
+					"description": "set position"
+				},
+				{
+					"interface": "action",
+					"argument": "TOGGLE",
+					"description": "Toggle switch state"
+				}
+			],
+			"outputs": [
+				{
+					"type": "integer",
+					"address": 29798,
+					"mask": 2,
+					"shift_by": 1,
+					"max_value": 1,
+					"suffix": "",
+					"description": "selector position"
+				}
+			],
+			"api_variant": "momentary_last_position"
+		},
+		"IFEI_CLOCK_H": {
+			"category": "Integrated Fuel/Engine Indicator (IFEI)",
+			"control_type": "display",
+			"description": "CLOCK_H",
+			"identifier": "IFEI_CLOCK_H",
+			"inputs": [],
+			"outputs": [
+				{
+					"type": "string",
+					"address": 29806,
+					"max_length": 2,
+					"suffix": "",
+					"description": "CLOCK_H"
+				}
+			]
+		}
+	},
+	"Master Caution Light": {
+		"MASTER_CAUTION_LT": {
+			"category": "Master Caution Light",
+			"control_type": "led",
+			"description": "MASTER CAUTION (yellow)",
+			"identifier": "MASTER_CAUTION_LT",
+			"inputs": [],
+			"outputs": [
+				{
+					"type": "integer",
+					"address": 29704,
+					"mask": 512,
+					"shift_by": 9,
+					"max_value": 1,
+					"suffix": "",
+					"description": "0 if light is off, 1 if light is on"
+				}
+			]
+		},
+		"MASTER_CAUTION_RESET_SW": {
+			"category": "Master Caution Light",
+			"control_type": "selector",
+			"description": "MASTER CAUTION Reset Button - Press to reset",
+			"identifier": "MASTER_CAUTION_RESET_SW",
+			"inputs": [
+				{
+					"interface": "fixed_step",
+					"description": "switch to previous or next state"
+				},
+				{
+					"interface": "set_state",
+					"max_value": 1,
+					"description": "set position"
+				},
+				{
+					"interface": "action",
+					"argument": "TOGGLE",
+					"description": "Toggle switch state"
+				}
+			],
+			"outputs": [
+				{
+					"type": "integer",
+					"address": 29704,
+					"mask": 1024,
+					"shift_by": 10,
+					"max_value": 1,
+					"suffix": "",
+					"description": "selector position"
+				}
+			]
+		}
+	},
+	"LH Advisory Panel": {
+		"LH_ADV_L_BAR_RED": {
+			"category": "LH Advisory Panel",
+			"control_type": "led",
+			"description": "L BAR (red)",
+			"identifier": "LH_ADV_L_BAR_RED",
+			"inputs": [],
+			"outputs": [
+				{
+					"type": "integer",
+					"address": 29704,
+					"mask": 32768,
+					"shift_by": 15,
+					"max_value": 1,
+					"suffix": "",
+					"description": "0 if light is off, 1 if light is on"
+				}
+			]
+		},
+		"LH_ADV_L_BAR_GREEN": {
+			"category": "LH Advisory Panel",
+			"control_type": "led",
+			"description": "L BAR (green)",
+			"identifier": "LH_ADV_L_BAR_GREEN",
+			"inputs": [],
+			"outputs": [
+				{
+					"address": 29706,
+					"address_mask_identifier": "FA_18C_hornet_LH_ADV_L_BAR_GREEN_AM",
+					"address_mask_shift_identifier": "FA_18C_hornet_LH_ADV_L_BAR_GREEN",
+					"description": "0 if light is off, 1 if light is on",
+					"mask": 2,
+					"max_value": 1,
+					"shift_by": 1,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		}
+	},
+	"Angle of Attack Indexer Lights": {
+		"AOA_INDEXER_HIGH": {
+			"category": "Angle of Attack Indexer Lights",
+			"control_type": "led",
+			"description": "AOA Indexer High (green)",
+			"identifier": "AOA_INDEXER_HIGH",
+			"inputs": [],
+			"outputs": [
+				{
+					"address": 29704,
+					"address_mask_identifier": "FA_18C_hornet_AOA_INDEXER_HIGH_AM",
+					"address_mask_shift_identifier": "FA_18C_hornet_AOA_INDEXER_HIGH",
+					"description": "0 if light is off, 1 if light is on",
+					"mask": 8,
+					"max_value": 1,
+					"shift_by": 3,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		},
+		"AOA_INDEXER_NORMAL": {
+			"category": "Angle of Attack Indexer Lights",
+			"control_type": "led",
+			"description": "AOA Indexer Normal (yellow)",
+			"identifier": "AOA_INDEXER_NORMAL",
+			"inputs": [],
+			"outputs": [
+				{
+					"address": 29704,
+					"address_mask_identifier": "FA_18C_hornet_AOA_INDEXER_NORMAL_AM",
+					"address_mask_shift_identifier": "FA_18C_hornet_AOA_INDEXER_NORMAL",
+					"description": "0 if light is off, 1 if light is on",
+					"mask": 16,
+					"max_value": 1,
+					"shift_by": 4,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		},
+		"AOA_INDEXER_LOW": {
+			"category": "Angle of Attack Indexer Lights",
+			"control_type": "led",
+			"description": "AOA Indexer Low (red)",
+			"identifier": "AOA_INDEXER_LOW",
+			"inputs": [],
+			"outputs": [
+				{
+					"address": 29704,
+					"address_mask_identifier": "FA_18C_hornet_AOA_INDEXER_LOW_AM",
+					"address_mask_shift_identifier": "FA_18C_hornet_AOA_INDEXER_LOW",
+					"description": "0 if light is off, 1 if light is on",
+					"mask": 32,
+					"max_value": 1,
+					"shift_by": 5,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		}
+	},
+	"Flaps, Landing Gear, Stores Indicator Panel": {
+		"FLP_LG_FLAPS_LT": {
+			"category": "Flaps, Landing Gear, Stores Indicator Panel",
+			"control_type": "led",
+			"description": "FLAPS (yellow)",
+			"identifier": "FLP_LG_FLAPS_LT",
+			"inputs": [],
+			"outputs": [
+				{
+					"address": 29798,
+					"address_mask_identifier": "FA_18C_hornet_FLP_LG_FLAPS_LT_AM",
+					"address_mask_shift_identifier": "FA_18C_hornet_FLP_LG_FLAPS_LT",
+					"description": "0 if light is off, 1 if light is on",
+					"mask": 1,
+					"max_value": 1,
+					"shift_by": 0,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		},
+		"FLP_LG_FULL_FLAPS_LT": {
+			"category": "Flaps, Landing Gear, Stores Indicator Panel",
+			"control_type": "led",
+			"description": "FULL FLAPS (green)",
+			"identifier": "FLP_LG_FULL_FLAPS_LT",
+			"inputs": [],
+			"outputs": [
+				{
+					"address": 29744,
+					"address_mask_identifier": "FA_18C_hornet_FLP_LG_FULL_FLAPS_LT_AM",
+					"address_mask_shift_identifier": "FA_18C_hornet_FLP_LG_FULL_FLAPS_LT",
+					"description": "0 if light is off, 1 if light is on",
+					"mask": 32768,
+					"max_value": 1,
+					"shift_by": 15,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		},
+		"FLP_LG_HALF_FLAPS_LT": {
+			"category": "Flaps, Landing Gear, Stores Indicator Panel",
+			"control_type": "led",
+			"description": "HALF FLAPS (green)",
+			"identifier": "FLP_LG_HALF_FLAPS_LT",
+			"inputs": [],
+			"outputs": [
+				{
+					"address": 29744,
+					"address_mask_identifier": "FA_18C_hornet_FLP_LG_HALF_FLAPS_LT_AM",
+					"address_mask_shift_identifier": "FA_18C_hornet_FLP_LG_HALF_FLAPS_LT",
+					"description": "0 if light is off, 1 if light is on",
+					"mask": 16384,
+					"max_value": 1,
+					"shift_by": 14,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		},
+		"FLP_LG_LEFT_GEAR_LT": {
+			"category": "Flaps, Landing Gear, Stores Indicator Panel",
+			"control_type": "led",
+			"description": "LEFT GEAR (green)",
+			"identifier": "FLP_LG_LEFT_GEAR_LT",
+			"inputs": [],
+			"outputs": [
+				{
+					"address": 29744,
+					"address_mask_identifier": "FA_18C_hornet_FLP_LG_LEFT_GEAR_LT_AM",
+					"address_mask_shift_identifier": "FA_18C_hornet_FLP_LG_LEFT_GEAR_LT",
+					"description": "0 if light is off, 1 if light is on",
+					"mask": 4096,
+					"max_value": 1,
+					"shift_by": 12,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		},
+		"FLP_LG_NOSE_GEAR_LT": {
+			"category": "Flaps, Landing Gear, Stores Indicator Panel",
+			"control_type": "led",
+			"description": "NOSE GEAR (green)",
+			"identifier": "FLP_LG_NOSE_GEAR_LT",
+			"inputs": [],
+			"outputs": [
+				{
+					"address": 29744,
+					"address_mask_identifier": "FA_18C_hornet_FLP_LG_NOSE_GEAR_LT_AM",
+					"address_mask_shift_identifier": "FA_18C_hornet_FLP_LG_NOSE_GEAR_LT",
+					"description": "0 if light is off, 1 if light is on",
+					"mask": 2048,
+					"max_value": 1,
+					"shift_by": 11,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		},
+		"FLP_LG_RIGHT_GEAR_LT": {
+			"category": "Flaps, Landing Gear, Stores Indicator Panel",
+			"control_type": "led",
+			"description": "RIGHT GEAR (green)",
+			"identifier": "FLP_LG_RIGHT_GEAR_LT",
+			"inputs": [],
+			"outputs": [
+				{
+					"address": 29744,
+					"address_mask_identifier": "FA_18C_hornet_FLP_LG_RIGHT_GEAR_LT_AM",
+					"address_mask_shift_identifier": "FA_18C_hornet_FLP_LG_RIGHT_GEAR_LT",
+					"description": "0 if light is off, 1 if light is on",
+					"mask": 8192,
+					"max_value": 1,
+					"shift_by": 13,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		}
+	},
+	"Landing Gear Handle and Warning Tone Silence": {
+		"LANDING_GEAR_HANDLE_LT": {
+			"category": "Landing Gear Handle and Warning Tone Silence",
+			"control_type": "led",
+			"description": "Landing Gear Handle Light",
+			"identifier": "LANDING_GEAR_HANDLE_LT",
+			"inputs": [],
+			"outputs": [
+				{
+					"address": 29822,
+					"address_mask_identifier": "FA_18C_hornet_LANDING_GEAR_HANDLE_LT_AM",
+					"address_mask_shift_identifier": "FA_18C_hornet_LANDING_GEAR_HANDLE_LT",
+					"description": "0 if light is off, 1 if light is on",
+					"mask": 2048,
+					"max_value": 1,
+					"shift_by": 11,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		},
+		"GEAR_LEVER": {
+			"category": "Landing Gear Handle and Warning Tone Silence",
+			"control_type": "selector",
+			"description": "Gear Lever",
+			"identifier": "GEAR_LEVER",
+			"inputs": [
+				{
+					"description": "switch to previous or next state",
+					"interface": "fixed_step"
+				},
+				{
+					"description": "set position",
+					"interface": "set_state",
+					"max_value": 1
+				},
+				{
+					"argument": "TOGGLE",
+					"description": "Toggle switch state",
+					"interface": "action"
+				}
+			],
+			"outputs": [
+				{
+					"address": 29822,
+					"address_mask_identifier": "FA_18C_hornet_GEAR_LEVER_AM",
+					"address_mask_shift_identifier": "FA_18C_hornet_GEAR_LEVER",
+					"description": "selector position",
+					"mask": 4096,
+					"max_value": 1,
+					"shift_by": 12,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		}
+	}
+}

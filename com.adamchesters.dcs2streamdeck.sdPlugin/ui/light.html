@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<title>DCS Light</title>
+	<link rel="stylesheet" href="pi.css" />
+</head>
+<body>
+	<label for="lamp">Light or indicator</label>
+	<input type="search" id="lampSearch" placeholder="Type to search (e.g. caution, l bar, aoa, flaps, gear)" />
+	<select id="lamp" data-setting="lamp"></select>
+	<div class="hint">Matches appear in the list as you type; click one, or press Enter for the top match. A light with several colours (L BAR) or parts (AOA indexer, Flaps, Landing Gear) shows all of it on this key.</div>
+
+	<label for="title">Key text</label>
+	<input type="text" id="title" data-setting="title" placeholder="Empty = light name" />
+
+	<div class="row"><input type="checkbox" id="invert" data-setting="invert" /><label for="invert" style="margin:0">Light when OFF</label></div>
+	<details>
+		<summary>Setup (all keys and dials)</summary>
+		<div class="status" id="status">Waiting for plugin…</div>
+		<label for="jsonDir">DCS-BIOS JSON folder</label>
+		<input type="text" id="jsonDir" data-global="jsonDir" placeholder="Saved Games\DCS\Scripts\DCS-BIOS\doc\json" />
+		<div class="hint">Leave empty for the default folder.</div>
+		<label for="mirrorPort">VR mirror port</label>
+		<input type="number" id="mirrorPort" data-global="mirrorPort" placeholder="31730" />
+		<div class="hint">VR mirror page: <code>http://127.0.0.1:31730/</code> (or your port). Add it as an OpenKneeboard Web Dashboard tab. A new port needs a Stream Deck restart.</div>
+	</details>
+	<script src="pi.js"></script>
+	<script>
+		picker(document.getElementById("lamp"), document.getElementById("lampSearch"), (i) => i.led);
+	</script>
+</body>
+</html>
