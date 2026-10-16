@@ -4,26 +4,24 @@
 
 # dcs2streamdeck
 
-<p align="center">
-  <a href="https://discord.gg/fs4WyaQPA"><img src="assets/alpha.png" alt="ALPHA VERSION, TESTERS WANTED. Find a bug as you're working? Prefer a different workflow (e.g. the 3 gear lights combined into one custom button)? Drop us a line on Reddit, Discord, or the feedback button in the desktop app." width="1280"></a>
-</p>
-
 > [!CAUTION]
 > ## ALPHA VERSION: TESTERS WANTED
-> **Find a bug as you're working? Prefer a different workflow (e.g. the 3 gear lights combined into one custom button)? Drop us a line on [Reddit](https://www.reddit.com/r/AdamChsLab/), [Discord](https://discord.gg/fs4WyaQPA), or the feedback button in the desktop app.**
->
-> **Please test every function:** every key, light and dial, on both jets, in the Stream Deck plugin and in the desktop app. Tell us what works and what breaks.
+> **Find a bug? Got a feature idea (e.g. the 3 gear lights combined into one custom button)? Drop us a line, details below.**
+> **Alpha : Not every function exhaustively tested yet. Help me!**
+> **Taking next module suggestions : Standalone app updater will notify you as they drop**
 
-- **Stream Deck plugin: integrated.** Runs inside Elgato's Stream Deck app, next to your other plugins, profiles and pages.
-- **Desktop app: lightweight.** Runs on its own and drives the Stream Deck directly, with no Elgato software. It has a deck-only window for OpenKneeboard and a built-in feedback button. Windows only.
+## What
 
-Stream Deck keys, lights and dials that show what your jet is actually doing in DCS World.
+Sync Stream Deck keys, lights and dials to what your jet is actually doing in DCS World. Live updating. 
 
-**For the DCS F/A-18C Hornet and F-16C Viper.** Each jet has its own plugin, so the control lists stay short. Install the ones you fly; they work side by side.
+Two ways to run this. 
+- **Stream Deck plugin: Fully integrated.** Installs into Elgato's Stream Deck app, with your other plugins, profiles and pages.
+- **Standalone Desktop app: Lightweight** Standalone app, cannot be run with Elgato's software. Drives your deck directly. Includes popout window for OpenKneeboard VR capture.
+- **There are dependencies** See the How section. You need DCS-Bios installed. 
 
 ## Why
 
-The DCS Stream Deck projects I tried had gone quiet. Some no longer worked with current DCS, and none kept the deck in step with the cockpit: when the jet moved a switch by itself, like a magnetically held APU or JFS switch, the key kept showing the wrong thing. dcs2streamdeck reads the live cockpit through DCS-BIOS, so the deck always matches the jet.
+The DCS Streamdeck projects I tried had gone quiet. Most no longer worked with the hornet, and none kept the deck in step with the cockpit: when the jet moved a switch by itself, like a magnetically held APU or JFS switch, the key kept showing the wrong thing. dcs2streamdeck reads the live cockpit through DCS-BIOS, so the deck always matches the jet. Then we applied common sense : You don't need 3 keys to show 3 gear lights, and that can double up as gear up/down toggle. Etc etc. Taking ideas! 
 
 ## Examples
 
@@ -31,26 +29,26 @@ The DCS Stream Deck projects I tried had gone quiet. Some no longer worked with 
   <img src="assets/examples.png" alt="Example keys. F/A-18C: APU, Master Caution, L BAR, flaps. F-16C: Master Arm, TO/LDG CONFIG, AOA indexer, gear" width="976">
 </p>
 
-- **DCS Switch**: any switch, button or lever. Shows its real position (ARM/SAFE, START 1/OFF/START 2) and can light up from its own cockpit light.
-- **DCS Light**: caution and warning lights in their cockpit colours, plus combined indicators: AOA indexer and landing gear, and on the Hornet also flaps and L BAR.
-- **DCS Dial** (Stream Deck +): turn to set brightness and volume knobs; press to step through a list. Presets for each jet's displays and cockpit lighting.
-- **VR**: a live copy of the deck for an OpenKneeboard Web Dashboard tab, at `http://127.0.0.1:31730/` (F/A-18C) or `http://127.0.0.1:31731/` (F-16C).
+- **DCS Switches**: any switch, button or lever. Shows its real position (ARM/SAFE, START 1/OFF/START 2) and can light up from its own cockpit light.
+- **DCS Caution/status Lights**: caution and warning lights in their cockpit colours, plus combined indicators: AOA indexer and landing gear, and on the Hornet also flaps and L BAR.
+- **DCS Dials** (Stream Deck +): turn to set brightness and volume knobs; press to step through a list. Presets for each jet's displays and cockpit lighting.
+- **VR**: a live copy of the deck for an OpenKneeboard Web Dashboard tab, at `http://127.0.0.1:31730/` (F/A-18C) or `http://127.0.0.1:31731/` (F-16C). See your streamdeck mirrored in VR. Finally. 
 
-## Install the plugin
+## Option 1 : Install the plugin
 
 1. Install [DCS-BIOS](https://github.com/DCS-Skunkworks/dcs-bios/releases) v0.11 or later.
 2. Use the Stream Deck app 7.1 or later.
 3. Download the `.streamDeckPlugin` for your jet from [Releases](https://github.com/AdamChesters/dcs2streamdeck/releases) (`dcs2streamdeck-fa18c-…` or `dcs2streamdeck-f16c-…`) and double-click it.
 
-## Use the desktop app (Windows)
+## Option 2 : Use the desktop app (Windows)
 
 1. Install [DCS-BIOS](https://github.com/DCS-Skunkworks/dcs-bios/releases) v0.11 or later.
 2. Download the zip for your jet from [Releases](https://github.com/AdamChesters/dcs2streamdeck/releases) (`dcs2streamdeck-fa18c-…-win.zip` or `dcs2streamdeck-f16c-…-win.zip`), unzip it to any folder and run `dcs2streamdeck FA-18C.exe` or `dcs2streamdeck F-16C.exe`. It is not code-signed yet, so Windows may show a warning first.
 3. Close the Elgato Stream Deck app: only one program can drive the deck at a time.
 
-To update, unzip the new version over the old folder; your keys and dials are kept (they live in `%APPDATA%\dcs2streamdeck-fa18c` or `-f16c`). To remove the app, delete its folder and that one.
-
-One repo for every jet: a folder per jet in `aircraft/`, shared code in `core/`, the Stream Deck plugin in `plugin/` and the desktop app in `app/`. Building from source: [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md).
+## Updating
+- **Automatic** - Both Plugin and Standalone app have automatic updates enabled and will notify you.
+- **Manual** - Plugin, download, open. It'll launch the stream deck up, update. All buttons will be saved. Standalone, extract new exe to your install folder, run from there. 
 
 ## Credits
 
