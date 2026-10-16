@@ -3,18 +3,20 @@ import { fileURLToPath } from "node:url";
 
 import streamDeck, { DeviceType } from "@elgato/streamdeck";
 
+import { releaseVersion } from "../../core/updates.ts";
 import { DcsDial } from "./actions/dial.ts";
 import { DcsLight } from "./actions/light.ts";
+import { sendInspectorData } from "./actions/common.ts";
 import { DcsSwitch } from "./actions/switch.ts";
 import { startMirrorServer } from "./mirror.ts";
 import type { GlobalSettings } from "./runtime.ts";
-import { client, DEFAULT_MIRROR_PORT, loadAircraft, mirror, reset, runtime } from "./runtime.ts";
+import { client, DEFAULT_MIRROR_PORT, loadAircraft, mirror, reset, runtime, startUpdateChecks } from "./runtime.ts";
 
 streamDeck.actions.registerAction(new DcsSwitch());
 streamDeck.actions.registerAction(new DcsDial());
 streamDeck.actions.registerAction(new DcsLight());
 
-// Aircraft changes only change whether keys are live; the control list is fixed.
+// DCS starting, stopping or changing aircraft changes which keys are live.
 client.onStatus(() => reset());
 
 streamDeck.settings.onDidReceiveGlobalSettings<GlobalSettings>((ev) => {
@@ -38,3 +40,9 @@ client.start();
 const pluginDir = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 startMirrorServer(mirror, runtime.settings.mirrorPort || DEFAULT_MIRROR_PORT, path.join(pluginDir, "mirror", "index.html"));
 reset();
+
+// The settings panel shows whether a newer plugin is out.
+startUpdateChecks(releaseVersion(streamDeck.info.plugin.version), async () => {
+	const action = streamDeck.ui.action;
+	if (action) await sendInspectorData(await action.getSettings());
+});

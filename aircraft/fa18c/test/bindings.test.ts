@@ -5,8 +5,9 @@ import type { Dcs } from "../../../core/bindings.ts";
 import { keyDown, keyLook, keyUp, keyWatches } from "../../../core/bindings.ts";
 import { keySvg } from "../../../core/render.ts";
 import { loadControls } from "../../../core/dcsbios/controls.ts";
+import * as aircraft from "../aircraft.ts";
 
-const controls = loadControls(new URL("fixtures/controls.json", import.meta.url).pathname);
+const controls = loadControls(new URL("fixtures/controls.json", import.meta.url).pathname, aircraft);
 const lookup = (id: string | undefined) => (id ? controls.get(id) : undefined);
 const dcs = (values: Record<string, number>): Dcs => ({
 	connected: true,

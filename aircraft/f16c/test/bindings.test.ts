@@ -5,8 +5,9 @@ import type { Dcs } from "../../../core/bindings.ts";
 import { keyDown, keyLook, keyUp, keyWatches } from "../../../core/bindings.ts";
 import { loadControls, parseControls } from "../../../core/dcsbios/controls.ts";
 import { keySvg } from "../../../core/render.ts";
+import * as aircraft from "../aircraft.ts";
 
-const controls = loadControls(new URL("fixtures/controls.json", import.meta.url).pathname);
+const controls = loadControls(new URL("fixtures/controls.json", import.meta.url).pathname, aircraft);
 const lookup = (id: string | undefined) => (id ? controls.get(id) : undefined);
 const dcs = (values: Record<string, number>): Dcs => ({
 	connected: true,
@@ -59,7 +60,7 @@ test("one light listed in two colours shows both on one key, red first", () => {
 		identifier, description, category: "Panel", control_type: "led", inputs: [],
 		outputs: [{ type: "integer", address: 2, mask: identifier.endsWith("RED") ? 2 : 1, shift_by: identifier.endsWith("RED") ? 1 : 0, max_value: 1, description: "" }],
 	});
-	const map = parseControls({ Panel: { X_GREEN: led("X_GREEN", "X BAR (green)"), X_RED: led("X_RED", "X BAR (red)") } });
+	const map = parseControls({ Panel: { X_GREEN: led("X_GREEN", "X BAR (green)"), X_RED: led("X_RED", "X BAR (red)") } }, aircraft);
 	const look = (v: Record<string, number>) => keyLook({ lamp: "X_GREEN" }, (id) => (id ? map.get(id) : undefined), dcs(v));
 	assert.equal(look({ X_GREEN: 1 }).colour, "green");
 	assert.equal(look({ X_GREEN: 1, X_RED: 1 }).colour, "red", "red wins when both are on");

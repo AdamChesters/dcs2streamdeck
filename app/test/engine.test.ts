@@ -54,6 +54,12 @@ test("keys and dials follow DCS, including a switch the jet releases", async () 
 		await until(() => key0().includes(">ON<"), 2000, "APU key ON");
 		await until(() => key0().includes(">OFF<"), 3000, "APU key OFF after the jet released it");
 
+		// A key for the other jet stays dark, says which jet it is for, and sends nothing.
+		engine.setKey(1, { aircraft: "f16c", control: "HDPT_SW_L" });
+		await until(() => (state?.keys[1].svg ?? "").includes(">F-16C<"), 2000, "F-16C key dark while flying the F/A-18C");
+		assert.equal(state!.status.flying, "fa18c");
+		assert.equal(engine.keyDown(1), false, "no F-16C controls loaded: nothing to press");
+
 		engine.dialRotate(0, 2);
 		await until(() => state!.dials[0].view.value === "10%", 2000, "dial 10%");
 		engine.dialNext(0);

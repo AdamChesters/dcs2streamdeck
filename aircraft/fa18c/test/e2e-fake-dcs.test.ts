@@ -5,9 +5,10 @@ import { test } from "node:test";
 
 import { DcsBiosClient } from "../../../core/dcsbios/client.ts";
 import { loadControls } from "../../../core/dcsbios/controls.ts";
+import * as aircraft from "../aircraft.ts";
 
 const fixture = new URL("fixtures/controls.json", import.meta.url).pathname;
-const controls = loadControls(fixture);
+const controls = loadControls(fixture, aircraft);
 
 function waitFor(check: () => boolean, ms: number): Promise<void> {
 	return new Promise((resolve, reject) => {

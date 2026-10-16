@@ -1,16 +1,15 @@
 import { useEffect, useMemo, useState } from "react";
 
-import { AIRCRAFT, DIAL_PRESETS as PRESETS } from "../../../core/aircraft.data.ts";
+import type { AircraftData } from "../../../core/aircraft.data.ts";
+import { AIRCRAFT_LIST, aircraftById, aircraftOf } from "../../../core/aircraft.data.ts";
 import type { DeckState, DialSettings, KeySettings, PickerItem } from "./api.ts";
 import { api } from "./api.ts";
 import type { Selection } from "./Deck.tsx";
 
 export function Editor({ state, selection, onClose }: { state: DeckState; selection: Selection; onClose: () => void }) {
-	const [items, setItems] = useState<PickerItem[]>([]);
-	useEffect(() => {
-		void api.controls().then(setItems);
-	}, [state.status.controls, state.status.loaded.join()]);
-
+	const flying = state.status.flying ? aircraftById(state.status.flying) : undefined;
+	// Changes when the control files are (re)loaded.
+	const version = `${state.status.controls} ${state.status.loaded.join()}`;
 	if (!selection) {
 		return <aside className="editor empty">Click a key or dial to set it up.</aside>;
 	}
@@ -20,7 +19,8 @@ export function Editor({ state, selection, onClose }: { state: DeckState; select
 				<KeyEditor
 					key={`k${selection.index}`}
 					index={selection.index}
-					items={items}
+					flying={flying}
+					version={version}
 					initial={state.keys[selection.index]?.settings ?? {}}
 					onClose={onClose}
 				/>
@@ -28,12 +28,41 @@ export function Editor({ state, selection, onClose }: { state: DeckState; select
 				<DialEditor
 					key={`d${selection.index}`}
 					index={selection.index}
-					items={items}
+					flying={flying}
+					version={version}
 					initial={state.dials[selection.index]?.settings ?? {}}
 					onClose={onClose}
 				/>
 			)}
 		</aside>
+	);
+}
+
+/** One aircraft's controls for the pickers. */
+function useItems(aircraft: string, version: string): PickerItem[] {
+	const [items, setItems] = useState<PickerItem[]>([]);
+	useEffect(() => {
+		void api.controls(aircraft).then(setItems);
+	}, [aircraft, version]);
+	return items;
+}
+
+/** The key's or dial's jet. A different jet has different controls, so changing it starts the key again. */
+function AircraftPicker({ value, onChange }: { value: string; onChange: (id: string) => void }) {
+	return (
+		<>
+			<label>
+				Aircraft
+				<select value={value} onChange={(e) => e.target.value !== value && onChange(e.target.value)}>
+					{AIRCRAFT_LIST.map(({ AIRCRAFT }) => (
+						<option key={AIRCRAFT.id} value={AIRCRAFT.id}>
+							{AIRCRAFT.fullName}
+						</option>
+					))}
+				</select>
+			</label>
+			<p className="hint">New keys start on the jet DCS is flying. Keys for another jet go dark until DCS flies it.</p>
+		</>
 	);
 }
 
@@ -110,11 +139,17 @@ function positionsOf(item: PickerItem | undefined): string[] {
 	return item.positions ?? Array.from({ length: item.maxValue + 1 }, (_, i) => String(i));
 }
 
-function KeyEditor({ index, items, initial, onClose }: { index: number; items: PickerItem[]; initial: KeySettings; onClose: () => void }) {
+type EditorProps<T> = { index: number; flying?: AircraftData; version: string; initial: T; onClose: () => void };
+
+function KeyEditor({ index, flying, version, initial, onClose }: EditorProps<KeySettings>) {
 	const [s, setS] = useState<KeySettings>(initial);
+	const aircraft = aircraftOf(s, flying).AIRCRAFT.id;
+	const items = useItems(aircraft, version);
+	// The first save keeps the jet shown (a new key's default can change with what DCS flies).
 	const save = (next: KeySettings) => {
-		setS(next);
-		void api.setKey(index, next);
+		const pinned = { ...next, aircraft: next.aircraft ?? aircraft };
+		setS(pinned);
+		void api.setKey(index, pinned);
 	};
 	const text = (name: "title" | "press" | "release") => ({
 		value: s[name] ?? "",
@@ -139,6 +174,7 @@ function KeyEditor({ index, items, initial, onClose }: { index: number; items: P
 					Done
 				</button>
 			</header>
+			<AircraftPicker value={aircraft} onChange={(id) => save({ aircraft: id, ...(s.title ? { title: s.title } : {}) })} />
 			<label>
 				Control
 				<ControlPicker items={items} value={s.control ?? ""} onChange={pickControl} keep={forKeys} placeholder="Type to search (e.g. apu), then pick below" />
@@ -212,7 +248,7 @@ function KeyEditor({ index, items, initial, onClose }: { index: number; items: P
 				<button onMouseDown={() => void api.keyDown(index)} onMouseUp={() => void api.keyUp(index)} onMouseLeave={() => void api.keyUp(index)}>
 					Test press
 				</button>
-				<button className="ghost" onClick={() => save({})}>
+				<button className="ghost" onClick={() => save({ aircraft })}>
 					Clear key
 				</button>
 			</footer>
@@ -220,12 +256,16 @@ function KeyEditor({ index, items, initial, onClose }: { index: number; items: P
 	);
 }
 
-function DialEditor({ index, items, initial, onClose }: { index: number; items: PickerItem[]; initial: DialSettings; onClose: () => void }) {
+function DialEditor({ index, flying, version, initial, onClose }: EditorProps<DialSettings>) {
 	const [text, setText] = useState(initial.functions ?? "");
+	const [pinned, setPinned] = useState(initial.aircraft);
 	const [adding, setAdding] = useState("");
-	const save = (functions: string) => {
+	const aircraft = aircraftOf({ aircraft: pinned, functions: text }, flying);
+	const items = useItems(aircraft.AIRCRAFT.id, version);
+	const save = (functions: string, id = aircraft.AIRCRAFT.id) => {
 		setText(functions);
-		void api.setDial(index, { functions });
+		setPinned(id);
+		void api.setDial(index, { aircraft: id, functions });
 	};
 	const label = (id: string) =>
 		id
@@ -241,11 +281,12 @@ function DialEditor({ index, items, initial, onClose }: { index: number; items: 
 					Done
 				</button>
 			</header>
+			<AircraftPicker value={aircraft.AIRCRAFT.id} onChange={(id) => save("", id)} />
 			<label>
-				{AIRCRAFT.name} presets
+				{aircraft.AIRCRAFT.name} presets
 				<select value="" onChange={(e) => e.target.value && save(e.target.value)}>
 					<option value="">Choose a preset…</option>
-					{PRESETS.map(([name, value]) => (
+					{aircraft.DIAL_PRESETS.map(([name, value]) => (
 						<option key={name} value={value}>
 							{name}
 						</option>

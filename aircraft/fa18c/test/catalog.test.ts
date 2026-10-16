@@ -3,8 +3,9 @@ import { test } from "node:test";
 
 import { catalog, dialLabel, suggestLamp } from "../../../core/catalog.ts";
 import { loadControls } from "../../../core/dcsbios/controls.ts";
+import * as aircraft from "../aircraft.ts";
 
-const controls = loadControls(new URL("fixtures/controls.json", import.meta.url).pathname);
+const controls = loadControls(new URL("fixtures/controls.json", import.meta.url).pathname, aircraft);
 
 test("suggests the APU READY light for the APU switch, nothing for others", () => {
 	assert.equal(suggestLamp(controls.get("APU_CONTROL_SW")!, controls), "APU_READY_LT");

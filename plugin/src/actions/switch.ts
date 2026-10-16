@@ -6,6 +6,7 @@ import type {
 	KeyAction,
 	KeyDownEvent,
 	KeyUpEvent,
+	PropertyInspectorDidAppearEvent,
 	SendToPluginEvent,
 	WillAppearEvent,
 	WillDisappearEvent,
@@ -13,11 +14,11 @@ import type {
 import { SingletonAction } from "@elgato/streamdeck";
 import type { JsonValue } from "@elgato/utils";
 
-import { AIRCRAFT } from "../../../core/aircraft.data.ts";
+import { aircraftOf, PRODUCT } from "../../../core/aircraft.data.ts";
 import type { KeySettings } from "../../../core/bindings.ts";
 import { keyDown, keyLook, keyUp, keyWatches } from "../../../core/bindings.ts";
 import { keySvg, svgDataUrl } from "../../../core/render.ts";
-import { client, control, dcs, mirror, onReset } from "../runtime.ts";
+import { client, fleet, mirror, onReset } from "../runtime.ts";
 import { handleInspectorMessage, sendInspectorData } from "./common.ts";
 
 export type SwitchSettings = KeySettings;
@@ -25,7 +26,7 @@ export type SwitchSettings = KeySettings;
 type Instance = { action: KeyAction<SwitchSettings>; settings: SwitchSettings; stop?: () => void };
 
 export class DcsSwitch extends SingletonAction<SwitchSettings> {
-	override readonly manifestId: string = `${AIRCRAFT.uuid}.switch`;
+	override readonly manifestId: string = `${PRODUCT.uuid}.switch`;
 	readonly #instances = new Map<string, Instance>();
 
 	constructor() {
@@ -55,33 +56,38 @@ export class DcsSwitch extends SingletonAction<SwitchSettings> {
 		this.#bind(instance);
 	}
 
-	override async onPropertyInspectorDidAppear(): Promise<void> {
-		await sendInspectorData();
+	override async onPropertyInspectorDidAppear(ev: PropertyInspectorDidAppearEvent<SwitchSettings>): Promise<void> {
+		await sendInspectorData(this.#instances.get(ev.action.id)?.settings ?? {});
 	}
 
 	override async onSendToPlugin(ev: SendToPluginEvent<JsonValue, SwitchSettings>): Promise<void> {
-		await handleInspectorMessage(ev.payload);
+		await handleInspectorMessage(ev.payload, this.#instances.get(ev.action.id)?.settings ?? {});
 	}
 
 	override onKeyDown(ev: KeyDownEvent<SwitchSettings>): void {
-		if (!keyDown(ev.payload.settings, control, dcs)) void ev.action.showAlert();
+		const id = aircraftOf(ev.payload.settings).AIRCRAFT.id;
+		if (!keyDown(ev.payload.settings, fleet.lookup(id), fleet.dcs(id))) void ev.action.showAlert();
 	}
 
 	override onKeyUp(ev: KeyUpEvent<SwitchSettings>): void {
-		keyUp(ev.payload.settings, control, dcs);
+		const id = aircraftOf(ev.payload.settings).AIRCRAFT.id;
+		keyUp(ev.payload.settings, fleet.lookup(id), fleet.dcs(id));
 	}
 
-	/** Subscribes the key to its DCS value and draws it. */
+	/** Subscribes the key to its DCS values (only while DCS flies the key's aircraft) and draws it. */
 	#bind(instance: Instance): void {
 		instance.stop?.();
-		const stops = keyWatches(instance.settings, control).map((c) => client.watch(c, () => this.#draw(instance)));
+		const id = aircraftOf(instance.settings).AIRCRAFT.id;
+		const watched = fleet.isFlying(id) ? keyWatches(instance.settings, fleet.lookup(id)) : [];
+		const stops = watched.map((c) => client.watch(c, () => this.#draw(instance)));
 		instance.stop = () => stops.forEach((stop) => stop());
 		this.#draw(instance);
 	}
 
 	#draw(instance: Instance): void {
 		const { action, settings } = instance;
-		const svg = keySvg(keyLook(settings, control, dcs));
+		const id = aircraftOf(settings).AIRCRAFT.id;
+		const svg = keySvg(keyLook(settings, fleet.lookup(id), fleet.dcs(id)));
 		void action.setImage(svgDataUrl(svg));
 		const where = action.coordinates;
 		if (where) mirror.setTile(action.id, { kind: "key", device: action.device.id, column: where.column, row: where.row, svg });

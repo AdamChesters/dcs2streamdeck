@@ -2,13 +2,14 @@
  * The deck's brain in the standalone app: key and dial settings, DCS-BIOS link,
  * and the images for every slot. No Electron imports, so it runs in tests.
  */
-import { defaultJsonDir, isOurAircraft, loadAircraftControls, offlineText } from "../../core/aircraft.ts";
-import type { Dcs, DialSettings, KeySettings } from "../../core/bindings.ts";
+import { aircraftOf } from "../../core/aircraft.data.ts";
+import { defaultJsonDir, Fleet } from "../../core/aircraft.ts";
+import type { DialSettings, KeySettings } from "../../core/bindings.ts";
 import type { PickerItem } from "../../core/catalog.ts";
 import { catalog } from "../../core/catalog.ts";
 import { dialRotate, dialView, keyDown, keyLook, keyUp, keyWatches, parseFunctions } from "../../core/bindings.ts";
 import { DcsBiosClient } from "../../core/dcsbios/client.ts";
-import type { Control, ControlMap } from "../../core/dcsbios/controls.ts";
+import type { Control } from "../../core/dcsbios/controls.ts";
 import type { DialView } from "../../core/render.ts";
 import { dialSvg, keySvg } from "../../core/render.ts";
 
@@ -29,17 +30,16 @@ export type DeckState = {
 	device: string;
 	keys: { index: number; svg: string; settings: KeySettings }[];
 	dials: { index: number; svg: string; view: DialView; settings: DialSettings }[];
-	status: { dcs: boolean; aircraft: string; controls: number; loaded: string[]; error: string; jsonDir: string };
+	/** dcs: DCS is sending data; aircraft: what DCS flies; flying: its ID when supported, else "". */
+	status: { dcs: boolean; aircraft: string; flying: string; controls: number; loaded: string[]; error: string; jsonDir: string };
 };
 
 export class Engine {
 	readonly client: DcsBiosClient;
+	readonly fleet: Fleet;
 	config: DeckConfig;
 	#layout: Layout = DEFAULT_LAYOUT;
 	#device = "";
-	#controls: ControlMap = new Map();
-	#loaded: string[] = [];
-	#error = "";
 	#dialIndex = new Map<number, number>();
 	#stops: (() => void)[] = [];
 	#pending?: NodeJS.Timeout;
@@ -56,27 +56,16 @@ export class Engine {
 		this.#onChange = onChange;
 		this.#onConfig = onConfig;
 		this.client = client;
-		// Aircraft changes only change whether keys are live; the control list is fixed.
+		this.fleet = new Fleet(client);
+		// DCS starting, stopping or changing aircraft changes which keys are live.
 		client.onStatus(() => this.#rebind());
-		this.dcs = {
-			get connected() {
-				return client.connected && isOurAircraft(client.aircraft);
-			},
-			get offline() {
-				return offlineText(client.connected);
-			},
-			read: (c) => (isOurAircraft(client.aircraft) ? client.read(c) : undefined),
-			send: (identifier, argument) => {
-				if (isOurAircraft(client.aircraft)) client.send(identifier, argument);
-			},
-		};
 	}
 
-	/** DCS as the keys see it: live only while DCS flies this app's aircraft. */
-	readonly dcs: Dcs;
-
-	readonly lookup = (identifier: string | undefined): Control | undefined =>
-		identifier ? this.#controls.get(identifier.trim()) : undefined;
+	/** Lookup and DCS for a key's or dial's aircraft (each is live only while DCS flies it). */
+	#for(settings: KeySettings | DialSettings) {
+		const id = aircraftOf(settings).AIRCRAFT.id;
+		return { id, lookup: this.fleet.lookup(id), dcs: this.fleet.dcs(id) };
+	}
 
 	start(): void {
 		this.#load();
@@ -118,16 +107,21 @@ export class Engine {
 	}
 
 	keyDown(index: number): boolean {
-		return keyDown(this.config.keys[index] ?? {}, this.lookup, this.dcs);
+		const s = this.config.keys[index] ?? {};
+		const { lookup, dcs } = this.#for(s);
+		return keyDown(s, lookup, dcs);
 	}
 
 	keyUp(index: number): void {
-		keyUp(this.config.keys[index] ?? {}, this.lookup, this.dcs);
+		const s = this.config.keys[index] ?? {};
+		const { lookup, dcs } = this.#for(s);
+		keyUp(s, lookup, dcs);
 	}
 
 	dialRotate(index: number, ticks: number): boolean {
-		const functions = parseFunctions(this.config.dials[index]?.functions);
-		return dialRotate(functions[this.#dialIndex.get(index) ?? 0], ticks, this.lookup, this.dcs);
+		const s = this.config.dials[index] ?? {};
+		const { lookup, dcs } = this.#for(s);
+		return dialRotate(parseFunctions(s.functions)[this.#dialIndex.get(index) ?? 0], ticks, lookup, dcs);
 	}
 
 	/** Dial press or strip tap: step to the next knob in the list. */
@@ -138,21 +132,23 @@ export class Engine {
 		this.#rebind();
 	}
 
-	/** The controls for the editor's pickers, grouped by panel. */
-	controlsList(): PickerItem[] {
-		return catalog(this.#controls);
+	/** One aircraft's controls for the editor's pickers, grouped by panel. */
+	controlsList(aircraft: string): PickerItem[] {
+		return catalog(this.fleet.controls(aircraft));
 	}
 
 	state(): DeckState {
 		const { columns, rows, dials } = this.#layout;
 		const keys = Array.from({ length: columns * rows }, (_, index) => {
 			const settings = this.config.keys[index] ?? {};
-			const empty = !settings.control;
-			return { index, settings, svg: empty ? keySvgEmpty() : keySvg(keyLook(settings, this.lookup, this.dcs)) };
+			const empty = !settings.control && !settings.lamp;
+			const { lookup, dcs } = this.#for(settings);
+			return { index, settings, svg: empty ? keySvgEmpty() : keySvg(keyLook(settings, lookup, dcs)) };
 		});
 		const dialStates = Array.from({ length: dials }, (_, index) => {
 			const settings = this.config.dials[index] ?? {};
-			const view = dialView(parseFunctions(settings.functions), this.#dialIndex.get(index) ?? 0, this.lookup, this.dcs);
+			const { lookup, dcs } = this.#for(settings);
+			const view = dialView(parseFunctions(settings.functions), this.#dialIndex.get(index) ?? 0, lookup, dcs);
 			return { index, settings, view, svg: dialSvg(view) };
 		});
 		return {
@@ -161,22 +157,19 @@ export class Engine {
 			keys,
 			dials: dialStates,
 			status: {
-				dcs: this.dcs.connected,
+				dcs: this.client.connected,
 				aircraft: this.client.aircraft,
-				controls: this.#controls.size,
-				loaded: this.#loaded,
-				error: this.#error,
+				flying: this.fleet.flying()?.AIRCRAFT.id ?? "",
+				controls: this.fleet.size,
+				loaded: this.fleet.loaded,
+				error: this.fleet.error,
 				jsonDir: this.jsonDir(),
 			},
 		};
 	}
 
 	#load(): void {
-		const result = loadAircraftControls(this.jsonDir());
-		this.#error = result.error;
-		if (result.error) return;
-		this.#controls = result.controls;
-		this.#loaded = result.loaded;
+		this.fleet.load(this.jsonDir());
 	}
 
 	#saveAndRebind(): void {
@@ -184,17 +177,19 @@ export class Engine {
 		this.#rebind();
 	}
 
-	/** Watches every control a key or dial shows, then redraws. */
+	/** Watches every control a key or dial shows (only for the aircraft DCS flies), then redraws. */
 	#rebind(): void {
 		for (const stop of this.#stops) stop();
 		this.#stops = [];
 		const watched = new Set<Control>();
 		for (const settings of Object.values(this.config.keys)) {
-			for (const c of keyWatches(settings, this.lookup)) watched.add(c);
+			const { id, lookup } = this.#for(settings);
+			if (this.fleet.isFlying(id)) for (const c of keyWatches(settings, lookup)) watched.add(c);
 		}
 		for (const [index, settings] of Object.entries(this.config.dials)) {
+			const { id, lookup } = this.#for(settings);
 			const fn = parseFunctions(settings.functions)[this.#dialIndex.get(Number(index)) ?? 0];
-			const c = this.lookup(fn?.identifier);
+			const c = this.fleet.isFlying(id) ? lookup(fn?.identifier) : undefined;
 			if (c) watched.add(c);
 		}
 		for (const c of watched) this.#stops.push(this.client.watch(c, () => this.#emit()));

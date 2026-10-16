@@ -1,22 +1,14 @@
 /**
  * Everything specific to the F/A-18C Hornet (DCS-BIOS module "FA-18C_hornet").
- * The rest of the code is the same for every aircraft; builds pick this file through
- * the "#aircraft" import in package.json.
+ * The rest of the code is the same for every aircraft; core/aircraft.data.ts lists the aircraft.
  */
 
-/**
- * DCS-BIOS module (its JSON file name), names, and IDs. Download files and the app's
- * settings folder are named dcs2streamdeck-<id>. Never change uuid (installed plugins update
- * by it) or appId (the feedback relay's app ID).
- */
+/** DCS-BIOS module (its JSON file name), names, and the ID saved in each key's settings (never change it). */
 export const AIRCRAFT = {
 	id: "fa18c",
 	module: "FA-18C_hornet",
 	name: "F/A-18C",
 	fullName: "F/A-18C Hornet",
-	uuid: "com.adamchesters.dcs2streamdeck",
-	appId: "dcs2streamdeck",
-	mirrorPort: 31730,
 } as const;
 
 /** Switch → its own light, for pairs the panel/name rule in catalog.ts cannot find. */

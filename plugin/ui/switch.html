@@ -43,16 +43,6 @@
 	<select id="lamp" data-setting="lamp"></select>
 	<div class="row"><input type="checkbox" id="invert" data-setting="invert" /><label for="invert" style="margin:0">Light when OFF</label></div>
 	<div class="hint">Matches appear in the list as you type; click one, or press Enter for the top match. The text shows the switch; the highlight shows this light. Filled in for you when the switch has its own light. A light with several colours (L BAR) or parts (AOA indexer) shows all of them. Held and magnetic switches stay lit while on and go dark when the jet releases them.</div>
-	<details>
-		<summary>Setup (all keys and dials)</summary>
-		<div class="status" id="status">Waiting for plugin…</div>
-		<label for="jsonDir">DCS-BIOS JSON folder</label>
-		<input type="text" id="jsonDir" data-global="jsonDir" placeholder="Saved Games\DCS\Scripts\DCS-BIOS\doc\json" />
-		<div class="hint">Leave empty for the default folder.</div>
-		<label for="mirrorPort">VR mirror port</label>
-		<input type="number" id="mirrorPort" data-global="mirrorPort" placeholder="__MIRROR_PORT__" />
-		<div class="hint">VR mirror page: <code>http://127.0.0.1:__MIRROR_PORT__/</code> (or your port). Add it as an OpenKneeboard Web Dashboard tab. A new port needs a Stream Deck restart.</div>
-	</details>
 	<script src="pi.js"></script>
 	<script>
 		const $ = (id) => document.getElementById(id);

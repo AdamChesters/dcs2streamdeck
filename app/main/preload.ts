@@ -8,7 +8,7 @@ const on = (channel: string) => (listener: (payload: unknown) => void) => {
 
 contextBridge.exposeInMainWorld("d2s", {
 	state: () => ipcRenderer.invoke("state"),
-	controls: () => ipcRenderer.invoke("controls"),
+	controls: (aircraft: string) => ipcRenderer.invoke("controls", aircraft),
 	info: () => ipcRenderer.invoke("info"),
 	keyDown: (index: number) => ipcRenderer.invoke("key-down", index),
 	keyUp: (index: number) => ipcRenderer.invoke("key-up", index),

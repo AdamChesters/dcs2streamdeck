@@ -5,9 +5,10 @@ import { test } from "node:test";
 
 import { DcsBiosClient } from "../../../core/dcsbios/client.ts";
 import { loadControls } from "../../../core/dcsbios/controls.ts";
+import * as aircraft from "../aircraft.ts";
 
 const fixture = new URL("fixtures/controls.json", import.meta.url).pathname;
-const controls = loadControls(fixture);
+const controls = loadControls(fixture, aircraft);
 
 function waitFor(check: () => boolean, ms: number): Promise<void> {
 	return new Promise((resolve, reject) => {
@@ -28,7 +29,7 @@ test("commands reach the fake jet and state changes come back, magnetic drop inc
 	const ports = { exportPort: 25010, commandPort: 27778 };
 	const sim = spawn(
 		process.execPath,
-		["tools/fake-dcs.ts", "--json", fixture, "--magnetic", "HDPT_SW_L:1", "--port", "25010", "--command-port", "27778"],
+		["tools/fake-dcs.ts", "--aircraft", "F-16C_50", "--json", fixture, "--magnetic", "HDPT_SW_L:1", "--port", "25010", "--command-port", "27778"],
 		{ stdio: "ignore" },
 	);
 	const client = new DcsBiosClient(ports);

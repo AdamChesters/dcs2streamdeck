@@ -3,7 +3,6 @@
  * suggested light for switches that have their own lamp.
  */
 import type { Control, ControlMap } from "./dcsbios/controls.ts";
-import { KNOWN_LAMPS } from "./aircraft.data.ts";
 import { input, intOutput, lampColour, stripColour } from "./dcsbios/controls.ts";
 
 export type PickerItem = {
@@ -33,7 +32,7 @@ const words = (id: string) => id.split("_").filter((w) => w && !NOISE.has(w));
  * SJ_CTR → SJ_CTR_LT, LEFT_FIRE_BTN → FIRE_LEFT_LT).
  */
 export function suggestLamp(control: Control, controls: ControlMap): string | undefined {
-	const known = KNOWN_LAMPS[control.identifier];
+	const known = control.knownLamp;
 	if (known && controls.has(known)) return known;
 	if (control.control_type === "led" || control.inputs.length === 0) return undefined;
 	const mine = new Set(words(control.identifier));

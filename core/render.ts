@@ -129,13 +129,14 @@ function lightKeySvg(look: KeyLook, g: Extract<Glyph, { kind: "lens" | "aoa" | "
 			cell(g.full, 74, 30, 56, 44, "FULL") +
 			cell(g.flaps, 14, 82, 116, 44, "FLAPS");
 	} else if (g.kind === "gear") {
-		// Like the cockpit panel: nose on top, left and right below; the handle light underneath.
+		// Like the cockpit panel: nose on top, left and right below; the handle light underneath
+		// (offline, the offline text takes the handle's place).
 		body =
 			`<text x="72" y="20" ${FONT} font-size="15" fill="#9a9a9a" text-anchor="middle">${escape(look.title)}</text>` +
 			cell(g.nose, 47, 28, 50, 34, "N") +
 			cell(g.left, 14, 68, 50, 34, "L") +
 			cell(g.right, 80, 68, 50, 34, "R") +
-			cell(g.handle, 14, 108, 116, 24, "HANDLE");
+			(look.live ? cell(g.handle, 14, 108, 116, 24, "HANDLE") : "");
 	} else if (g.kind === "stack") {
 		const n = Math.max(1, g.lights.length);
 		const h = Math.min(30, Math.floor(88 / n) - 6);

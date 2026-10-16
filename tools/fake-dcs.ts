@@ -2,10 +2,10 @@
  * Fake DCS: speaks the DCS-BIOS protocol so the plugin can be tested without the game.
  *
  *   node tools/fake-dcs.ts --json <FA-18C_hornet.json> [--magnetic APU_CONTROL_SW:10]
- *   node --conditions=f16c tools/fake-dcs.ts --json <F-16C_50.json> [--magnetic HDPT_SW_L:10]
+ *   node tools/fake-dcs.ts --aircraft F-16C_50 --json <F-16C_50.json> [--magnetic HDPT_SW_L:10]
  *   node tools/fake-dcs.ts --play <recording.jsonl>
  *
- * --aircraft sets the aircraft name sent to the plugin (default: the selected aircraft).
+ * --aircraft sets the aircraft (DCS-BIOS module name) it flies (default FA-18C_hornet).
  * Sim mode keeps a memory map, applies commands sent to UDP 7778 and sends
  * the export stream to 239.255.50.10:5010 at 30 frames a second.
  * --magnetic ID:seconds drops that switch back to 0 after the delay, like the
@@ -16,7 +16,7 @@ import dgram from "node:dgram";
 import { readFileSync } from "node:fs";
 import { parseArgs } from "node:util";
 
-import { AIRCRAFT } from "../core/aircraft.data.ts";
+import { aircraftByModule, DEFAULT_AIRCRAFT } from "../core/aircraft.data.ts";
 import { DEFAULT_OPTIONS } from "../core/dcsbios/client.ts";
 import type { Control } from "../core/dcsbios/controls.ts";
 import { intOutput, loadControls } from "../core/dcsbios/controls.ts";
@@ -26,7 +26,7 @@ const { values } = parseArgs({
 	options: {
 		json: { type: "string" },
 		play: { type: "string" },
-		aircraft: { type: "string", default: AIRCRAFT.module },
+		aircraft: { type: "string", default: DEFAULT_AIRCRAFT.AIRCRAFT.module },
 		magnetic: { type: "string", multiple: true, default: [] },
 		group: { type: "string", default: DEFAULT_OPTIONS.exportGroup },
 		port: { type: "string", default: String(DEFAULT_OPTIONS.exportPort) },
@@ -66,7 +66,7 @@ function play(file: string): void {
 }
 
 function simulate(jsonPath: string): void {
-	const controls = loadControls(jsonPath);
+	const controls = loadControls(jsonPath, aircraftByModule(values.aircraft!) ?? DEFAULT_AIRCRAFT);
 	const memory = new Uint8Array(0x10000);
 	const name = new TextEncoder().encode(values.aircraft);
 	memory.set(name.subarray(0, 23), 0);

@@ -2,8 +2,9 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 
 import { defaultKeyMode, formatValue, lampColour, loadControls, parseControls, pressArgument, rotateArguments } from "../../../core/dcsbios/controls.ts";
+import * as aircraft from "../aircraft.ts";
 
-const controls = loadControls(new URL("fixtures/controls.json", import.meta.url).pathname);
+const controls = loadControls(new URL("fixtures/controls.json", import.meta.url).pathname, aircraft);
 const get = (id: string) => controls.get(id)!;
 
 /** A one-control map built in the test, for rules that need custom descriptions. */
@@ -16,7 +17,7 @@ const single = (identifier: string, description: string, control_type = "selecto
 				outputs: [{ type: "integer", address: 0, mask: 1, shift_by: 0, max_value: 1, description: "" }],
 			},
 		},
-	}).get(identifier)!;
+	}, aircraft).get(identifier)!;
 
 test("loads every control by identifier", () => {
 	assert.equal(controls.size, 18);

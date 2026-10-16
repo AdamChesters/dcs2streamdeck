@@ -1,7 +1,7 @@
 import type { DialSettings, KeySettings } from "../../../core/bindings.ts";
 import type { PickerItem } from "../../../core/catalog.ts";
 import type { DeckState, Layout } from "../../main/engine.ts";
-import type { UpdateStatus } from "../../main/updates.ts";
+import type { UpdateStatus } from "../../../core/updates.ts";
 
 export type { DeckState, DialSettings, KeySettings, Layout, PickerItem, UpdateStatus };
 
@@ -9,7 +9,7 @@ export type Info = { version: string; appId: string; releasesPage: string; elgat
 
 type Api = {
 	state(): Promise<DeckState>;
-	controls(): Promise<PickerItem[]>;
+	controls(aircraft: string): Promise<PickerItem[]>;
 	info(): Promise<Info>;
 	keyDown(index: number): Promise<boolean>;
 	keyUp(index: number): Promise<void>;

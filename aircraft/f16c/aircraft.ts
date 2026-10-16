@@ -1,22 +1,14 @@
 /**
  * Everything specific to the F-16C Viper (DCS-BIOS module "F-16C_50", control reference v0.11.7).
- * The rest of the code is the same for every aircraft; builds pick this file through
- * the "#aircraft" import in package.json.
+ * The rest of the code is the same for every aircraft; core/aircraft.data.ts lists the aircraft.
  */
 
-/**
- * DCS-BIOS module (its JSON file name), names, and IDs. Download files and the app's
- * settings folder are named dcs2streamdeck-<id>. Never change uuid (installed plugins update
- * by it) or appId (the feedback relay's app ID).
- */
+/** DCS-BIOS module (its JSON file name), names, and the ID saved in each key's settings (never change it). */
 export const AIRCRAFT = {
 	id: "f16c",
 	module: "F-16C_50",
 	name: "F-16C",
 	fullName: "F-16C Viper",
-	uuid: "com.adamchesters.dcs2streamdeck.f16c",
-	appId: "dcs2streamdeck-f16c",
-	mirrorPort: 31731,
 } as const;
 
 /**

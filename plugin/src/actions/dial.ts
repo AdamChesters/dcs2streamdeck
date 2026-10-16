@@ -7,6 +7,7 @@ import type {
 	DialDownEvent,
 	DialRotateEvent,
 	DidReceiveSettingsEvent,
+	PropertyInspectorDidAppearEvent,
 	SendToPluginEvent,
 	TouchTapEvent,
 	WillAppearEvent,
@@ -15,18 +16,18 @@ import type {
 import { SingletonAction } from "@elgato/streamdeck";
 import type { JsonValue } from "@elgato/utils";
 
-import { AIRCRAFT } from "../../../core/aircraft.data.ts";
+import { aircraftOf, PRODUCT } from "../../../core/aircraft.data.ts";
 import type { DialFunction, DialSettings } from "../../../core/bindings.ts";
 import { dialRotate, dialView, parseFunctions } from "../../../core/bindings.ts";
-import { client, control, dcs, mirror, onReset } from "../runtime.ts";
+import { client, fleet, mirror, onReset } from "../runtime.ts";
 import { handleInspectorMessage, sendInspectorData } from "./common.ts";
 
 export type { DialSettings };
 
-type Instance = { action: DialAction<DialSettings>; functions: DialFunction[]; index: number; stop?: () => void };
+type Instance = { action: DialAction<DialSettings>; settings: DialSettings; functions: DialFunction[]; index: number; stop?: () => void };
 
 export class DcsDial extends SingletonAction<DialSettings> {
-	override readonly manifestId = `${AIRCRAFT.uuid}.dial`;
+	override readonly manifestId = `${PRODUCT.uuid}.dial`;
 	readonly #instances = new Map<string, Instance>();
 
 	constructor() {
@@ -38,7 +39,8 @@ export class DcsDial extends SingletonAction<DialSettings> {
 
 	override onWillAppear(ev: WillAppearEvent<DialSettings>): void {
 		if (!ev.action.isDial()) return;
-		const instance: Instance = { action: ev.action, functions: parseFunctions(ev.payload.settings.functions), index: 0 };
+		const settings = ev.payload.settings;
+		const instance: Instance = { action: ev.action, settings, functions: parseFunctions(settings.functions), index: 0 };
 		this.#instances.set(ev.action.id, instance);
 		void ev.action.setTriggerDescription({ rotate: "Adjust", push: "Next knob", touch: "Next knob" });
 		this.#bind(instance);
@@ -53,22 +55,24 @@ export class DcsDial extends SingletonAction<DialSettings> {
 	override onDidReceiveSettings(ev: DidReceiveSettingsEvent<DialSettings>): void {
 		const instance = this.#instances.get(ev.action.id);
 		if (!instance) return;
+		instance.settings = ev.payload.settings;
 		instance.functions = parseFunctions(ev.payload.settings.functions);
 		instance.index = Math.min(instance.index, Math.max(0, instance.functions.length - 1));
 		this.#bind(instance);
 	}
 
-	override async onPropertyInspectorDidAppear(): Promise<void> {
-		await sendInspectorData();
+	override async onPropertyInspectorDidAppear(ev: PropertyInspectorDidAppearEvent<DialSettings>): Promise<void> {
+		await sendInspectorData(this.#instances.get(ev.action.id)?.settings ?? {});
 	}
 
 	override async onSendToPlugin(ev: SendToPluginEvent<JsonValue, DialSettings>): Promise<void> {
-		await handleInspectorMessage(ev.payload);
+		await handleInspectorMessage(ev.payload, this.#instances.get(ev.action.id)?.settings ?? {});
 	}
 
 	override onDialRotate(ev: DialRotateEvent<DialSettings>): void {
 		const instance = this.#instances.get(ev.action.id);
-		if (!dialRotate(instance?.functions[instance.index], ev.payload.ticks, control, dcs)) void ev.action.showAlert();
+		const id = aircraftOf(ev.payload.settings).AIRCRAFT.id;
+		if (!dialRotate(instance?.functions[instance.index], ev.payload.ticks, fleet.lookup(id), fleet.dcs(id))) void ev.action.showAlert();
 	}
 
 	override onDialDown(ev: DialDownEvent<DialSettings>): void {
@@ -88,14 +92,16 @@ export class DcsDial extends SingletonAction<DialSettings> {
 
 	#bind(instance: Instance): void {
 		instance.stop?.();
-		const c = control(instance.functions[instance.index]?.identifier);
+		const id = aircraftOf(instance.settings).AIRCRAFT.id;
+		const c = fleet.isFlying(id) ? fleet.lookup(id)(instance.functions[instance.index]?.identifier) : undefined;
 		instance.stop = c ? client.watch(c, () => this.#draw(instance)) : undefined;
 		this.#draw(instance);
 	}
 
 	#draw(instance: Instance): void {
 		const { action } = instance;
-		const view = dialView(instance.functions, instance.index, control, dcs);
+		const id = aircraftOf(instance.settings).AIRCRAFT.id;
+		const view = dialView(instance.functions, instance.index, fleet.lookup(id), fleet.dcs(id));
 		void action.setFeedback({ title: view.title, value: view.value, indicator: view.percent });
 		mirror.setTile(action.id, { kind: "dial", device: action.device.id, column: action.coordinates.column, dial: view });
 	}

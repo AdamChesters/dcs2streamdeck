@@ -6,12 +6,12 @@ import type { DeckState, Info, UpdateStatus } from "./api.ts";
 import { api } from "./api.ts";
 import type { Selection } from "./Deck.tsx";
 import { Deck } from "./Deck.tsx";
-import { AIRCRAFT } from "../../../core/aircraft.data.ts";
+import { aircraftById } from "../../../core/aircraft.data.ts";
 import { Editor } from "./Editor.tsx";
 import { DeckLink } from "./hid.ts";
 import logo from "./logo.svg";
 
-const APP_NAME = `dcs2streamdeck ${AIRCRAFT.name}`;
+const APP_NAME = "dcs2streamdeck";
 
 export function App() {
 	const [state, setState] = useState<DeckState>();
@@ -54,7 +54,7 @@ export function App() {
 			<header className="topbar">
 				<img className="topbar-logo" src={logo} alt="" />
 				<span className="topbar-name">{APP_NAME}</span>
-				<Status on={state.status.dcs} label={state.status.dcs ? `DCS · ${state.status.aircraft || "no aircraft"}` : "DCS"} />
+				<Status on={state.status.dcs} label={state.status.dcs ? `DCS · ${flyingName(state)}` : "DCS"} />
 				<Status on={Boolean(deckName)} label={deckName || "No Stream Deck"} />
 				<span className="spacer" />
 				<button className={`bar-button${deckWindow ? " active" : ""}`} onClick={toggleDeckWindow} title="Deck-only window for OpenKneeboard">
@@ -106,6 +106,12 @@ export function App() {
 			)}
 		</div>
 	);
+}
+
+/** What DCS flies, by its short name when supported (e.g. "F/A-18C"). */
+function flyingName(state: DeckState): string {
+	if (state.status.flying) return aircraftById(state.status.flying).AIRCRAFT.name;
+	return state.status.aircraft ? `${state.status.aircraft} (not supported)` : "no aircraft";
 }
 
 function Status({ on, label }: { on: boolean; label: string }) {
@@ -183,8 +189,8 @@ function UpdateDialog({ info, update, onClose }: { info: Info; update: UpdateSta
 			{release?.notes && <pre className="notes">{release.notes}</pre>}
 			<footer>
 				{update.state === "available" && release && (
-					<button className="primary" onClick={() => void api.openExternal(release.zipUrl)}>
-						Download {release.zipName}
+					<button className="primary" onClick={() => void api.openExternal(release.fileUrl)}>
+						Download {release.fileName}
 					</button>
 				)}
 				{update.state !== "checking" && <button onClick={() => void api.updateCheck()}>Check again</button>}

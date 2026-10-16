@@ -8,13 +8,13 @@
 > ## ALPHA VERSION: TESTERS WANTED
 > **Find a bug? Got a feature idea (e.g. the 3 gear lights combined into one custom button)? Drop us a line, details below.**
 > **Alpha : Not every function exhaustively tested yet. Help me!**
-> **Taking next module suggestions : Standalone app updater will notify you as they drop**
+> **Taking next module suggestions : The plugin and the standalone app will notify you as they drop**
 
 ## What
 
 Sync Stream Deck keys, lights and dials to what your jet is actually doing in DCS World. Live updating. 
 
-Two ways to run this. 
+Two ways to run this. Both cover every supported jet: each key picks its jet, and new keys start on the jet DCS is flying.
 - **Stream Deck plugin: Fully integrated.** Installs into Elgato's Stream Deck app, with your other plugins, profiles and pages.
 - **Standalone Desktop app: Lightweight** Standalone app, cannot be run with Elgato's software. Drives your deck directly. Includes popout window for OpenKneeboard VR capture.
 - **There are dependencies** See the How section. You need DCS-Bios installed. 
@@ -32,23 +32,24 @@ The DCS Streamdeck projects I tried had gone quiet. Most no longer worked with t
 - **DCS Switches**: any switch, button or lever. Shows its real position (ARM/SAFE, START 1/OFF/START 2) and can light up from its own cockpit light.
 - **DCS Caution/status Lights**: caution and warning lights in their cockpit colours, plus combined indicators: AOA indexer and landing gear, and on the Hornet also flaps and L BAR.
 - **DCS Dials** (Stream Deck +): turn to set brightness and volume knobs; press to step through a list. Presets for each jet's displays and cockpit lighting.
-- **VR**: a live copy of the deck for an OpenKneeboard Web Dashboard tab, at `http://127.0.0.1:31730/` (F/A-18C) or `http://127.0.0.1:31731/` (F-16C). See your streamdeck mirrored in VR. Finally. 
+- **VR**: a live copy of the deck for an OpenKneeboard Web Dashboard tab, at `http://127.0.0.1:31730/`. See your streamdeck mirrored in VR. Finally. 
 
 ## Option 1 : Install the plugin
 
 1. Install [DCS-BIOS](https://github.com/DCS-Skunkworks/dcs-bios/releases) v0.11 or later.
 2. Use the Stream Deck app 7.1 or later.
-3. Download the `.streamDeckPlugin` for your jet from [Releases](https://github.com/AdamChesters/dcs2streamdeck/releases) (`dcs2streamdeck-fa18c-…` or `dcs2streamdeck-f16c-…`) and double-click it.
+3. Download `dcs2streamdeck-<version>.streamDeckPlugin` from [Releases](https://github.com/AdamChesters/dcs2streamdeck/releases) and double-click it.
+4. Had the separate F-16C plugin (0.3 or older)? Remove it in the Stream Deck app and set its keys up again in the new one. F/A-18C keys carry over.
 
 ## Option 2 : Use the desktop app (Windows)
 
 1. Install [DCS-BIOS](https://github.com/DCS-Skunkworks/dcs-bios/releases) v0.11 or later.
-2. Download the zip for your jet from [Releases](https://github.com/AdamChesters/dcs2streamdeck/releases) (`dcs2streamdeck-fa18c-…-win.zip` or `dcs2streamdeck-f16c-…-win.zip`), unzip it to any folder and run `dcs2streamdeck FA-18C.exe` or `dcs2streamdeck F-16C.exe`. It is not code-signed yet, so Windows may show a warning first.
+2. Download `dcs2streamdeck-<version>-win.zip` from [Releases](https://github.com/AdamChesters/dcs2streamdeck/releases), unzip it to any folder and run `dcs2streamdeck.exe`. It is not code-signed yet, so Windows may show a warning first.
 3. Close the Elgato Stream Deck app: only one program can drive the deck at a time.
 
 ## Updating
-- **Automatic** - Both Plugin and Standalone app have automatic updates enabled and will notify you.
-- **Manual** - Plugin, download, open. It'll launch the stream deck up, update. All buttons will be saved. Standalone, extract new exe to your install folder, run from there. 
+- **Automatic** - Both Plugin and Standalone app check for updates and will notify you. Plugin: the top row of any key's settings turns red ("Update available"); click it for the releases page. App: the version light in the top bar.
+- **Manual** - Plugin, download, open. It'll launch the stream deck up, update. All buttons will be saved. Standalone, unzip the new zip over your install folder, run from there. Your keys are saved in your Windows profile, not the app folder. 
 
 ## Credits
 

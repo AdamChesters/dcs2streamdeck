@@ -5,10 +5,66 @@ let context;
 let actionUuid;
 let settings = {};
 let globalSettings = {};
-/** Controls from the plugin: { id, category, description, positions, maxValue, key, dial, led, lamp }. */
+/** Controls of this key's aircraft: { id, category, description, positions, maxValue, key, dial, led, lamp }. */
 let catalog = [];
-/** Dial presets for this aircraft: [name, knob list]. */
+/** Dial presets for this key's aircraft: [name, knob list]. */
 let presets = [];
+/** This key's aircraft ID, as the plugin chose it. */
+let aircraft = "";
+let releasesPage = "";
+
+// Every page starts with Setup (always open, with the update row) and the key's aircraft.
+const header = document.createElement("div");
+header.innerHTML = `
+	<div class="setup">
+		<div class="setup-title">Setup (all keys and dials)</div>
+		<div id="update" class="update"><b></b><span>Checking for updates…</span></div>
+		<div class="status" id="status">Waiting for plugin…</div>
+		<label for="jsonDir">DCS-BIOS JSON folder</label>
+		<input type="text" id="jsonDir" data-global="jsonDir" placeholder="Empty = Saved Games\\DCS\\Scripts\\DCS-BIOS\\doc\\json" />
+		<label for="mirrorPort">VR mirror port</label>
+		<input type="number" id="mirrorPort" data-global="mirrorPort" placeholder="__MIRROR_PORT__" />
+		<div class="hint">VR mirror page: <code>http://127.0.0.1:__MIRROR_PORT__/</code> (or your port), for an OpenKneeboard Web Dashboard tab. A new port needs a Stream Deck restart.</div>
+	</div>
+	<label for="aircraft">Aircraft</label>
+	<select id="aircraft"></select>
+	<div class="hint">New keys start on the jet DCS is flying. Each key keeps its own jet; the lists below show only its controls. Keys for another jet go dark until DCS flies it.</div>`;
+document.body.prepend(...header.children);
+
+const UPDATE = {
+	checking: ["", "", "Checking for updates…"],
+	current: ["ok", "✓", "Up to date"],
+	available: ["bad", "✕", "Update available"],
+	failed: ["", "", "Could not check for updates"],
+};
+
+function showUpdate(state) {
+	const [cls, mark, text] = UPDATE[state] ?? UPDATE.failed;
+	const row = document.getElementById("update");
+	row.className = `update ${cls}`;
+	row.querySelector("b").textContent = mark;
+	row.querySelector("span").textContent = text;
+	row.title = state === "available" ? "Open the releases page" : "";
+}
+
+document.getElementById("update").addEventListener("click", () => {
+	if (document.getElementById("update").classList.contains("bad") && releasesPage) send({ event: "openUrl", payload: { url: releasesPage } });
+});
+
+function refresh() {
+	send({ event: "sendToPlugin", action: actionUuid, context, payload: { type: "refresh", settings } });
+}
+
+// A different jet has different controls: the key starts again (its text stays).
+document.getElementById("aircraft").addEventListener("change", (ev) => {
+	const id = ev.target.value;
+	if (!id || id === aircraft) return;
+	settings = { aircraft: id, ...(settings.title ? { title: settings.title } : {}) };
+	aircraft = id;
+	send({ event: "setSettings", context, payload: settings });
+	fill();
+	refresh();
+});
 
 window.connectElgatoStreamDeckSocket = (port, uuid, registerEvent, _info, actionInfo) => {
 	context = uuid;
@@ -19,7 +75,7 @@ window.connectElgatoStreamDeckSocket = (port, uuid, registerEvent, _info, action
 	socket.onopen = () => {
 		send({ event: registerEvent, uuid });
 		send({ event: "getGlobalSettings", context });
-		send({ event: "sendToPlugin", action: actionUuid, context, payload: { type: "refresh" } });
+		refresh();
 		fill();
 	};
 	socket.onmessage = (msg) => {
@@ -31,9 +87,18 @@ window.connectElgatoStreamDeckSocket = (port, uuid, registerEvent, _info, action
 			globalSettings = m.payload.settings || {};
 			fill();
 		} else if (m.event === "sendToPropertyInspector" && m.payload.type === "data") {
-			document.getElementById("status").textContent = m.payload.status;
-			catalog = m.payload.catalog || [];
-			presets = m.payload.presets || [];
+			const data = m.payload;
+			document.getElementById("status").textContent = data.status;
+			showUpdate(data.update);
+			releasesPage = data.releasesPage || "";
+			aircraft = data.aircraft;
+			const select = document.getElementById("aircraft");
+			select.replaceChildren(...(data.aircraftList || []).map((a) => Object.assign(document.createElement("option"), { value: a.id, textContent: a.name })));
+			select.value = aircraft;
+			// A new key keeps the jet the plugin chose for it.
+			if (!settings.aircraft && aircraft) saveSetting("aircraft", aircraft);
+			catalog = data.catalog || [];
+			presets = data.presets || [];
 			document.dispatchEvent(new Event("pi-catalog"));
 		}
 	};
@@ -71,7 +136,7 @@ document.addEventListener("change", (ev) => {
 	if (el.dataset.global) {
 		globalSettings[el.dataset.global] = read(el);
 		send({ event: "setGlobalSettings", context, payload: globalSettings });
-		setTimeout(() => send({ event: "sendToPlugin", action: actionUuid, context, payload: { type: "refresh" } }), 500);
+		setTimeout(refresh, 500);
 	}
 });
 

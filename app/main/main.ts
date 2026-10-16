@@ -1,34 +1,39 @@
 /**
- * dcs2streamdeck standalone app, one build per aircraft: Electron main process.
+ * dcs2streamdeck standalone app (every aircraft in one): Electron main process.
  * The Stream Deck itself is driven from the main window's renderer (WebHID);
  * this process owns DCS-BIOS, settings, updates and the windows.
  */
 import { execFile } from "node:child_process";
-import { readFileSync, writeFileSync, mkdirSync, renameSync } from "node:fs";
+import { copyFileSync, existsSync, readFileSync, writeFileSync, mkdirSync, renameSync } from "node:fs";
 import path from "node:path";
 
 import { app, BrowserWindow, ipcMain, Menu, session, shell } from "electron";
 
-import { AIRCRAFT } from "../../core/aircraft.data.ts";
+import { PRODUCT } from "../../core/aircraft.data.ts";
 import type { DialSettings, KeySettings } from "../../core/bindings.ts";
 import type { DeckConfig, Layout } from "./engine.ts";
 import { Engine } from "./engine.ts";
-import { RELEASES_PAGE, Updater } from "./updates.ts";
+import { RELEASES_PAGE, Updater, zipName } from "../../core/updates.ts";
 // Shared support component (feedback relay sender).
 import feedback from "../donate/feedback.cjs";
 
 // Feedback relay app ID.
-const APP_ID = AIRCRAFT.appId;
-const TITLE = `dcs2streamdeck ${AIRCRAFT.name}`;
+const APP_ID = PRODUCT.appId;
+const TITLE = "dcs2streamdeck";
 const ELGATO_VENDOR_ID = 0x0fd9;
 
 type AppConfig = DeckConfig & { deckWindow?: { open: boolean; bounds?: Electron.Rectangle } };
 
-// Each aircraft's app keeps its own settings, outside the app folder so a new zip keeps them
-// (set before the single-instance lock, which lives there).
-app.setPath("userData", path.join(app.getPath("appData"), `dcs2streamdeck-${AIRCRAFT.id}`));
+// Settings live outside the app folder so a new zip keeps them (set before the single-instance
+// lock, which lives there). The first run takes the keys of the 0.3 F/A-18C app, if any.
+app.setPath("userData", path.join(app.getPath("appData"), "dcs2streamdeck"));
+const hornetConfig = path.join(app.getPath("appData"), "dcs2streamdeck-fa18c", "config.json");
+if (!existsSync(path.join(app.getPath("userData"), "config.json")) && existsSync(hornetConfig)) {
+	mkdirSync(app.getPath("userData"), { recursive: true });
+	copyFileSync(hornetConfig, path.join(app.getPath("userData"), "config.json"));
+}
 if (!app.requestSingleInstanceLock()) app.quit();
-app.setAppUserModelId(AIRCRAFT.uuid);
+app.setAppUserModelId(PRODUCT.uuid);
 
 const configPath = () => path.join(app.getPath("userData"), "config.json");
 
@@ -152,7 +157,7 @@ function watchElgatoApp(): void {
 
 function registerIpc(): void {
 	ipcMain.handle("state", () => engine.state());
-	ipcMain.handle("controls", () => engine.controlsList());
+	ipcMain.handle("controls", (_e, aircraft: string) => engine.controlsList(aircraft));
 	ipcMain.handle("info", () => ({
 		version: app.getVersion(),
 		appId: APP_ID,
@@ -193,6 +198,7 @@ app.whenReady().then(() => {
 	);
 	updater = new Updater({
 		currentVersion: app.getVersion(),
+		fileName: zipName,
 		onStatus: (status) => broadcast("update-status", status),
 	});
 	allowStreamDecks();

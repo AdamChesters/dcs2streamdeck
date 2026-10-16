@@ -3,14 +3,13 @@
  */
 import type { Control, KeyMode } from "./dcsbios/controls.ts";
 import { defaultKeyMode, formatValue, intOutput, isMomentary, lampColour, pressArgument, RESTING, rotateArguments, stripColour } from "./dcsbios/controls.ts";
-import { LEVER_KNOBS } from "./aircraft.data.ts";
 import type { Colour, DialView, Glyph, KeyLook, Light } from "./render.ts";
 
 /** The part of the DCS-BIOS client the bindings use. */
 export type Dcs = {
-	/** True when DCS is sending data for this plugin's aircraft. */
+	/** True when DCS is sending data for this key's aircraft. */
 	readonly connected: boolean;
-	/** Key text when not connected, e.g. "NO DCS" or "NO F-16C". */
+	/** Key text when not connected: "NO DCS", or the key's aircraft (e.g. "F-16C") while DCS flies another. */
 	readonly offline?: string;
 	read(control: Control): number | string | undefined;
 	send(identifier: string, argument: string): void;
@@ -19,6 +18,8 @@ export type Dcs = {
 export type Lookup = (identifier: string | undefined) => Control | undefined;
 
 export type KeySettings = {
+	/** Aircraft ID (aircraft/<id>), e.g. "f16c". None = see aircraftOf in aircraft.data.ts. */
+	aircraft?: string;
 	/** DCS-BIOS identifier to send to, e.g. APU_CONTROL_SW. */
 	control?: string;
 	/** Text on the key. Empty = the control's description. */
@@ -36,6 +37,8 @@ export type KeySettings = {
 };
 
 export type DialSettings = {
+	/** Aircraft ID, as for keys. */
+	aircraft?: string;
 	/** One knob per line: `IDENTIFIER | Label | step` (label and step optional). */
 	functions?: string;
 };
@@ -130,7 +133,7 @@ function switchGlyph(c: Control, value: number | undefined): Glyph | undefined {
 	if (isMomentary(c)) return { kind: "button", pressed: value === 1 };
 	if (max === 1 && /_COVER$/.test(c.identifier)) return { kind: "guard", open: value === 1 };
 	if (max === 1) {
-		const knob = LEVER_KNOBS[c.identifier];
+		const knob = c.leverKnob;
 		return knob ? { kind: "toggle", up: value === 1, knob } : { kind: "toggle", up: value === 1 };
 	}
 	if (max === 2) {

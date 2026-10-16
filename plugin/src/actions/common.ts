@@ -1,26 +1,32 @@
 import streamDeck from "@elgato/streamdeck";
 
-import { AIRCRAFT, DIAL_PRESETS } from "../../../core/aircraft.data.ts";
+import { AIRCRAFT_LIST, aircraftOf } from "../../../core/aircraft.data.ts";
 import { catalog } from "../../../core/catalog.ts";
-import { client, runtime, statusText } from "../runtime.ts";
+import { RELEASES_PAGE } from "../../../core/updates.ts";
+import { fleet, runtime } from "../runtime.ts";
 
-/** Sends the control list and status to the open property inspector. */
-export async function sendInspectorData(): Promise<void> {
+type ActionSettings = { aircraft?: string; control?: string; lamp?: string; functions?: string };
+
+/**
+ * Sends the open property inspector what it shows: the key's aircraft (chosen for a new key),
+ * that aircraft's controls and presets, the aircraft list, DCS status and the update state.
+ */
+export async function sendInspectorData(settings: ActionSettings): Promise<void> {
+	const aircraft = aircraftOf(settings, fleet.flying());
 	await streamDeck.ui.sendToPropertyInspector({
 		type: "data",
-		status: statusText(),
-		catalog: catalog(runtime.controls),
-		presets: DIAL_PRESETS,
-		aircraft: AIRCRAFT.name,
+		status: fleet.statusText(),
+		update: runtime.updater?.status.state ?? "checking",
+		releasesPage: RELEASES_PAGE,
+		aircraft: aircraft.AIRCRAFT.id,
+		aircraftList: AIRCRAFT_LIST.map((a) => ({ id: a.AIRCRAFT.id, name: a.AIRCRAFT.fullName })),
+		catalog: catalog(fleet.controls(aircraft.AIRCRAFT.id)),
+		presets: aircraft.DIAL_PRESETS,
 	});
 }
 
-/** Handles messages every property inspector can send. */
-export async function handleInspectorMessage(payload: unknown): Promise<void> {
-	const message = payload as { type?: string };
-	if (message.type === "refresh") await sendInspectorData();
-}
-
-export function isLive(): boolean {
-	return client.connected;
+/** Handles messages every property inspector can send: "refresh" carries its current settings. */
+export async function handleInspectorMessage(payload: unknown, settings: ActionSettings): Promise<void> {
+	const message = payload as { type?: string; settings?: ActionSettings };
+	if (message.type === "refresh") await sendInspectorData(message.settings ?? settings);
 }

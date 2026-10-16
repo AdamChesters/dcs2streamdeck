@@ -2,8 +2,9 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 
 import { defaultKeyMode, formatValue, lampColour, loadControls, parseControls, pressArgument, rotateArguments } from "../../../core/dcsbios/controls.ts";
+import * as aircraft from "../aircraft.ts";
 
-const controls = loadControls(new URL("fixtures/controls.json", import.meta.url).pathname);
+const controls = loadControls(new URL("fixtures/controls.json", import.meta.url).pathname, aircraft);
 const get = (id: string) => controls.get(id)!;
 
 test("loads every control by identifier", () => {
@@ -50,8 +51,9 @@ test("cycle through chosen positions only", () => {
 });
 
 test("light colours: suffix, 'light green', and Hornet lights DCS-BIOS gives no colour", () => {
+	// Read through parseControls, which adds the colours the aircraft data knows.
 	const led = (identifier: string, description: string) =>
-		({ identifier, description, category: "x", control_type: "led", inputs: [], outputs: [] }) as Parameters<typeof lampColour>[0];
+		parseControls({ x: { [identifier]: { identifier, description, category: "x", control_type: "led", inputs: [], outputs: [] } } }, aircraft).get(identifier)!;
 	assert.equal(lampColour(led("X", "L BAR (red)")), "red");
 	assert.equal(lampColour(led("X", "MASTER CAUTION (amber)")), "yellow");
 	assert.equal(lampColour(led("X", "Emergency Instrument Lightning (light green)")), "green");
@@ -70,7 +72,7 @@ test("2-position switches get their real position names", () => {
 					outputs: [{ type: "integer", address: 0, mask: 1, shift_by: 0, max_value: 1, description: "" }],
 				},
 			},
-		}).get(identifier)!;
+		}, aircraft).get(identifier)!;
 	const arm = named("MASTER_ARM_SW", "Master Arm Switch, ARM/SAFE");
 	assert.deepEqual(arm.positions, ["SAFE", "ARM"]);
 	assert.equal(formatValue(arm, 1), "ARM");
@@ -91,7 +93,7 @@ test("the resting name is position 0 whichever way the description lists it", ()
 					outputs: [{ type: "integer", address: 0, mask: 1, shift_by: 0, max_value: 1, description: "" }],
 				},
 			},
-		}).get(identifier)!.positions;
+		}, aircraft).get(identifier)!.positions;
 	assert.deepEqual(two("A_SW", "BIT Switch, OFF/BIT"), ["OFF", "BIT"]);
 	assert.deepEqual(two("B_SW", "Master Arm Switch, ARM/SAFE"), ["SAFE", "ARM"]);
 	assert.deepEqual(two("C_SW", "Generator, NORM/OFF"), ["OFF", "NORM"], "OFF rests more than NORM");
@@ -109,7 +111,7 @@ test("latching buttons are not push buttons", () => {
 					outputs: [{ type: "integer", address: 0, mask: 1, shift_by: 0, max_value: 1, description: "" }],
 				},
 			},
-		}).get(identifier)!;
+		}, aircraft).get(identifier)!;
 	assert.equal(defaultKeyMode(ctl("ECM_1_BTN", "ECM 1 Button")), "cycle", "latching: toggles");
 	assert.equal(defaultKeyMode(ctl("X_RESET", "Reset Button - Press to reset")), "momentary");
 	assert.equal(defaultKeyMode(ctl("FCS_RESET_BTN", "FCS RESET Button")), "momentary", "listed in the aircraft data");

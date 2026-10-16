@@ -4,7 +4,7 @@
  */
 import { readFileSync } from "node:fs";
 
-import { INDICATORS, KNOWN_COLOURS, KNOWN_LABELS, KNOWN_PUSH_BUTTONS } from "../aircraft.data.ts";
+import type { AircraftData } from "../aircraft.data.ts";
 
 export type ControlInput =
 	| { interface: "action"; argument: string; description: string }
@@ -30,8 +30,16 @@ export type Control = {
 	family?: string[];
 	/** Name of a multi-light indicator, e.g. "AOA Indexer". */
 	familyName?: string;
-	/** Picture and role of each light, for multi-light indicators (see aircraft.data.ts). */
+	/** Picture and role of each light, for multi-light indicators (from the aircraft data). */
 	indicator?: { kind: "aoa" | "gear" | "flaps"; roles: Record<string, string> };
+	/** From the aircraft data: a push button DCS-BIOS does not mark as momentary. */
+	pushButton?: boolean;
+	/** From the aircraft data: the light's colour when its description gives none. */
+	knownColour?: LampColour;
+	/** From the aircraft data: this switch's own light. */
+	knownLamp?: string;
+	/** From the aircraft data: the lever's special knob. */
+	leverKnob?: "wheel" | "hook";
 };
 
 export type ControlMap = Map<string, Control>;
@@ -50,8 +58,8 @@ const restRank = (name: string) => {
  * whichever way round the description lists it ("OFF/BIT", "ARM/SAFE"); with no resting
  * name the first is position 1. Returns [name of 0, name of 1].
  */
-function twoPositionNames(c: Control): string[] | undefined {
-	const known = KNOWN_LABELS[c.identifier];
+function twoPositionNames(c: Control, aircraft: AircraftData): string[] | undefined {
+	const known = aircraft.KNOWN_LABELS[c.identifier];
 	if (known) return [known[1], known[0]];
 	const m = /,\s*([A-Za-z0-9][A-Za-z0-9 .-]*)\/([A-Za-z0-9][A-Za-z0-9 .-]*)\s*$/.exec(c.description);
 	if (!m) return undefined;
@@ -60,14 +68,21 @@ function twoPositionNames(c: Control): string[] | undefined {
 	return restRank(first) < restRank(second) ? [first, second] : [second, first];
 }
 
-export function parseControls(json: unknown): ControlMap {
+/** Reads one aircraft's control reference, adding what that aircraft's data knows. */
+export function parseControls(json: unknown, aircraft: AircraftData): ControlMap {
 	const map: ControlMap = new Map();
 	for (const category of Object.values(json as Record<string, Record<string, Control>>)) {
 		for (const control of Object.values(category)) map.set(control.identifier, control);
 	}
 	for (const c of map.values()) {
+		if (aircraft.KNOWN_PUSH_BUTTONS.includes(c.identifier)) c.pushButton = true;
+		if (aircraft.KNOWN_COLOURS[c.identifier]) c.knownColour = aircraft.KNOWN_COLOURS[c.identifier];
+		if (aircraft.KNOWN_LAMPS[c.identifier]) c.knownLamp = aircraft.KNOWN_LAMPS[c.identifier];
+		if (aircraft.LEVER_KNOBS[c.identifier]) c.leverKnob = aircraft.LEVER_KNOBS[c.identifier];
+	}
+	for (const c of map.values()) {
 		if (c.positions || c.inputs.length === 0 || intOutput(c)?.max_value !== 1 || isMomentary(c)) continue;
-		const names = twoPositionNames(c);
+		const names = twoPositionNames(c, aircraft);
 		if (names) c.positions = names;
 	}
 	// One cockpit light, several colours: same panel, same legend, e.g. "L BAR (green)" and "L BAR (red)".
@@ -80,7 +95,7 @@ export function parseControls(json: unknown): ControlMap {
 	for (const ids of legends.values()) {
 		if (ids.length > 1) for (const id of ids) map.get(id)!.family = ids;
 	}
-	for (const { name, kind, roles } of INDICATORS) {
+	for (const { name, kind, roles } of aircraft.INDICATORS) {
 		const ids = Object.values(roles);
 		if (!ids.every((id) => map.has(id))) continue;
 		for (const id of ids) Object.assign(map.get(id)!, { family: ids, familyName: name, indicator: { kind, roles } });
@@ -88,8 +103,8 @@ export function parseControls(json: unknown): ControlMap {
 	return map;
 }
 
-export function loadControls(path: string): ControlMap {
-	return parseControls(JSON.parse(readFileSync(path, "utf8")));
+export function loadControls(path: string, aircraft: AircraftData): ControlMap {
+	return parseControls(JSON.parse(readFileSync(path, "utf8")), aircraft);
 }
 
 export function input<K extends ControlInput["interface"]>(
@@ -114,7 +129,7 @@ export function stringOutput(control: Control): Extract<ControlOutput, { type: "
 export function isMomentary(control: Control): boolean {
 	if (control.api_variant === "momentary_last_position") return true;
 	if ((intOutput(control)?.max_value ?? 0) !== 1) return false;
-	return KNOWN_PUSH_BUTTONS.includes(control.identifier) || /\b(press|push) to\b/i.test(control.description);
+	return Boolean(control.pushButton) || /\b(press|push) to\b/i.test(control.description);
 }
 
 export type LampColour = "green" | "yellow" | "red" | "white" | "blue";
@@ -129,8 +144,7 @@ export function stripColour(description: string): string {
 
 /** The light's colour from its DCS-BIOS description, e.g. "MASTER CAUTION (yellow)". */
 export function lampColour(control: Control): LampColour | undefined {
-	const known = KNOWN_COLOURS[control.identifier];
-	if (known) return known;
+	if (control.knownColour) return control.knownColour;
 	const m = COLOUR_SUFFIX.exec(control.description);
 	if (!m) return undefined;
 	const colour = m[1].toLowerCase();
