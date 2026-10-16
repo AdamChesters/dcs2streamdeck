@@ -9,12 +9,10 @@ export type Light = { colour: Colour; on: boolean };
 
 /** The picture in the middle of a key. */
 export type Glyph =
-	/** 2-position switch or lever; up = position 1. The knob can be a gear wheel or a hook. */
-	| { kind: "toggle"; up: boolean; knob?: "wheel" | "hook" }
+	/** 2- or 3-position switch, pointing as it does from the seat. The knob can be a gear wheel or a hook. */
+	| { kind: "lever"; at: "up" | "down" | "left" | "right" | "middle"; knob?: "wheel" | "hook" }
 	/** Guarded switch: striped cover closed, or open with the switch under it. */
 	| { kind: "guard"; open: boolean }
-	/** 3-position switch: 0 = up/left, 1 = middle, 2 = down/right. */
-	| { kind: "three"; position: number; horizontal: boolean }
 	/** Rotary selector with `count` positions. */
 	| { kind: "rotary"; position: number; count: number }
 	/** Push button. */
@@ -166,9 +164,12 @@ function switchGlyph(g: Glyph, ink: string, live: boolean): string {
 		`<circle cx="${x}" cy="${y}" r="7" fill="${ink}"/>` +
 		`<circle cx="72" cy="80" r="6" fill="#000" fill-opacity="0.45"/>`;
 	switch (g.kind) {
-		case "toggle": {
+		case "lever": {
 			if (!live) return plate + `<circle cx="72" cy="80" r="9" fill="${ink}"/>`;
-			const y = g.up ? 54 : 106;
+			if (g.at === "middle") return plate + `<circle cx="72" cy="80" r="11" fill="${ink}"/>`;
+			if (g.at === "left" || g.at === "right") return plate + lever(g.at === "left" ? 50 : 94, 80);
+			const up = g.at === "up";
+			const y = up ? 54 : 100;
 			const stem = `<line x1="72" y1="80" x2="72" y2="${y}" stroke="${ink}" stroke-width="7" stroke-linecap="round"/>`;
 			if (g.knob === "wheel") {
 				// Gear handle: a wheel-shaped knob.
@@ -181,14 +182,14 @@ function switchGlyph(g: Glyph, ink: string, live: boolean): string {
 			}
 			if (g.knob === "hook") {
 				// Hook handle: a hook-shaped knob.
-				const d = g.up ? -1 : 1;
+				const d = up ? -1 : 1;
 				return (
 					plate +
 					stem +
 					`<path d="M72 ${y} q0 ${d * 14} 12 ${d * 14} q10 0 10 ${-d * 10}" fill="none" stroke="${ink}" stroke-width="6" stroke-linecap="round"/>`
 				);
 			}
-			return plate + lever(72, g.up ? 58 : 102);
+			return plate + lever(72, up ? 58 : 102);
 		}
 		case "guard":
 			// Red-and-black striped cover; open shows the switch lever under it.
@@ -198,11 +199,6 @@ function switchGlyph(g: Glyph, ink: string, live: boolean): string {
 						`<rect x="48" y="40" width="48" height="12" rx="3" fill="#c0392b"/><path d="M52 40 l8 12 M64 40 l8 12 M76 40 l8 12 M88 40 l6 9" stroke="#111" stroke-width="4"/>`
 				: `<rect x="46" y="54" width="52" height="54" rx="8" fill="#c0392b" stroke="${ink}" stroke-width="2"/>` +
 						`<path d="M46 66 l20 -12 M46 82 l36 -28 M46 98 l52 -40 M58 108 l40 -31 M78 108 l20 -15" stroke="#111" stroke-width="6"/>`;
-		case "three": {
-			if (!live || g.position === 1) return plate + `<circle cx="72" cy="80" r="11" fill="${ink}"/>`;
-			const towardStart = g.position === 0;
-			return plate + (g.horizontal ? lever(towardStart ? 50 : 94, 80) : lever(72, towardStart ? 58 : 102));
-		}
 		case "rotary": {
 			const count = Math.max(2, g.count);
 			const angle = (i: number) => ((-135 + (270 * i) / (count - 1)) * Math.PI) / 180;

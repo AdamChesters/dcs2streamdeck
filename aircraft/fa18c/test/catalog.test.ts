@@ -18,14 +18,19 @@ test("catalog groups by panel and marks key, dial and lamp use", () => {
 	assert.deepEqual([...new Set(items.map((i) => i.category))], [
 		"Angle of Attack Indexer Lights",
 		"Auxiliary Power Unit Panel",
+		"Ejection Seat",
+		"Electrical Power Panel",
 		"Flaps, Landing Gear, Stores Indicator Panel",
 		"Integrated Fuel/Engine Indicator (IFEI)",
 		"Landing Gear Handle and Warning Tone Silence",
 		"Left DDI",
 		"LH Advisory Panel",
 		"Master Caution Light",
+		"Select Jettison Button",
 	]);
 	const by = Object.fromEntries(items.map((i) => [i.id, i]));
+	assert.deepEqual(by.FLAP_SW.order?.map((v) => by.FLAP_SW.positions?.[v]), ["AUTO", "HALF", "FULL"], "positions listed top first");
+	assert.deepEqual(by.ENGINE_CRANK_SW.order, [0, 1, 2], "crank: L is forward");
 	assert.equal(by.APU_CONTROL_SW.lamp, "APU_READY_LT");
 	assert.equal(by.APU_READY_LT.led, true);
 	assert.equal(by.LEFT_DDI_BRT_CTL.dial, true);

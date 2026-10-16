@@ -20,19 +20,86 @@ export const KNOWN_LAMPS: Record<string, string> = {
 };
 
 /**
- * 2-position switches whose DCS-BIOS description has no position names,
- * as [name of position 1, name of position 0] like the descriptions ("ARM/SAFE": 1 = ARM).
+ * Position names by DCS-BIOS value (0, 1, 2), where DCS-BIOS has none or has them wrong.
+ * From DCS's own key bindings, which give each position's value. DCS-BIOS names most
+ * 3-position switches in the order the cockpit lists them, top first, but the top is value 2.
  */
-export const KNOWN_LABELS: Record<string, [string, string]> = {
-	LAUNCH_BAR_SW: ["EXTEND", "RETRACT"],
-	GEAR_LEVER: ["UP", "DOWN"],
-	HOOK_LEVER: ["UP", "DOWN"],
-	ANTI_SKID_SW: ["ON", "OFF"],
-	LDG_TAXI_SW: ["ON", "OFF"],
-	GAIN_SWITCH: ["ORIDE", "NORM"],
-	GAIN_SWITCH_COVER: ["OPEN", "CLOSED"],
-	LEFT_FIRE_BTN_COVER: ["OPEN", "CLOSED"],
-	RIGHT_FIRE_BTN_COVER: ["OPEN", "CLOSED"],
+export const POSITION_NAMES: Record<string, string[]> = {
+	LAUNCH_BAR_SW: ["RETRACT", "EXTEND"],
+	GEAR_LEVER: ["DOWN", "UP"],
+	HOOK_LEVER: ["DOWN", "UP"],
+	ANTI_SKID_SW: ["OFF", "ON"],
+	LDG_TAXI_SW: ["OFF", "ON"],
+	GAIN_SWITCH: ["NORM", "ORIDE"],
+	GAIN_SWITCH_COVER: ["CLOSED", "OPEN"],
+	LEFT_FIRE_BTN_COVER: ["CLOSED", "OPEN"],
+	RIGHT_FIRE_BTN_COVER: ["CLOSED", "OPEN"],
+	EJECTION_SEAT_ARMED: ["ARMED", "SAFE"],
+	HIDE_STICK_TOGGLE: ["SHOW", "HIDE"],
+	FLAP_SW: ["FULL", "HALF", "AUTO"],
+	BATTERY_SW: ["ORIDE", "OFF", "ON"],
+	CABIN_PRESS_SW: ["RAM/DUMP", "DUMP", "NORM"],
+	ECS_MODE_SW: ["OFF/RAM", "MAN", "AUTO"],
+	ENG_ANTIICE_SW: ["TEST", "OFF", "ON"],
+	WSHIELD_ANTI_ICE_SW: ["RAIN", "OFF", "ANTI ICE"],
+	COCKKPIT_LIGHT_MODE_SW: ["DAY", "NITE", "NVG"],
+	STROBE_SW: ["DIM", "OFF", "BRT"],
+	CANOPY_SW: ["CLOSE", "HOLD", "OPEN"],
+	FLIR_SW: ["OFF", "STBY", "ON"],
+	IR_COOL_SW: ["OFF", "NORM", "ORIDE"],
+	HUD_ATT_SW: ["STBY", "AUTO", "INS"],
+	HUD_SYM_REJ_SW: ["REJ 2", "REJ 1", "NORM"],
+	HUD_VIDEO_CONTROL_SW: ["OFF", "VID", "W/B"],
+	UFC_ADF: ["2", "OFF", "1"],
+	AMPCD_NIGHT_DAY: ["NIGHT", "OFF", "DAY"],
+	AMPCD_SYM_SW: ["DOWN", "OFF", "UP"],
+	AMPCD_CONT_SW: ["DOWN", "OFF", "UP"],
+	AMPCD_GAIN_SW: ["DOWN", "OFF", "UP"],
+	LEFT_DDI_HDG_SW: ["LEFT", "OFF", "RIGHT"],
+	LEFT_DDI_CRS_SW: ["LEFT", "OFF", "RIGHT"],
+	COMM1_ANT_SELECT_SW: ["LOWER", "AUTO", "UPPER"],
+	IFF_ANT_SELECT_SW: ["LOWER", "BOTH", "UPPER"],
+	COM_COMM_RELAY_SW: ["PLAIN", "OFF", "CIPHER"],
+	COM_COMM_G_XMT_SW: ["COMM 2", "OFF", "COMM 1"],
+	COM_CRYPTO_SW: ["ZERO", "NORM", "HOLD"],
+	COM_IFF_MODE4_SW: ["OFF", "DIS", "DIS/AUD"],
+	MC_SW: ["2 OFF", "NORM", "1 OFF"],
+	PROBE_SW: ["EMERG EXTD", "RETRACT", "EXTEND"],
+	EXT_PWR_SW: ["OFF", "NORM", "RESET"],
+	GND_PWR_1_SW: ["B ON", "AUTO", "A ON"],
+	GND_PWR_2_SW: ["B ON", "AUTO", "A ON"],
+	GND_PWR_3_SW: ["B ON", "AUTO", "A ON"],
+	GND_PWR_4_SW: ["B ON", "AUTO", "A ON"],
+	FIRE_TEST_SW: ["TEST B", "OFF", "TEST A"],
+	CMSD_DISPENSE_SW: ["OFF", "ON", "BYPASS"],
+	THROTTLE_DISP_SW: ["FLARE", "OFF", "CHAFF"],
+	EMERGENCY_PARKING_BRAKE_ROTATE: ["EMERG", "PARK", "RELEASE"],
+};
+
+/** On the F/A-18C a switch's highest position is up (forward on the consoles), unless listed in HIGH_END. */
+export const HIGH_END_OF_THREE = "up";
+
+/**
+ * Switches that point elsewhere at their highest position, as seen from the seat (DCS manual
+ * pictures). The fuel, FCS, APU, fire test and ground power panels on the left console are
+ * mounted sideways, so most of their switches move left and right.
+ */
+export const HIGH_END: Record<string, "up" | "down" | "left" | "right"> = {
+	LAUNCH_BAR_SW: "down",
+	SEAT_HEIGHT_SW: "down",
+	ENGINE_CRANK_SW: "down",
+	APU_CONTROL_SW: "right",
+	GAIN_SWITCH: "right",
+	PROBE_SW: "right",
+	EXT_WNG_TANK_SW: "right",
+	EXT_CNT_TANK_SW: "right",
+	FUEL_DUMP_SW: "right",
+	FIRE_TEST_SW: "right",
+	EXT_PWR_SW: "right",
+	GND_PWR_1_SW: "right",
+	GND_PWR_2_SW: "right",
+	GND_PWR_3_SW: "right",
+	GND_PWR_4_SW: "right",
 };
 
 /** Push buttons (press = 1, release = 0) that DCS-BIOS does not mark as momentary. */

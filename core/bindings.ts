@@ -2,7 +2,7 @@
  * What a key or dial does and shows. Shared by the Stream Deck plugin and the standalone app.
  */
 import type { Control, KeyMode } from "./dcsbios/controls.ts";
-import { defaultKeyMode, formatValue, intOutput, isMomentary, lampColour, pressArgument, RESTING, rotateArguments, stripColour } from "./dcsbios/controls.ts";
+import { defaultKeyMode, formatValue, intOutput, isMomentary, lampColour, leverAt, pressArgument, RESTING, rotateArguments, stripColour } from "./dcsbios/controls.ts";
 import type { Colour, DialView, Glyph, KeyLook, Light } from "./render.ts";
 
 /** The part of the DCS-BIOS client the bindings use. */
@@ -132,13 +132,11 @@ function switchGlyph(c: Control, value: number | undefined): Glyph | undefined {
 	const max = intOutput(c)?.max_value ?? 0;
 	if (isMomentary(c)) return { kind: "button", pressed: value === 1 };
 	if (max === 1 && /_COVER$/.test(c.identifier)) return { kind: "guard", open: value === 1 };
-	if (max === 1) {
-		const knob = c.leverKnob;
-		return knob ? { kind: "toggle", up: value === 1, knob } : { kind: "toggle", up: value === 1 };
-	}
-	if (max === 2) {
-		const horizontal = (c.positions ?? []).some((p) => /^(LEFT|RIGHT|L|R)$/i.test(p));
-		return { kind: "three", position: value ?? 1, horizontal };
+	// 3-position knobs (DDI brightness: OFF/NIGHT/DAY) turn rather than flip.
+	if (max === 2 && /\bknob\b/i.test(c.description)) return { kind: "rotary", position: value ?? 0, count: 3 };
+	if (max === 1 || max === 2) {
+		const at = leverAt(c, value);
+		return c.leverKnob ? { kind: "lever", at, knob: c.leverKnob } : { kind: "lever", at };
 	}
 	if (max >= 3 && max <= 11) return { kind: "rotary", position: value ?? 0, count: max + 1 };
 	return undefined;

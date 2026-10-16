@@ -12,7 +12,9 @@ npm run pack      # writes dist/dcs2streamdeck-<version>.streamDeckPlugin
 ## Layout
 
 - `aircraft/<id>/aircraft.ts`: everything specific to one aircraft (names, light pairs,
-  position names, light colours, combined indicators, dial presets).
+  position names, which way each switch points, light colours, combined indicators, dial
+  presets). Check position names against DCS's own key bindings: DCS-BIOS often lists
+  3-position names top first, which is the reverse of their values.
   `aircraft/<id>/test/` holds its tests and a DCS-BIOS control fixture.
 - `core/`: DCS-BIOS link, every aircraft's control list, key and dial logic, key pictures,
   update check. Shared. `core/aircraft.data.ts` lists the aircraft and holds the plugin and

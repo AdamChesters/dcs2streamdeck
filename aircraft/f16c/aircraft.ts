@@ -63,18 +63,21 @@ export const KNOWN_LAMPS: Record<string, string> = {
 	ECM_SPL_BTN: "LIGHT_ECM_SPL_S",
 };
 
-/**
- * 2-position switches whose DCS-BIOS description has no position names the parser can read,
- * as [name of position 1, name of position 0] like the descriptions ("ARM/OFF": 1 = ARM).
- */
-export const KNOWN_LABELS: Record<string, [string, string]> = {
-	// Descriptions the parser misses ("EPU/GEN /OFF", "NORM/ WING FIRST", "100 percent/NORM"); [position 1, position 0], resting name at 0.
-	EPU_GEN_TEST_SW: ["EPU/GEN", "OFF"],
-	EXT_FUEL_TRANS_SW: ["WING FIRST", "NORM"],
-	OXY_DILUTER_LVR: ["100%", "NORM"],
+/** Position names by DCS-BIOS value (0, 1), where DCS-BIOS has none the parser can read. */
+export const POSITION_NAMES: Record<string, string[]> = {
+	// Descriptions the parser misses ("EPU/GEN /OFF", "NORM/ WING FIRST", "100 percent/NORM"); resting name at 0.
+	EPU_GEN_TEST_SW: ["OFF", "EPU/GEN"],
+	EXT_FUEL_TRANS_SW: ["NORM", "WING FIRST"],
+	OXY_DILUTER_LVR: ["NORM", "100%"],
 	// No names in DCS; ON/OFF order assumed like the "X/OFF" switches.
-	UHF_SQUELCH_SW: ["ON", "OFF"],
+	UHF_SQUELCH_SW: ["OFF", "ON"],
 };
+
+/** Not yet checked in DCS: 2-position switches are drawn with position 1 up, 3-position with position 0 up. */
+export const HIGH_END_OF_THREE = "down";
+
+/** Switches that point elsewhere at their highest position. None known for the F-16C. */
+export const HIGH_END: Record<string, "up" | "down" | "left" | "right"> = {};
 
 /** Push buttons (press = 1, release = 0) that DCS-BIOS does not mark as momentary. None needed for the F-16C. */
 export const KNOWN_PUSH_BUTTONS: string[] = [];

@@ -8,7 +8,7 @@ const controls = loadControls(new URL("fixtures/controls.json", import.meta.url)
 const get = (id: string) => controls.get(id)!;
 
 test("loads every control by identifier", () => {
-	assert.equal(controls.size, 22);
+	assert.equal(controls.size, 27);
 	assert.equal(get("APU_CONTROL_SW").category, "Auxiliary Power Unit Panel");
 });
 

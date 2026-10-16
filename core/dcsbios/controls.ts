@@ -40,7 +40,15 @@ export type Control = {
 	knownLamp?: string;
 	/** From the aircraft data: the lever's special knob. */
 	leverKnob?: "wheel" | "hook";
+	/** 2- and 3-position switches: where the lever points at the highest position, as seen from the seat. */
+	highEnd?: LeverEnd;
 };
+
+/** A lever's direction as seen from the seat ("up" is forward on the consoles). */
+export type LeverEnd = "up" | "down" | "left" | "right";
+export type LeverAt = LeverEnd | "middle";
+
+const OPPOSITE: Record<LeverEnd, LeverEnd> = { up: "down", down: "up", left: "right", right: "left" };
 
 export type ControlMap = Map<string, Control>;
 
@@ -53,14 +61,11 @@ const restRank = (name: string) => {
 };
 
 /**
- * Position names for 2-position switches, from the aircraft list or the description
- * ("Master Arm Switch, ARM/SAFE"). The resting name (OFF, SAFE, NORM…) is position 0
- * whichever way round the description lists it ("OFF/BIT", "ARM/SAFE"); with no resting
- * name the first is position 1. Returns [name of 0, name of 1].
+ * Position names for 2-position switches from the description ("Master Arm Switch, ARM/SAFE").
+ * The resting name (OFF, SAFE, NORM…) is position 0 whichever way round the description lists
+ * it ("OFF/BIT", "ARM/SAFE"); with no resting name the first is position 1. Returns [name of 0, name of 1].
  */
-function twoPositionNames(c: Control, aircraft: AircraftData): string[] | undefined {
-	const known = aircraft.KNOWN_LABELS[c.identifier];
-	if (known) return [known[1], known[0]];
+function twoPositionNames(c: Control): string[] | undefined {
 	const m = /,\s*([A-Za-z0-9][A-Za-z0-9 .-]*)\/([A-Za-z0-9][A-Za-z0-9 .-]*)\s*$/.exec(c.description);
 	if (!m) return undefined;
 	const first = m[1].trim().toUpperCase();
@@ -81,9 +86,13 @@ export function parseControls(json: unknown, aircraft: AircraftData): ControlMap
 		if (aircraft.LEVER_KNOBS[c.identifier]) c.leverKnob = aircraft.LEVER_KNOBS[c.identifier];
 	}
 	for (const c of map.values()) {
-		if (c.positions || c.inputs.length === 0 || intOutput(c)?.max_value !== 1 || isMomentary(c)) continue;
-		const names = twoPositionNames(c, aircraft);
-		if (names) c.positions = names;
+		const named = aircraft.POSITION_NAMES[c.identifier];
+		if (named) c.positions = [...named];
+		const max = intOutput(c)?.max_value;
+		if (c.inputs.length === 0 || (max !== 1 && max !== 2) || isMomentary(c)) continue;
+		if (!c.positions && max === 1) c.positions = twoPositionNames(c);
+		const sideways = (c.positions ?? []).some((p) => /^(LEFT|RIGHT|L|R)$/i.test(p));
+		c.highEnd = aircraft.HIGH_END[c.identifier] ?? (sideways ? "right" : max === 2 ? aircraft.HIGH_END_OF_THREE : "up");
 	}
 	// One cockpit light, several colours: same panel, same legend, e.g. "L BAR (green)" and "L BAR (red)".
 	const legends = new Map<string, string[]>();
@@ -149,6 +158,22 @@ export function lampColour(control: Control): LampColour | undefined {
 	if (!m) return undefined;
 	const colour = m[1].toLowerCase();
 	return (colour === "amber" ? "yellow" : colour) as LampColour;
+}
+
+/** Where a switch's lever points at `value` (middle for the centre and while unknown). */
+export function leverAt(control: Control, value: number | undefined): LeverAt {
+	const high = control.highEnd ?? "up";
+	if (value === intOutput(control)?.max_value) return high;
+	if (value === 0) return OPPOSITE[high];
+	return "middle";
+}
+
+/** A switch's positions as values, from the top (or left) end, like the cockpit. */
+export function leverOrder(control: Control): number[] | undefined {
+	const max = intOutput(control)?.max_value;
+	if (!control.highEnd || max === undefined) return undefined;
+	const values = Array.from({ length: max + 1 }, (_, i) => i);
+	return control.highEnd === "up" || control.highEnd === "left" ? values.reverse() : values;
 }
 
 /** Text for a value: the position name when DCS-BIOS lists one, else ON/OFF or a percentage. */

@@ -49,9 +49,11 @@
 		const controls = picker($("control"), $("controlSearch"), (i) => i.key);
 		picker($("lamp"), $("lampSearch"), (i) => i.led || i.key);
 
+		// [value, name] pairs from the top (or left) of the switch, like the cockpit.
 		function positionsOf(item) {
 			if (!item || !item.maxValue || item.maxValue < 2) return [];
-			return item.positions ?? Array.from({ length: item.maxValue + 1 }, (_, i) => String(i));
+			const values = item.order ?? Array.from({ length: item.maxValue + 1 }, (_, i) => i);
+			return values.map((v) => [v, item.positions?.[v] ?? String(v)]);
 		}
 
 		function refreshExtras() {
@@ -62,11 +64,11 @@
 			$("cycleBox").style.display = showCycle ? "" : "none";
 			const chosen = new Set(settings.cycle ?? []);
 			$("cycle").replaceChildren(
-				...positions.map((name, i) => {
-					const box = Object.assign(document.createElement("input"), { type: "checkbox", checked: chosen.has(i) });
+				...positions.map(([value, name]) => {
+					const box = Object.assign(document.createElement("input"), { type: "checkbox", checked: chosen.has(value), value });
 					box.addEventListener("change", () => {
-						const picked = [...$("cycle").querySelectorAll("input")].flatMap((b, n) => (b.checked ? [n] : []));
-						saveSetting("cycle", picked);
+						const picked = [...$("cycle").querySelectorAll("input")].flatMap((b) => (b.checked ? [Number(b.value)] : []));
+						saveSetting("cycle", picked.sort((a, b) => a - b));
 					});
 					const label = document.createElement("label");
 					label.append(box, ` ${name}`);

@@ -531,5 +531,179 @@
 				}
 			]
 		}
+	},
+	"Ejection Seat": {
+		"EJECTION_SEAT_ARMED": {
+			"category": "Ejection Seat",
+			"control_type": "selector",
+			"description": "Ejection Seat SAFE/ARMED Handle, SAFE/ARMED",
+			"identifier": "EJECTION_SEAT_ARMED",
+			"inputs": [
+				{
+					"description": "switch to previous or next state",
+					"interface": "fixed_step"
+				},
+				{
+					"description": "set position",
+					"interface": "set_state",
+					"max_value": 1
+				},
+				{
+					"argument": "TOGGLE",
+					"description": "Toggle switch state",
+					"interface": "action"
+				}
+			],
+			"outputs": [
+				{
+					"address": 29902,
+					"address_mask_identifier": "FA_18C_hornet_EJECTION_SEAT_ARMED_AM",
+					"address_mask_shift_identifier": "FA_18C_hornet_EJECTION_SEAT_ARMED",
+					"description": "selector position",
+					"mask": 32768,
+					"max_value": 1,
+					"shift_by": 15,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		},
+		"SEAT_HEIGHT_SW": {
+			"category": "Ejection Seat",
+			"control_type": "selector",
+			"description": "Seat Height Adjustment Switch",
+			"identifier": "SEAT_HEIGHT_SW",
+			"inputs": [
+				{
+					"description": "set the switch position -- 0 = held left/down, 1 = centered, 2 = held right/up",
+					"interface": "set_state",
+					"max_value": 2
+				}
+			],
+			"outputs": [
+				{
+					"address": 29904,
+					"address_mask_shift_identifier": "FA_18C_hornet_SEAT_HEIGHT_SW",
+					"description": "selector position",
+					"mask": 3072,
+					"max_value": 2,
+					"shift_by": 10,
+					"suffix": "",
+					"type": "integer"
+				}
+			],
+			"positions": [
+				"UP",
+				"HOLD",
+				"DOWN"
+			]
+		}
+	},
+	"Electrical Power Panel": {
+		"BATTERY_SW": {
+			"category": "Electrical Power Panel",
+			"control_type": "selector",
+			"description": "Battery Switch",
+			"identifier": "BATTERY_SW",
+			"inputs": [
+				{
+					"description": "switch to previous or next state",
+					"interface": "fixed_step"
+				},
+				{
+					"description": "set position",
+					"interface": "set_state",
+					"max_value": 2
+				}
+			],
+			"outputs": [
+				{
+					"address": 29892,
+					"address_mask_shift_identifier": "FA_18C_hornet_BATTERY_SW",
+					"description": "selector position",
+					"mask": 6144,
+					"max_value": 2,
+					"shift_by": 11,
+					"suffix": "",
+					"type": "integer"
+				}
+			],
+			"positions": [
+				"ON",
+				"OFF",
+				"ORIDE"
+			]
+		}
+	},
+	"Select Jettison Button": {
+		"FLAP_SW": {
+			"category": "Select Jettison Button",
+			"control_type": "selector",
+			"description": "FLAP Switch",
+			"identifier": "FLAP_SW",
+			"inputs": [
+				{
+					"description": "switch to previous or next state",
+					"interface": "fixed_step"
+				},
+				{
+					"description": "set position",
+					"interface": "set_state",
+					"max_value": 2
+				}
+			],
+			"outputs": [
+				{
+					"address": 29828,
+					"address_mask_shift_identifier": "FA_18C_hornet_FLAP_SW",
+					"description": "selector position",
+					"mask": 768,
+					"max_value": 2,
+					"shift_by": 8,
+					"suffix": "",
+					"type": "integer"
+				}
+			],
+			"positions": [
+				"AUTO",
+				"HALF",
+				"FULL"
+			]
+		},
+		"LAUNCH_BAR_SW": {
+			"category": "Select Jettison Button",
+			"control_type": "action",
+			"description": "Launch Bar Switch",
+			"identifier": "LAUNCH_BAR_SW",
+			"inputs": [
+				{
+					"description": "switch to previous or next state",
+					"interface": "fixed_step"
+				},
+				{
+					"description": "set the switch position -- 0 = off, 1 = on",
+					"interface": "set_state",
+					"max_value": 1
+				},
+				{
+					"argument": "TOGGLE",
+					"description": "toggle switch state",
+					"interface": "action"
+				}
+			],
+			"outputs": [
+				{
+					"address": 29824,
+					"address_mask_identifier": "FA_18C_hornet_LAUNCH_BAR_SW_AM",
+					"address_mask_shift_identifier": "FA_18C_hornet_LAUNCH_BAR_SW",
+					"description": "selector position",
+					"mask": 8192,
+					"max_value": 1,
+					"shift_by": 13,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		}
 	}
 }

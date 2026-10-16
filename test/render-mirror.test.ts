@@ -51,6 +51,6 @@ test("light-only keys draw lit lenses; switch keys draw their lever", () => {
 	const aoa = keySvg({ title: "AOA", state: "ON", lit: true, live: true, glyph: { kind: "aoa", high: { on: true, colour: "green" }, normal: { on: false, colour: "yellow" }, low: { on: false, colour: "red" } } });
 	assert.match(aoa, /stroke="#3ddc62"/, "green high chevron");
 	assert.equal((aoa.match(/<polyline/g) ?? []).length, 2);
-	const toggle = keySvg({ title: "APU", state: "ON", lit: false, live: true, glyph: { kind: "toggle", up: true } });
+	const toggle = keySvg({ title: "APU", state: "ON", lit: false, live: true, glyph: { kind: "lever", at: "up" } });
 	assert.match(toggle, /y2="58"/, "lever up");
 });

@@ -87,12 +87,12 @@ test("gear indicator key and gear handle", () => {
 		handle: { on: true, colour: "red" },
 	});
 	assert.equal(gear.colour, "red", "warning light (gear in transit) wins");
-	assert.deepEqual(keyLook({ control: "GEAR_HANDLE" }, lookup, dcs({ GEAR_HANDLE: 1 })).glyph, { kind: "toggle", up: true, knob: "wheel" });
+	assert.deepEqual(keyLook({ control: "GEAR_HANDLE" }, lookup, dcs({ GEAR_HANDLE: 1 })).glyph, { kind: "lever", at: "up", knob: "wheel" });
 });
 
 test("switch pictures follow the switch type", () => {
-	assert.deepEqual(keyLook({ control: "JFS_SW" }, lookup, dcs({ JFS_SW: 2 })).glyph, { kind: "three", position: 2, horizontal: false });
-	assert.deepEqual(keyLook({ control: "MASTER_ARM_SW" }, lookup, dcs({ MASTER_ARM_SW: 1 })).glyph, { kind: "three", position: 1, horizontal: false });
+	assert.deepEqual(keyLook({ control: "JFS_SW" }, lookup, dcs({ JFS_SW: 2 })).glyph, { kind: "lever", at: "down" }, "F-16C: position 0 up (not yet checked in DCS)");
+	assert.deepEqual(keyLook({ control: "MASTER_ARM_SW" }, lookup, dcs({ MASTER_ARM_SW: 1 })).glyph, { kind: "lever", at: "middle" });
 	assert.deepEqual(keyLook({ control: "MASTER_CAUTION" }, lookup, dcs({ MASTER_CAUTION: 0 })).glyph, { kind: "button", pressed: false });
 });
 

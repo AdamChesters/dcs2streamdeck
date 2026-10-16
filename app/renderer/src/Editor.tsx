@@ -134,9 +134,11 @@ const forKeys = (i: PickerItem) => i.key;
 const forLamps = (i: PickerItem) => i.led || i.key;
 const forDials = (i: PickerItem) => i.dial;
 
-function positionsOf(item: PickerItem | undefined): string[] {
+/** [value, name] pairs from the top (or left) of the switch, like the cockpit. */
+function positionsOf(item: PickerItem | undefined): [number, string][] {
 	if (!item?.maxValue || item.maxValue < 2) return [];
-	return item.positions ?? Array.from({ length: item.maxValue + 1 }, (_, i) => String(i));
+	const values = item.order ?? Array.from({ length: item.maxValue + 1 }, (_, i) => i);
+	return values.map((v) => [v, item.positions?.[v] ?? String(v)]);
 }
 
 type EditorProps<T> = { index: number; flying?: AircraftData; version: string; initial: T; onClose: () => void };
@@ -199,15 +201,15 @@ function KeyEditor({ index, flying, version, initial, onClose }: EditorProps<Key
 				<div className="field">
 					<span>Positions a press steps through</span>
 					<div className="checks">
-						{positions.map((name, i) => (
-							<label key={name} className="check">
+						{positions.map(([value, name]) => (
+							<label key={value} className="check">
 								<input
 									type="checkbox"
-									checked={chosen.has(i)}
+									checked={chosen.has(value)}
 									onChange={(e) => {
 										const next = new Set(chosen);
-										if (e.target.checked) next.add(i);
-										else next.delete(i);
+										if (e.target.checked) next.add(value);
+										else next.delete(value);
 										save({ ...s, cycle: [...next].sort((a, b) => a - b) });
 									}}
 								/>

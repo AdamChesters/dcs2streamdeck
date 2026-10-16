@@ -4,12 +4,14 @@
  */
 import * as f16c from "../aircraft/f16c/aircraft.ts";
 import * as fa18c from "../aircraft/fa18c/aircraft.ts";
-import type { LampColour } from "./dcsbios/controls.ts";
+import type { LampColour, LeverEnd } from "./dcsbios/controls.ts";
 
 export type AircraftData = {
 	AIRCRAFT: { readonly id: string; readonly module: string; readonly name: string; readonly fullName: string };
 	KNOWN_LAMPS: Record<string, string>;
-	KNOWN_LABELS: Record<string, [string, string]>;
+	POSITION_NAMES: Record<string, string[]>;
+	HIGH_END_OF_THREE: "up" | "down";
+	HIGH_END: Record<string, LeverEnd>;
 	KNOWN_PUSH_BUTTONS: string[];
 	LEVER_KNOBS: Record<string, "wheel" | "hook">;
 	KNOWN_COLOURS: Record<string, LampColour>;

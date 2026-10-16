@@ -3,7 +3,7 @@
  * suggested light for switches that have their own lamp.
  */
 import type { Control, ControlMap } from "./dcsbios/controls.ts";
-import { input, intOutput, lampColour, stripColour } from "./dcsbios/controls.ts";
+import { input, intOutput, lampColour, leverOrder, stripColour } from "./dcsbios/controls.ts";
 
 export type PickerItem = {
 	id: string;
@@ -11,6 +11,8 @@ export type PickerItem = {
 	category: string;
 	description: string;
 	positions?: string[];
+	/** Positions (as numbers) from the top or left, like the cockpit. */
+	order?: number[];
 	/** Highest position number (1 for on/off switches). */
 	maxValue?: number;
 	/** Usable on a key (has an input). */
@@ -78,6 +80,7 @@ export function catalog(controls: ControlMap): PickerItem[] {
 			category: c.category,
 			description: entry.description,
 			positions: c.positions,
+			order: leverOrder(c),
 			maxValue: max,
 			key: c.inputs.length > 0,
 			dial: Boolean(input(c, "variable_step")) || (set !== undefined && set.max_value >= 2),

@@ -19,7 +19,7 @@ test("with a lamp, the text follows the switch and the highlight follows the lam
 	const s = { control: "APU_CONTROL_SW", lamp: "APU_READY_LT", title: "APU" };
 	assert.deepEqual(
 		{ ...keyLook(s, lookup, dcs({ APU_CONTROL_SW: 1, APU_READY_LT: 0 })), title: undefined },
-		{ title: undefined, state: "ON", lit: false, live: true, offline: undefined, colour: "green", glyph: { kind: "toggle", up: true } },
+		{ title: undefined, state: "ON", lit: false, live: true, offline: undefined, colour: "green", glyph: { kind: "lever", at: "right" } },
 		"switch on, APU spooling: ON but not highlighted",
 	);
 	assert.equal(keyLook(s, lookup, dcs({ APU_CONTROL_SW: 1, APU_READY_LT: 1 })).lit, true, "APU READY: highlighted");
@@ -90,9 +90,23 @@ test("AOA indexer: any of its lights gives the three-part indexer", () => {
 });
 
 test("switch pictures follow the switch type", () => {
-	assert.deepEqual(keyLook({ control: "ENGINE_CRANK_SW" }, lookup, dcs({ ENGINE_CRANK_SW: 2 })).glyph, { kind: "three", position: 2, horizontal: true });
-	assert.deepEqual(keyLook({ control: "LEFT_DDI_BRT_SELECT" }, lookup, dcs({ LEFT_DDI_BRT_SELECT: 1 })).glyph, { kind: "three", position: 1, horizontal: false });
+	assert.deepEqual(keyLook({ control: "ENGINE_CRANK_SW" }, lookup, dcs({ ENGINE_CRANK_SW: 1 })).glyph, { kind: "lever", at: "middle" });
+	assert.deepEqual(keyLook({ control: "LEFT_DDI_BRT_SELECT" }, lookup, dcs({ LEFT_DDI_BRT_SELECT: 1 })).glyph, { kind: "rotary", position: 1, count: 3 }, "a 3-position knob turns");
 	assert.deepEqual(keyLook({ control: "MASTER_CAUTION_RESET_SW" }, lookup, dcs({ MASTER_CAUTION_RESET_SW: 0 })).glyph, { kind: "button", pressed: false });
+});
+
+test("switches show the cockpit's names and point the way they do in the cockpit", () => {
+	const look = (id: string) => [0, 1, 2].map((v) => keyLook({ control: id }, lookup, dcs({ [id]: v }))).map((l) => [l.state, l.glyph]);
+	const lever = (at: string) => ({ kind: "lever", at });
+	// DCS-BIOS names the flap positions the other way round; AUTO (up) is 2.
+	assert.deepEqual(look("FLAP_SW"), [["FULL", lever("down")], ["HALF", lever("middle")], ["AUTO", lever("up")]]);
+	assert.deepEqual(look("BATTERY_SW"), [["ORIDE", lever("down")], ["OFF", lever("middle")], ["ON", lever("up")]]);
+	assert.deepEqual(look("LAUNCH_BAR_SW").slice(0, 2), [["RETRACT", lever("up")], ["EXTEND", lever("down")]], "L BAR: RETRACT up");
+	assert.deepEqual(look("SEAT_HEIGHT_SW"), [["UP", lever("up")], ["HOLD", lever("middle")], ["DOWN", lever("down")]]);
+	assert.deepEqual(look("EJECTION_SEAT_ARMED").slice(0, 2), [["ARMED", lever("down")], ["SAFE", lever("up")]]);
+	// The APU panel is mounted sideways: ON is to the right, the crank's L is forward.
+	assert.deepEqual(look("APU_CONTROL_SW").slice(0, 2), [["OFF", lever("left")], ["ON", lever("right")]]);
+	assert.deepEqual(look("ENGINE_CRANK_SW"), [["LEFT", lever("up")], ["OFF", lever("middle")], ["RIGHT", lever("down")]]);
 });
 
 test("flaps and gear indicator keys", () => {
@@ -107,7 +121,7 @@ test("flaps and gear indicator keys", () => {
 		handle: { on: true, colour: "red" },
 	});
 	assert.equal(gear.colour, "red", "handle light (gear in transit) wins");
-	assert.deepEqual(keyLook({ control: "GEAR_LEVER" }, lookup, dcs({ GEAR_LEVER: 1 })).glyph, { kind: "toggle", up: true, knob: "wheel" });
+	assert.deepEqual(keyLook({ control: "GEAR_LEVER" }, lookup, dcs({ GEAR_LEVER: 1 })).glyph, { kind: "lever", at: "up", knob: "wheel" });
 });
 
 test("resting positions stay dark: SAFE, RETRACT, NORM", () => {
