@@ -5,12 +5,12 @@
 # dcs2streamdeck
 
 <p align="center">
-  <a href="https://discord.gg/fs4WyaQPA"><img src="assets/alpha.png" alt="ALPHA VERSION, TESTERS WANTED. Test every key, light and dial, on both jets, in the plugin and the desktop app. Tell us what breaks: join the Discord, or use the feedback button in the desktop app." width="1280"></a>
+  <a href="https://discord.gg/fs4WyaQPA"><img src="assets/alpha.png" alt="ALPHA VERSION, TESTERS WANTED. Find a bug as you're working? Prefer a different workflow (e.g. the 3 gear lights combined into one custom button)? Drop us a line on Reddit, Discord, or the feedback button in the desktop app." width="1280"></a>
 </p>
 
 > [!CAUTION]
 > ## ALPHA VERSION: TESTERS WANTED
-> **Join the [Discord](https://discord.gg/fs4WyaQPA) to give feedback, or use the feedback button built into the desktop apps.**
+> **Find a bug as you're working? Prefer a different workflow (e.g. the 3 gear lights combined into one custom button)? Drop us a line on [Reddit](https://www.reddit.com/r/AdamChsLab/), [Discord](https://discord.gg/fs4WyaQPA), or the feedback button in the desktop app.**
 >
 > **Please test every function:** every key, light and dial, on both jets, in the Stream Deck plugin and in the desktop app. Tell us what works and what breaks.
 
@@ -67,4 +67,4 @@ I love making things. Anything I've ever built has been to have fun, share fun, 
 
 [GitHub Sponsors](https://github.com/sponsors/AdamChesters) | [Buy Me a Coffee](https://buymeacoffee.com/adamch) | [Donate with PayPal](https://www.paypal.com/donate/?business=KLHSZPXTSVSAU&no_recurring=0&item_name=I%27ve+donated+to+lots+of+small+creators+for+their+useful+little+tools%2C+now+I+create+them.+Dig+one?+I%27d+love+your+support.&currency_code=AUD)
 
-[Join the Discord](https://discord.gg/fs4WyaQPA)
+[Join the Discord](https://discord.gg/fs4WyaQPA) | [r/AdamChsLab on Reddit](https://www.reddit.com/r/AdamChsLab/)
