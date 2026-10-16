@@ -4,7 +4,15 @@
 
 # dcs2streamdeck
 
-> **ALPHA VERSION:** join the [Discord](https://discord.gg/fs4WyaQPA) to give feedback, or use the feedback button built into the desktop apps.
+<p align="center">
+  <a href="https://discord.gg/fs4WyaQPA"><img src="assets/alpha.png" alt="ALPHA VERSION, TESTERS WANTED. Test every key, light and dial, on both jets, in the plugin and the desktop app. Tell us what breaks: join the Discord, or use the feedback button in the desktop app." width="1280"></a>
+</p>
+
+> [!CAUTION]
+> ## ALPHA VERSION: TESTERS WANTED
+> **Join the [Discord](https://discord.gg/fs4WyaQPA) to give feedback, or use the feedback button built into the desktop apps.**
+>
+> **Please test every function:** every key, light and dial, on both jets, in the Stream Deck plugin and in the desktop app. Tell us what works and what breaks.
 
 - **Stream Deck plugin: integrated.** Runs inside Elgato's Stream Deck app, next to your other plugins, profiles and pages.
 - **Desktop app: lightweight.** Runs on its own and drives the Stream Deck directly, with no Elgato software. It has a deck-only window for OpenKneeboard and a built-in feedback button. Windows only.
