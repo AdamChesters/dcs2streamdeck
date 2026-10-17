@@ -15,9 +15,9 @@ It includes or is built on the open-source projects below. Thank you to their au
 
 | Package | Version | Licence |
 |---|---|---|
-| [@elgato/streamdeck](https://github.com/elgatosf/streamdeck) | 3.0.1 | MIT |
-| [@elgato/schemas](https://github.com/elgatosf/streamdeck/tree/main/packages/schemas) | 0.5.1 | MIT |
-| [@elgato/utils](https://github.com/elgatosf/streamdeck/tree/main/packages/utils) | 0.6.0 | MIT |
+| [@elgato/streamdeck](https://github.com/elgatosf/streamdeck) | 3.0.2 | MIT |
+| [@elgato/schemas](https://github.com/elgatosf/streamdeck/tree/main/packages/schemas) | 0.5.2 | MIT |
+| [@elgato/utils](https://github.com/elgatosf/streamdeck/tree/main/packages/utils) | 0.6.1 | MIT |
 | [ws](https://github.com/websockets/ws) | 8.22.0 | MIT |
 | [zod](https://zod.dev) | 3.25.76 | MIT |
 
@@ -44,7 +44,7 @@ Build tools (not shipped): esbuild, Vite, TypeScript, electron-builder and the E
 
 ## Licence texts
 
-<details><summary>@elgato/streamdeck 3.0.1 (MIT)</summary>
+<details><summary>@elgato/streamdeck 3.0.2 (MIT)</summary>
 
 ```text
 MIT License
@@ -72,7 +72,7 @@ SOFTWARE.
 
 </details>
 
-<details><summary>@elgato/schemas 0.5.1 (MIT)</summary>
+<details><summary>@elgato/schemas 0.5.2 (MIT)</summary>
 
 ```text
 MIT License
@@ -100,7 +100,7 @@ SOFTWARE.
 
 </details>
 
-<details><summary>@elgato/utils 0.6.0 (MIT)</summary>
+<details><summary>@elgato/utils 0.6.1 (MIT)</summary>
 
 ```text
 MIT License
