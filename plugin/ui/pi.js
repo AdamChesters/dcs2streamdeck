@@ -21,6 +21,7 @@ header.innerHTML = `
 	<div class="setup">
 		<div class="setup-title">Setup (all keys and dials)</div>
 		<div id="update" class="update"><b></b><span></span></div>
+		<div id="updateNote" class="hint" hidden></div>
 		<div class="status" id="status">Waiting for plugin…</div>
 		<label for="jsonDir">DCS-BIOS JSON folder</label>
 		<input type="text" id="jsonDir" data-global="jsonDir" placeholder="Empty = Saved Games\\DCS\\Scripts\\DCS-BIOS\\doc\\json" />
@@ -34,27 +35,38 @@ header.innerHTML = `
 document.body.prepend(...header.children);
 
 // The update row always shows this version: green tick when it is the newest release, red
-// cross when a newer one is out, amber "!" when GitHub could not be asked.
+// cross when a newer one is out (click installs it), amber "!" when GitHub could not be asked
+// (click opens the releases page). The note under it says why an install failed or what next.
 const UPDATE = {
 	checking: ["", "", () => "Checking for updates…"],
 	current: ["ok", "✓", () => "Up to date"],
-	available: ["bad", "✕", (latest) => (latest ? `Update available: ${latest}` : "Update available")],
+	available: ["bad", "✕", (u) => `Update to ${u.latest}: click to install`],
+	downloading: ["busy", "↓", (u) => `Downloading ${u.latest}… ${Math.round((u.progress || 0) * 100)}%`],
+	installing: ["ok", "✓", (u) => `Installing ${u.latest}`],
 	failed: ["warn", "!", () => "Could not check for updates"],
 };
+let updateState = "checking";
 
-function showUpdate(state, latest = "", message = "") {
-	const [cls, mark, text] = UPDATE[state] ?? UPDATE.failed;
+function showUpdate(u) {
+	updateState = UPDATE[u.update] ? u.update : "failed";
+	const [cls, mark, text] = UPDATE[updateState];
 	const row = document.getElementById("update");
 	row.className = `update ${cls}`;
 	row.querySelector("b").textContent = mark;
-	row.querySelector("span").textContent = `${version ? `Version ${version} · ` : ""}${text(latest)}`;
-	row.title = state === "available" ? "Open the releases page" : state === "failed" ? `${message || "Could not check for updates"}. Click for the releases page.` : "";
+	row.querySelector("span").textContent = `${version ? `Version ${version} · ` : ""}${text(u)}`;
+	row.title = {
+		available: `Download ${u.latest} from GitHub and install it`,
+		failed: `${u.updateMessage || "Could not check for updates"}. Click for the releases page.`,
+	}[updateState] ?? "";
+	const note = document.getElementById("updateNote");
+	note.textContent = updateState === "failed" ? "" : u.updateMessage || "";
+	note.hidden = !note.textContent;
 }
-showUpdate("checking");
+showUpdate({ update: "checking" });
 
 document.getElementById("update").addEventListener("click", () => {
-	const row = document.getElementById("update");
-	if ((row.classList.contains("bad") || row.classList.contains("warn")) && releasesPage) send({ event: "openUrl", payload: { url: releasesPage } });
+	if (updateState === "available") send({ event: "sendToPlugin", action: actionUuid, context, payload: { type: "install" } });
+	else if (updateState === "failed" && releasesPage) send({ event: "openUrl", payload: { url: releasesPage } });
 });
 
 function refresh() {
@@ -92,12 +104,16 @@ window.connectElgatoStreamDeckSocket = (port, uuid, registerEvent, _info, action
 		} else if (m.event === "didReceiveGlobalSettings") {
 			globalSettings = m.payload.settings || {};
 			fill();
+		} else if (m.event === "sendToPropertyInspector" && m.payload.type === "update") {
+			version = m.payload.version || version;
+			releasesPage = m.payload.releasesPage || releasesPage;
+			showUpdate(m.payload);
 		} else if (m.event === "sendToPropertyInspector" && m.payload.type === "data") {
 			const data = m.payload;
 			document.getElementById("status").textContent = data.status;
 			version = data.version || version;
-			showUpdate(data.update, data.latest, data.updateMessage);
 			releasesPage = data.releasesPage || "";
+			showUpdate(data);
 			aircraft = data.aircraft;
 			const select = document.getElementById("aircraft");
 			select.replaceChildren(...(data.aircraftList || []).map((a) => Object.assign(document.createElement("option"), { value: a.id, textContent: a.name })));

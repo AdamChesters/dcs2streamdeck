@@ -39,7 +39,13 @@ add it to `AIRCRAFT_LIST` in `core/aircraft.data.ts`, and replace the data and t
   `node tools/fake-dcs.ts --aircraft F-16C_50 --json <path>/F-16C_50.json --magnetic HDPT_SW_L:10`.
 - `node tools/record.ts recordings/session.jsonl` records a real DCS-BIOS stream;
   `node tools/fake-dcs.ts --play recordings/session.jsonl` plays it back.
-- `D2S_RELEASES_API=<url>` points the plugin's update check at another releases list.
+- `D2S_RELEASES_API=<url>` points the plugin's and the app's update check at another releases
+  list; downloads may then come from that server too (otherwise only GitHub release downloads).
+- Updates are downloaded with their size and SHA-256 checked against GitHub's. The plugin opens
+  the new `.streamDeckPlugin` (the Stream Deck app installs it); the app runs a PowerShell
+  helper (`app/main/self-update.ts`) that waits for it to close, unzips the new zip over its
+  folder and starts it again, logging to `%APPDATA%\dcs2streamdeck\update.log`.
+  `D2S_INSTALL_UPDATE=1` makes the app install an available update at once (Windows tests).
 
 ## Standalone app (`app/`)
 

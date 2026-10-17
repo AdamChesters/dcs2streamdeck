@@ -23,6 +23,7 @@ contextBridge.exposeInMainWorld("d2s", {
 	sendFeedback: (fields: unknown) => ipcRenderer.invoke("send-feedback", fields),
 	updateStatus: () => ipcRenderer.invoke("update-status"),
 	updateCheck: () => ipcRenderer.invoke("update-check"),
+	updateInstall: () => ipcRenderer.invoke("update-install"),
 	onState: on("state"),
 	onUpdateStatus: on("update-status"),
 	onElgato: on("elgato"),

@@ -2,7 +2,8 @@
 // Uses the real default DCS-BIOS ports (5010/7778), so DCS-BIOS must not be running on this machine.
 import assert from "node:assert/strict";
 import { spawn } from "node:child_process";
-import { copyFileSync, mkdtempSync } from "node:fs";
+import { createHash } from "node:crypto";
+import { copyFileSync, existsSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
 import http from "node:http";
 import { createRequire } from "node:module";
 import os from "node:os";
@@ -42,10 +43,18 @@ function waitFor<T>(find: () => T | undefined, ms: number, what: string): Promis
 
 const svgOf = (m: Message) => Buffer.from(String(m.payload.image).split(",")[1], "base64").toString();
 
-/** A fake GitHub releases list with one release holding the plugin. */
+const NEW_PLUGIN = Buffer.from("fake plugin package");
+
+/** A fake GitHub: a releases list with one release holding the plugin, and its download. */
 async function fakeReleases(version: string): Promise<{ url: string; close: () => void }> {
-	const list = [{ tag_name: `v${version}`, assets: [{ name: pluginName(version), state: "uploaded", browser_download_url: `${RELEASES_PAGE}/download/v${version}/${pluginName(version)}` }] }];
-	const server = http.createServer((_req, res) => res.end(JSON.stringify(list)));
+	const server = http.createServer((req, res) => {
+		const origin = `http://127.0.0.1:${(server.address() as { port: number }).port}`;
+		const download = `/download/v${version}/${pluginName(version)}`;
+		if (req.url === download) return res.end(NEW_PLUGIN);
+		const digest = `sha256:${createHash("sha256").update(NEW_PLUGIN).digest("hex")}`;
+		const asset = { name: pluginName(version), state: "uploaded", size: NEW_PLUGIN.length, digest, browser_download_url: `${origin}${download}` };
+		res.end(JSON.stringify([{ tag_name: `v${version}`, assets: [asset] }]));
+	});
 	await new Promise<void>((r) => server.listen(0, "127.0.0.1", r));
 	return { url: `http://127.0.0.1:${(server.address() as { port: number }).port}/releases`, close: () => server.close() };
 }
@@ -148,6 +157,20 @@ test("plugin drives keys and dials from DCS state and feeds the mirror", async (
 		assert.equal(data.releasesPage, RELEASES_PAGE);
 		assert.equal(data.version, "0.1.0");
 		assert.equal(data.latest, "0.2.0");
+
+		// Clicking the update row downloads the plugin, checks it and opens it (here: no opener).
+		const downloaded = path.join(os.tmpdir(), "dcs2streamdeck-update", pluginName("0.2.0"));
+		rmSync(downloaded, { force: true });
+		sd({ event: "sendToPlugin", action: SWITCH, context: "k1", payload: { type: "install" } });
+		const installing = await waitFor(
+			() => received.find((m) => m.event === "sendToPropertyInspector" && m.payload.type === "update" && m.payload.update === "installing" && m.payload.updateMessage)?.payload,
+			5000,
+			"update downloaded and handed to the installer",
+		);
+		assert.match(installing.updateMessage, /Downloaded to .*dcs2streamdeck-0\.2\.0\.streamDeckPlugin/);
+		assert.ok(existsSync(downloaded));
+		assert.deepEqual(readFileSync(downloaded), NEW_PLUGIN);
+		rmSync(path.dirname(downloaded), { recursive: true, force: true });
 
 		const res = await fetch(`http://127.0.0.1:${MIRROR_PORT}/events`);
 		const reader = res.body!.getReader();

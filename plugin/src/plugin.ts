@@ -6,7 +6,7 @@ import streamDeck, { DeviceType } from "@elgato/streamdeck";
 import { releaseVersion } from "../../core/updates.ts";
 import { DcsDial } from "./actions/dial.ts";
 import { DcsLight } from "./actions/light.ts";
-import { sendInspectorData } from "./actions/common.ts";
+import { sendInspectorUpdate } from "./actions/common.ts";
 import { DcsSwitch } from "./actions/switch.ts";
 import { startMirrorServer } from "./mirror.ts";
 import type { GlobalSettings } from "./runtime.ts";
@@ -41,8 +41,7 @@ const pluginDir = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 startMirrorServer(mirror, runtime.settings.mirrorPort || DEFAULT_MIRROR_PORT, path.join(pluginDir, "mirror", "index.html"));
 reset();
 
-// The settings panel shows whether a newer plugin is out.
+// The settings panel shows whether a newer plugin is out, and the download as it runs.
 startUpdateChecks(releaseVersion(streamDeck.info.plugin.version), async () => {
-	const action = streamDeck.ui.action;
-	if (action) await sendInspectorData(await action.getSettings());
+	if (streamDeck.ui.action) await sendInspectorUpdate();
 });

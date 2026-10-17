@@ -5,7 +5,15 @@ import type { UpdateStatus } from "../../../core/updates.ts";
 
 export type { DeckState, DialSettings, KeySettings, Layout, PickerItem, UpdateStatus };
 
-export type Info = { version: string; appId: string; releasesPage: string; elgatoRunning: boolean; deckWindowOpen: boolean };
+export type Info = {
+	version: string;
+	appId: string;
+	releasesPage: string;
+	elgatoRunning: boolean;
+	deckWindowOpen: boolean;
+	/** Why this copy cannot update itself, or "" when it can. */
+	selfUpdate: string;
+};
 
 type Api = {
 	state(): Promise<DeckState>;
@@ -24,6 +32,7 @@ type Api = {
 	sendFeedback(fields: { name: string; email: string; message: string }): Promise<{ ok: boolean; error?: string }>;
 	updateStatus(): Promise<UpdateStatus>;
 	updateCheck(): Promise<void>;
+	updateInstall(): Promise<void>;
 	onState(listener: (state: DeckState) => void): () => void;
 	onUpdateStatus(listener: (status: UpdateStatus) => void): () => void;
 	onElgato(listener: (running: boolean) => void): () => void;

@@ -48,7 +48,7 @@ The DCS Streamdeck projects I tried had gone quiet. Most no longer worked with t
 3. Close the Elgato Stream Deck app: only one program can drive the deck at a time.
 
 ## Updating
-- **Automatic** - Both Plugin and Standalone app check for updates and will notify you. Plugin: the top row of any key's settings shows your version, green with a tick when up to date, red ("Update available") when a newer one is out; click it for the releases page. App: the version light in the top bar.
+- **Automatic** - Both Plugin and Standalone app check for updates and install them for you. Plugin: the top row of any key's settings shows your version, green with a tick when up to date, red when a newer one is out; click it and the Stream Deck app installs the new plugin (confirm in its window). App: click the version in the top bar, then "Install and restart"; the app downloads the new version, puts it in its folder and starts again.
 - **Manual** - Plugin, download, open. It'll launch the stream deck up, update. All buttons will be saved. Standalone, unzip the new zip over your install folder, run from there. Your keys are saved in your Windows profile, not the app folder. 
 
 ## Credits

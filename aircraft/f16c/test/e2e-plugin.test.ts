@@ -44,8 +44,10 @@ const svgOf = (m: Message) => Buffer.from(String(m.payload.image).split(",")[1],
 
 /** A fake GitHub releases list with one release holding the plugin. */
 async function fakeReleases(version: string): Promise<{ url: string; close: () => void }> {
-	const list = [{ tag_name: `v${version}`, assets: [{ name: pluginName(version), state: "uploaded", browser_download_url: `${RELEASES_PAGE}/download/v${version}/${pluginName(version)}` }] }];
-	const server = http.createServer((_req, res) => res.end(JSON.stringify(list)));
+	const server = http.createServer((_req, res) => {
+		const download = `http://127.0.0.1:${(server.address() as { port: number }).port}/download/v${version}/${pluginName(version)}`;
+		res.end(JSON.stringify([{ tag_name: `v${version}`, assets: [{ name: pluginName(version), state: "uploaded", browser_download_url: download }] }]));
+	});
 	await new Promise<void>((r) => server.listen(0, "127.0.0.1", r));
 	return { url: `http://127.0.0.1:${(server.address() as { port: number }).port}/releases`, close: () => server.close() };
 }

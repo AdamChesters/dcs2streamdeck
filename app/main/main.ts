@@ -14,6 +14,7 @@ import type { DialSettings, KeySettings } from "../../core/bindings.ts";
 import type { DeckConfig, Layout } from "./engine.ts";
 import { Engine } from "./engine.ts";
 import { RELEASES_PAGE, Updater, zipName } from "../../core/updates.ts";
+import { cannotUpdate, startZipUpdate } from "./self-update.ts";
 // Shared support component (feedback relay sender).
 import feedback from "../donate/feedback.cjs";
 
@@ -164,6 +165,7 @@ function registerIpc(): void {
 		releasesPage: RELEASES_PAGE,
 		elgatoRunning,
 		deckWindowOpen: Boolean(deckWindow),
+		selfUpdate: cannotUpdate(app.isPackaged, app.getPath("exe")),
 	}));
 	ipcMain.handle("key-down", (_e, index: number) => engine.keyDown(index));
 	ipcMain.handle("key-up", (_e, index: number) => engine.keyUp(index));
@@ -186,7 +188,26 @@ function registerIpc(): void {
 	);
 	ipcMain.handle("update-status", () => updater.status);
 	ipcMain.handle("update-check", () => updater.check());
+	ipcMain.handle("update-install", () => installUpdate());
 }
+
+/**
+ * Downloads the newer zip, starts the helper that unzips it over this folder, then quits so it
+ * can; the helper starts the new version.
+ */
+async function installUpdate(): Promise<void> {
+	const exe = app.getPath("exe");
+	const reason = cannotUpdate(app.isPackaged, exe);
+	if (reason) throw new Error(reason);
+	await updater.install(path.join(app.getPath("temp"), "dcs2streamdeck-update"), async (zip, release) => {
+		await startZipUpdate(zip, exe, path.join(app.getPath("userData"), "update.log"));
+		setTimeout(() => app.quit(), 1500);
+		return `Restarting with ${release.version}…`;
+	});
+}
+
+// Test hook: D2S_INSTALL_UPDATE=1 installs an available update straight away (once).
+let autoInstall = Boolean(process.env.D2S_INSTALL_UPDATE);
 
 app.whenReady().then(() => {
 	Menu.setApplicationMenu(null);
@@ -199,7 +220,14 @@ app.whenReady().then(() => {
 	updater = new Updater({
 		currentVersion: app.getVersion(),
 		fileName: zipName,
-		onStatus: (status) => broadcast("update-status", status),
+		onStatus: (status) => {
+			broadcast("update-status", status);
+			if (autoInstall && status.state === "available") {
+				autoInstall = false;
+				setTimeout(() => void installUpdate().catch((e) => console.error(e)), 0);
+			}
+		},
+		releasesApi: process.env.D2S_RELEASES_API || undefined,
 	});
 	allowStreamDecks();
 	registerIpc();
