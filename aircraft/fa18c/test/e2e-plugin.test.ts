@@ -146,6 +146,8 @@ test("plugin drives keys and dials from DCS state and feeds the mirror", async (
 		assert.deepEqual(data.aircraftList.map((a: { id: string }) => a.id), ["fa18c", "f16c"]);
 		assert.ok(data.catalog.find((i: { id: string }) => i.id === key.settings.control));
 		assert.equal(data.releasesPage, RELEASES_PAGE);
+		assert.equal(data.version, "0.1.0");
+		assert.equal(data.latest, "0.2.0");
 
 		const res = await fetch(`http://127.0.0.1:${MIRROR_PORT}/events`);
 		const reader = res.body!.getReader();

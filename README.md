@@ -48,7 +48,7 @@ The DCS Streamdeck projects I tried had gone quiet. Most no longer worked with t
 3. Close the Elgato Stream Deck app: only one program can drive the deck at a time.
 
 ## Updating
-- **Automatic** - Both Plugin and Standalone app check for updates and will notify you. Plugin: the top row of any key's settings turns red ("Update available"); click it for the releases page. App: the version light in the top bar.
+- **Automatic** - Both Plugin and Standalone app check for updates and will notify you. Plugin: the top row of any key's settings shows your version, green with a tick when up to date, red ("Update available") when a newer one is out; click it for the releases page. App: the version light in the top bar.
 - **Manual** - Plugin, download, open. It'll launch the stream deck up, update. All buttons will be saved. Standalone, unzip the new zip over your install folder, run from there. Your keys are saved in your Windows profile, not the app folder. 
 
 ## Credits
@@ -60,10 +60,14 @@ The DCS Streamdeck projects I tried had gone quiet. Most no longer worked with t
 
 Licence notices: [LICENSES.md](LICENSES.md). dcs2streamdeck is licensed under the [GPL-3.0](LICENSE).
 
-## Feedback and donations
+## Feedback and support
 
-I love making things. Anything I've ever built has been to have fun, share fun, and make life a bit easier. If you got value from one of these things, and you'd like to chuck us a coffee, a bottle, or a god damned Ferrari, go your hardest. Then hustle over to discord to claim your supporter role!
+Thanks for using dcs2streamdeck. I like to fix bugs and implement features rapidly. Issue? Idea? Let's work on it! Contact me anywhere you prefer.
 
-[GitHub Sponsors](https://github.com/sponsors/AdamChesters) | [Buy Me a Coffee](https://buymeacoffee.com/adamch) | [Donate with PayPal](https://www.paypal.com/donate/?business=KLHSZPXTSVSAU&no_recurring=0&item_name=I%27ve+donated+to+lots+of+small+creators+for+their+useful+little+tools%2C+now+I+create+them.+Dig+one?+I%27d+love+your+support.&currency_code=AUD)
+[Discord](https://discord.gg/fs4WyaQPA) | [Reddit](https://www.reddit.com/r/AdamChsLab/) | [GitHub](https://github.com/AdamChesters) | [LinkedIn](https://www.linkedin.com/in/adamchesters/) | [AdamCh.com](https://adamch.com)
 
-[Join the Discord](https://discord.gg/fs4WyaQPA) | [r/AdamChsLab on Reddit](https://www.reddit.com/r/AdamChsLab/)
+### Support
+
+I love making things to have fun, share fun, and make life a lil better. If you got value out of one of them, feel free to buy us a coffee. Or a house. Push comes to shove, I prefer Aston Martin. Supporters get golden crowns on the Discord / tags on the subreddit!
+
+[GitHub Sponsors](https://github.com/sponsors/AdamChesters) | [Buy Me a Coffee](https://buymeacoffee.com/adamch) | [Support with PayPal](https://www.paypal.com/donate/?business=KLHSZPXTSVSAU&no_recurring=0&item_name=I%27ve+donated+to+lots+of+small+creators+for+their+useful+little+tools%2C+now+I+create+them.+Dig+one?+I%27d+love+your+support.&currency_code=AUD)

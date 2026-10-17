@@ -3,9 +3,15 @@ import { Send, X } from 'lucide-react'
 import githubMark from './assets/github.svg'
 import coffeeMark from './assets/buymeacoffee.svg'
 import paypalMark from './assets/paypal.svg'
+import discordMark from './assets/discord.svg'
+import redditMark from './assets/reddit.svg'
+import githubSocialMark from './assets/github-mark.svg'
+import linkedinMark from './assets/linkedin.svg'
+import websiteMark from './assets/website.svg'
 import content from './content.json'
 import './SupportDialog.css'
 
+const socialMarks = { 'assets/discord.svg': discordMark, 'assets/reddit.svg': redditMark, 'assets/github-mark.svg': githubSocialMark, 'assets/linkedin.svg': linkedinMark, 'assets/website.svg': websiteMark }
 const fields = Object.fromEntries(content.feedback.fields.map(field => [field.id, field]))
 
 export default function SupportDialog({ onClose, appName, appLogo, appId, appVersion, updateStatus, updateBusy, updateAvailable, checkForUpdates, openExternal, sendFeedback }) {
@@ -49,7 +55,7 @@ export default function SupportDialog({ onClose, appName, appLogo, appId, appVer
 
   return <dialog ref={dialog} className={`support-modal ${feedback ? 'feedback-modal' : ''}`} aria-labelledby="support-title"
     onCancel={event => { if (sending) event.preventDefault(); else onClose() }}>
-    <div className="support-modal-header"><h2 id="support-title">{feedback ? content.feedback.title : `About ${appName} / Donate`}</h2>
+    <div className="support-modal-header"><h2 id="support-title">{feedback ? content.feedback.title : `About ${appName} / Support`}</h2>
       <button className="support-close" aria-label="Close dialog" disabled={sending} onClick={onClose}><X size={20} /></button></div>
     {feedback ? <>
       <p className="support-hint">{content.feedback.intro.replace('{appName}', appName)}</p>
@@ -67,13 +73,12 @@ export default function SupportDialog({ onClose, appName, appLogo, appId, appVer
     </> : <div className="support-dialog">
       <header><img className="support-logo" src={appLogo} alt={appName} /><h3>{appName}</h3>
         <p className="support-version-row" role="status"><strong>Version {appVersion}</strong><span>{updateStatus}</span></p>
-        <div className="support-actions"><button className="support-discord" onClick={() => visit(content.links.discord)}>{content.actions.discord}</button>
-          <button disabled={updateBusy} onClick={checkForUpdates}>{updateAvailable ? `Download ${updateAvailable}` : content.actions.update}</button>
+        <div className="support-actions"><button disabled={updateBusy} onClick={checkForUpdates}>{updateAvailable ? `Download ${updateAvailable}` : content.actions.update}</button>
           <button onClick={() => { setFeedback(true); setResult('') }}>{content.actions.feedback}</button></div>
+        <div className="support-socials">{content.socials.map(social => <button key={social.id} className="social-button" style={{ background: social.color, borderColor: social.color }} title={social.label} aria-label={social.label} onClick={() => visit(social.url)}><img src={socialMarks[social.icon]} alt="" /></button>)}</div>
       </header>
-      <div className="support-intro"><p>{content.intro.replace('{appName}', appName)}</p>
-        <p>{content.projectsText} <a href={content.links.github} onClick={event => { event.preventDefault(); visit(event.currentTarget.href) }}>GitHub</a><span aria-hidden="true"> | </span><a href={content.links.website} onClick={event => { event.preventDefault(); visit(event.currentTarget.href) }}>AdamCh.com</a></p></div>
-      <section aria-label="Donate" className="support-donations"><h3>{content.donationTitle}</h3><p>{content.donationText}</p>
+      <div className="support-intro"><p>{content.intro.replace('{appName}', appName)}</p></div>
+      <section aria-label={content.donationTitle} className="support-donations"><h3>{content.donationTitle}</h3><p>{content.donationText}</p>
         <div className="support-buttons">
           {content.platforms.map(platform => <div className="donation-option" key={platform.id}>
             <button className={`donation-button ${platform.id === 'buymeacoffee' ? 'coffee' : platform.id}-button`} onClick={() => visit(platform.url)}>

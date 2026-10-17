@@ -12,13 +12,15 @@ let presets = [];
 /** This key's aircraft ID, as the plugin chose it. */
 let aircraft = "";
 let releasesPage = "";
+/** This plugin's version ("0.4.2"), shown in the update row. */
+let version = "__VERSION__".split(".").slice(0, 3).join(".");
 
 // Every page starts with Setup (always open, with the update row) and the key's aircraft.
 const header = document.createElement("div");
 header.innerHTML = `
 	<div class="setup">
 		<div class="setup-title">Setup (all keys and dials)</div>
-		<div id="update" class="update"><b></b><span>Checking for updates…</span></div>
+		<div id="update" class="update"><b></b><span></span></div>
 		<div class="status" id="status">Waiting for plugin…</div>
 		<label for="jsonDir">DCS-BIOS JSON folder</label>
 		<input type="text" id="jsonDir" data-global="jsonDir" placeholder="Empty = Saved Games\\DCS\\Scripts\\DCS-BIOS\\doc\\json" />
@@ -31,24 +33,28 @@ header.innerHTML = `
 	<div class="hint">New keys start on the jet DCS is flying. Each key keeps its own jet; the lists below show only its controls. Keys for another jet go dark until DCS flies it.</div>`;
 document.body.prepend(...header.children);
 
+// The update row always shows this version: green tick when it is the newest release, red
+// cross when a newer one is out, amber "!" when GitHub could not be asked.
 const UPDATE = {
-	checking: ["", "", "Checking for updates…"],
-	current: ["ok", "✓", "Up to date"],
-	available: ["bad", "✕", "Update available"],
-	failed: ["", "", "Could not check for updates"],
+	checking: ["", "", () => "Checking for updates…"],
+	current: ["ok", "✓", () => "Up to date"],
+	available: ["bad", "✕", (latest) => (latest ? `Update available: ${latest}` : "Update available")],
+	failed: ["warn", "!", () => "Could not check for updates"],
 };
 
-function showUpdate(state) {
+function showUpdate(state, latest = "", message = "") {
 	const [cls, mark, text] = UPDATE[state] ?? UPDATE.failed;
 	const row = document.getElementById("update");
 	row.className = `update ${cls}`;
 	row.querySelector("b").textContent = mark;
-	row.querySelector("span").textContent = text;
-	row.title = state === "available" ? "Open the releases page" : "";
+	row.querySelector("span").textContent = `${version ? `Version ${version} · ` : ""}${text(latest)}`;
+	row.title = state === "available" ? "Open the releases page" : state === "failed" ? `${message || "Could not check for updates"}. Click for the releases page.` : "";
 }
+showUpdate("checking");
 
 document.getElementById("update").addEventListener("click", () => {
-	if (document.getElementById("update").classList.contains("bad") && releasesPage) send({ event: "openUrl", payload: { url: releasesPage } });
+	const row = document.getElementById("update");
+	if ((row.classList.contains("bad") || row.classList.contains("warn")) && releasesPage) send({ event: "openUrl", payload: { url: releasesPage } });
 });
 
 function refresh() {
@@ -89,7 +95,8 @@ window.connectElgatoStreamDeckSocket = (port, uuid, registerEvent, _info, action
 		} else if (m.event === "sendToPropertyInspector" && m.payload.type === "data") {
 			const data = m.payload;
 			document.getElementById("status").textContent = data.status;
-			showUpdate(data.update);
+			version = data.version || version;
+			showUpdate(data.update, data.latest, data.updateMessage);
 			releasesPage = data.releasesPage || "";
 			aircraft = data.aircraft;
 			const select = document.getElementById("aircraft");

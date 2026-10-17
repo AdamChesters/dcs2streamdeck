@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 
-// Shared support component (about / donate / feedback / updates).
+// Shared support component (about / support / feedback / updates).
 import SupportDialog from "../../donate/SupportDialog.jsx";
 import type { DeckState, Info, UpdateStatus } from "./api.ts";
 import { api } from "./api.ts";
@@ -64,7 +64,7 @@ export function App() {
 					Settings
 				</button>
 				<button className="bar-button" onClick={() => setDialog("support")}>
-					Feedback / Donate
+					Feedback / Support
 				</button>
 				<VersionLight info={info} update={update} onClick={() => setDialog("update")} />
 			</header>

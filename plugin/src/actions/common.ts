@@ -9,14 +9,18 @@ type ActionSettings = { aircraft?: string; control?: string; lamp?: string; func
 
 /**
  * Sends the open property inspector what it shows: the key's aircraft (chosen for a new key),
- * that aircraft's controls and presets, the aircraft list, DCS status and the update state.
+ * that aircraft's controls and presets, the aircraft list, DCS status, this version and the update state.
  */
 export async function sendInspectorData(settings: ActionSettings): Promise<void> {
 	const aircraft = aircraftOf(settings, fleet.flying());
+	const update = runtime.updater?.status;
 	await streamDeck.ui.sendToPropertyInspector({
 		type: "data",
 		status: fleet.statusText(),
-		update: runtime.updater?.status.state ?? "checking",
+		update: update?.state ?? "checking",
+		version: update?.current ?? "",
+		latest: update?.release?.version ?? "",
+		updateMessage: update?.message ?? "",
 		releasesPage: RELEASES_PAGE,
 		aircraft: aircraft.AIRCRAFT.id,
 		aircraftList: AIRCRAFT_LIST.map((a) => ({ id: a.AIRCRAFT.id, name: a.AIRCRAFT.fullName })),

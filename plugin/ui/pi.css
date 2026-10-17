@@ -23,3 +23,5 @@ button { padding: 5px 10px; background: #4a4a4a; color: #e8e8e8; border: 1px sol
 .update.ok b { background: #2f9a4f; }
 .update.bad { background: #4a1416; color: #ffb0b0; border: 1px solid #a33; cursor: pointer; }
 .update.bad b { background: #d33; }
+.update.warn { background: #3d3112; color: #f0d48a; border: 1px solid #8a6d1f; cursor: pointer; }
+.update.warn b { background: #c99a1a; }

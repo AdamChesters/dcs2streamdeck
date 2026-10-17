@@ -1,7 +1,7 @@
 {
   "name": "dcs2streamdeck-app",
   "productName": "dcs2streamdeck",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "private": true,
   "description": "dcs2streamdeck desktop app, one portable zip per aircraft: drives the Stream Deck directly, no Elgato app needed.",
   "author": "Adam Chesters",
@@ -19,7 +19,7 @@
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "typescript": "7.0.2",
-    "vite": "8.3.3"
+    "vite": "8.3.4"
   },
   "scripts": {
     "build": "vite build && node build-main.mjs",
