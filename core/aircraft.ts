@@ -12,6 +12,7 @@ import type { Dcs, Lookup } from "./bindings.ts";
 import type { DcsBiosClient } from "./dcsbios/client.ts";
 import type { ControlMap } from "./dcsbios/controls.ts";
 import { loadControls } from "./dcsbios/controls.ts";
+import type { InfoBarView } from "./render.ts";
 
 export function defaultJsonDir(): string {
 	return path.join(os.homedir(), "Saved Games", "DCS", "Scripts", "DCS-BIOS", "doc", "json");
@@ -68,6 +69,13 @@ export class Fleet {
 	/** The supported aircraft DCS is flying, if any. */
 	flying(): AircraftData | undefined {
 		return this.client.connected ? aircraftByModule(this.client.aircraft) : undefined;
+	}
+
+	/** The Neo info bar: the jet DCS flies (dimmed when not supported), or NO DCS. */
+	infoBar(): InfoBarView {
+		if (!this.client.connected) return { text: "NO DCS", live: false };
+		const flying = this.flying();
+		return flying ? { text: flying.AIRCRAFT.name, live: true } : { text: this.client.aircraft || "NO AIRCRAFT", live: false };
 	}
 
 	/** True when DCS is flying this aircraft. Keys of other aircraft stay dark and send nothing. */

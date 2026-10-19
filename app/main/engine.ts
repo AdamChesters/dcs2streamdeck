@@ -11,12 +11,13 @@ import { dialRotate, dialView, keyDown, keyLook, keyUp, keyWatches, parseFunctio
 import { DcsBiosClient } from "../../core/dcsbios/client.ts";
 import type { Control } from "../../core/dcsbios/controls.ts";
 import type { DialView } from "../../core/render.ts";
-import { dialSvg, keySvg } from "../../core/render.ts";
+import { dialSvg, infoBarSvg, keySvg } from "../../core/render.ts";
 
-export type Layout = { model: string; columns: number; rows: number; dials: number };
+/** `infoBar`: a Stream Deck Neo, whose info bar shows DCS and the time (nothing can be put on it). */
+export type Layout = { model: string; columns: number; rows: number; dials: number; infoBar: boolean };
 
 /** Shown until a real deck connects. */
-export const DEFAULT_LAYOUT: Layout = { model: "Stream Deck +", columns: 4, rows: 2, dials: 4 };
+export const DEFAULT_LAYOUT: Layout = { model: "Stream Deck +", columns: 4, rows: 2, dials: 4, infoBar: false };
 
 export type DeckConfig = {
 	jsonDir?: string;
@@ -30,6 +31,8 @@ export type DeckState = {
 	device: string;
 	keys: { index: number; svg: string; settings: KeySettings }[];
 	dials: { index: number; svg: string; view: DialView; settings: DialSettings }[];
+	/** The Neo's info bar picture, or "" when the deck has none. */
+	bar: string;
 	/** dcs: DCS is sending data; aircraft: what DCS flies; flying: its ID when supported, else "". */
 	status: { dcs: boolean; aircraft: string; flying: string; controls: number; loaded: string[]; error: string; jsonDir: string };
 };
@@ -43,6 +46,7 @@ export class Engine {
 	#dialIndex = new Map<number, number>();
 	#stops: (() => void)[] = [];
 	#pending?: NodeJS.Timeout;
+	#clock?: NodeJS.Timeout;
 	#onChange: (state: DeckState) => void;
 	#onConfig: (config: DeckConfig) => void;
 
@@ -76,6 +80,7 @@ export class Engine {
 	stop(): void {
 		this.client.stop();
 		clearTimeout(this.#pending);
+		clearTimeout(this.#clock);
 	}
 
 	jsonDir(): string {
@@ -86,7 +91,21 @@ export class Engine {
 	setDevice(layout: Layout | null, name = ""): void {
 		this.#layout = layout ?? DEFAULT_LAYOUT;
 		this.#device = layout ? name : "";
+		this.#tick();
 		this.#emit();
+	}
+
+	/** Redraws at each new minute while the deck has an info bar (it shows the time). */
+	#tick(): void {
+		clearTimeout(this.#clock);
+		if (!this.#layout.infoBar) return;
+		this.#clock = setTimeout(
+			() => {
+				this.#emit();
+				this.#tick();
+			},
+			60_000 - (Date.now() % 60_000) + 50,
+		);
 	}
 
 	setKey(index: number, settings: KeySettings): void {
@@ -156,6 +175,7 @@ export class Engine {
 			device: this.#device,
 			keys,
 			dials: dialStates,
+			bar: this.#layout.infoBar ? infoBarSvg(this.fleet.infoBar(), clockText()) : "",
 			status: {
 				dcs: this.client.connected,
 				aircraft: this.client.aircraft,
@@ -203,6 +223,10 @@ export class Engine {
 			this.#onChange(this.state());
 		}, 30);
 	}
+}
+
+function clockText(): string {
+	return new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 }
 
 /** An unassigned key: plain dark glass. */

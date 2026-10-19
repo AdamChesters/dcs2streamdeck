@@ -155,7 +155,7 @@ test("plugin drives keys and dials from DCS state and feeds the mirror", async (
 		const reader = res.body!.getReader();
 		const snapshot = JSON.parse(new TextDecoder().decode((await reader.read()).value).replace(/^data: /, ""));
 		await reader.cancel();
-		assert.equal(snapshot.devices[0].hasDials, true);
+		assert.equal(snapshot.devices[0].dials, 4);
 		assert.ok(snapshot.tiles.find((t: any) => t.kind === "key" && t.column === 0 && t.svg.includes(">OFF<")));
 		assert.ok(snapshot.tiles.find((t: any) => t.kind === "dial" && t.column === 1 && t.dial.title === "L DDI CONT 2/2"));
 		assert.match(await (await fetch(`http://127.0.0.1:${MIRROR_PORT}/`)).text(), /EventSource/);

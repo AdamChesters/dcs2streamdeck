@@ -2,7 +2,7 @@
  * Self-update of the portable Windows app: a helper script waits for the app to close, unzips the
  * downloaded release over the app folder (files only added or replaced; settings live in
  * %APPDATA%), then starts the app again. It logs to update.log next to the settings.
- * Verified on VM202: PowerShell started detached (no console) never runs the script, so the
+ * Found on Windows: PowerShell started detached (no console) never runs the script, so the
  * helper is a plain child that starts its real work as a separate process.
  */
 import { spawn } from "node:child_process";

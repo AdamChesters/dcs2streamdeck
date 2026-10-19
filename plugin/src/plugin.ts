@@ -10,14 +10,17 @@ import { sendInspectorUpdate } from "./actions/common.ts";
 import { DcsSwitch } from "./actions/switch.ts";
 import { startMirrorServer } from "./mirror.ts";
 import type { GlobalSettings } from "./runtime.ts";
-import { client, DEFAULT_MIRROR_PORT, loadAircraft, mirror, reset, runtime, startUpdateChecks } from "./runtime.ts";
+import { client, DEFAULT_MIRROR_PORT, fleet, loadAircraft, mirror, reset, runtime, startUpdateChecks } from "./runtime.ts";
 
 streamDeck.actions.registerAction(new DcsSwitch());
 streamDeck.actions.registerAction(new DcsDial());
 streamDeck.actions.registerAction(new DcsLight());
 
 // DCS starting, stopping or changing aircraft changes which keys are live.
-client.onStatus(() => reset());
+client.onStatus(() => {
+	mirror.setBar(fleet.infoBar());
+	reset();
+});
 
 streamDeck.settings.onDidReceiveGlobalSettings<GlobalSettings>((ev) => {
 	runtime.settings = ev.settings;
@@ -25,9 +28,18 @@ streamDeck.settings.onDidReceiveGlobalSettings<GlobalSettings>((ev) => {
 	reset();
 });
 
+/** Touch strip segments, one per dial. */
+const DIALS: Partial<Record<DeviceType, number>> = { [DeviceType.StreamDeckPlus]: 4, [DeviceType.StreamDeckPlusXL]: 6 };
+
 function showDevice(device: { id: string; name: string; type: DeviceType; size: { columns: number; rows: number } }): void {
-	const hasDials = device.type === DeviceType.StreamDeckPlus || device.type === DeviceType.StreamDeckPlusXL;
-	mirror.setDevice({ id: device.id, name: device.name, columns: device.size.columns, rows: device.size.rows, hasDials });
+	mirror.setDevice({
+		id: device.id,
+		name: device.name,
+		columns: device.size.columns,
+		rows: device.size.rows,
+		dials: DIALS[device.type] ?? 0,
+		infoBar: device.type === DeviceType.StreamDeckNeo,
+	});
 }
 streamDeck.devices.onDeviceDidConnect((ev) => showDevice(ev.device));
 

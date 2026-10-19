@@ -1,25 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 
 import type { DeckState } from "./api.ts";
+import { BAR_H, deckSize, GAP, KEY, KNOB, STRIP_H } from "./deck-size.ts";
 
 export type Selection = { kind: "key" | "dial"; index: number } | null;
 
-const KEY = 96;
-const GAP = 16;
-const PAD = 24;
-const STRIP_H = 54;
-const KNOB = 50;
-
 const svgUrl = (svg: string) => `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
-
-/** Size of the drawn deck in design pixels. */
-export function deckSize(state: DeckState): { width: number; height: number } {
-	const { columns, rows, dials } = state.layout;
-	const width = PAD * 2 + columns * KEY + (columns - 1) * GAP;
-	const keysH = rows * KEY + (rows - 1) * GAP;
-	const dialsH = dials ? GAP + STRIP_H + 18 + KNOB : 0;
-	return { width, height: PAD * 2 + keysH + dialsH };
-}
 
 /**
  * The deck, drawn like the device: grey body, glass keys, the touch strip and knobs.
@@ -36,7 +22,7 @@ export function Deck({
 }) {
 	const box = useRef<HTMLDivElement>(null);
 	const [scale, setScale] = useState(1);
-	const size = deckSize(state);
+	const size = deckSize(state.layout);
 
 	useEffect(() => {
 		const el = box.current;
@@ -99,6 +85,19 @@ export function Deck({
 							))}
 						</div>
 					</>
+				)}
+				{state.bar && (
+					<div className="deck-neo" style={{ gridTemplateColumns: `repeat(${columns}, ${KEY}px)`, gap: GAP, marginTop: GAP }}>
+						<span className="deck-touch" />
+						<img
+							className="deck-infobar"
+							src={svgUrl(state.bar)}
+							style={{ gridColumn: `span ${Math.max(1, columns - 2)}`, height: BAR_H }}
+							alt=""
+							draggable={false}
+						/>
+						<span className="deck-touch" />
+					</div>
 				)}
 			</div>
 		</div>

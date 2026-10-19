@@ -69,6 +69,10 @@ code { color: #e8e8e8; }
 .deck-segment { border-radius: 0; }
 .deck-knobs { display: flex; margin-top: 18px; }
 .deck-knob { border-radius: 50%; background: radial-gradient(circle at 35% 30%, #4a4d52, #1d1e21 70%); box-shadow: 0 2px 4px #0008, inset 0 1px 0 #5a5d63; }
+/* Stream Deck Neo: info bar between the two touch points */
+.deck-neo { display: grid; align-items: center; }
+.deck-touch { height: 8px; margin: 0 16px; border-radius: 4px; background: #3a3d42; }
+.deck-infobar { display: block; width: 100%; border-radius: 6px; }
 .selected { outline: 3px solid #cfd1d4; outline-offset: 3px; }
 .deck-segment.selected { outline-offset: -3px; }
 

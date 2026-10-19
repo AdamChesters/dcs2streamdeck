@@ -268,6 +268,22 @@ export function dialSvg(view: DialView, width = 200, height = 100): string {
 	);
 }
 
+/** What the Stream Deck Neo's info bar shows: the jet DCS flies, or why there is none. */
+export type InfoBarView = { text: string; live: boolean };
+
+/** The Stream Deck Neo's info bar (248 × 58): DCS on the left, the time on the right. */
+export function infoBarSvg(view: InfoBarView, time: string, width = 248, height = 58): string {
+	const pad = 12;
+	const y = Math.round(height / 2 + 8);
+	return (
+		`<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">` +
+		`<rect width="${width}" height="${height}" fill="#101010"/>` +
+		`<text x="${pad}" y="${y}" ${FONT} font-size="${fit(view.text, 22, width - pad * 3 - 90)}" font-weight="bold" fill="${view.live ? "#ffffff" : "#777"}">${escape(view.text)}</text>` +
+		`<text x="${width - pad}" y="${y}" ${FONT} font-size="20" fill="#d0d0d0" text-anchor="end">${escape(time)}</text>` +
+		`</svg>`
+	);
+}
+
 export function svgDataUrl(svg: string): string {
 	return `data:image/svg+xml;base64,${Buffer.from(svg).toString("base64")}`;
 }

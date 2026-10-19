@@ -3,13 +3,16 @@
  * sends key, dial and strip input to the main process.
  */
 import type { StreamDeckWeb } from "@elgato-stream-deck/webhid";
-import { getStreamDecks, requestStreamDecks } from "@elgato-stream-deck/webhid";
+import { DeviceModelId, getStreamDecks, requestStreamDecks } from "@elgato-stream-deck/webhid";
 
 import type { DeckState, Layout } from "./api.ts";
 import { api } from "./api.ts";
 
 type Button = { type: "button"; index: number; row: number; column: number; feedbackType: string; pixelSize?: { width: number; height: number } };
-type Lcd = { type: "lcd-segment"; columnSpan: number; pixelSize: { width: number; height: number } };
+type Lcd = { type: "lcd-segment"; id: number; columnSpan: number; pixelSize: { width: number; height: number } };
+
+/** Keys with a screen. The Neo's two touch points under its keys are buttons too, but not keys. */
+const isKey = (c: { type: string; feedbackType?: string }): c is Button => c.type === "button" && c.feedbackType === "lcd";
 
 export class DeckLink {
 	deck?: StreamDeckWeb;
@@ -28,8 +31,7 @@ export class DeckLink {
 	async autoConnect(): Promise<void> {
 		if (this.deck) return;
 		try {
-			const [deck] = await getStreamDecks();
-			if (deck) await this.#open(deck);
+			for (const deck of await getStreamDecks()) if (await this.#open(deck)) return;
 		} catch (error) {
 			console.error("Stream Deck open failed", error);
 		}
@@ -37,29 +39,34 @@ export class DeckLink {
 
 	/** Button-driven connect (a user gesture), for when automatic connect finds nothing. */
 	async request(): Promise<void> {
-		const [deck] = await requestStreamDecks();
-		if (deck) await this.#open(deck);
+		for (const deck of await requestStreamDecks()) if (await this.#open(deck)) return;
 	}
 
-	async #open(deck: StreamDeckWeb): Promise<void> {
+	/** False (and closed again) for a deck with no key screens, such as the Pedal. */
+	async #open(deck: StreamDeckWeb): Promise<boolean> {
+		const controls = deck.CONTROLS as unknown as (Button | Lcd | { type: "encoder"; index: number })[];
+		const keys = controls.filter(isKey);
+		if (!keys.length) {
+			await deck.close().catch(() => undefined);
+			return false;
+		}
 		this.deck = deck;
 		this.#drawn.clear();
-		const controls = deck.CONTROLS as unknown as (Button | Lcd | { type: "encoder"; index: number })[];
-		const buttons = controls.filter((c): c is Button => c.type === "button");
 		const layout: Layout = {
 			model: deck.PRODUCT_NAME,
-			columns: Math.max(...buttons.map((b) => b.column)) + 1,
-			rows: Math.max(...buttons.map((b) => b.row)) + 1,
+			columns: Math.max(...keys.map((b) => b.column)) + 1,
+			rows: Math.max(...keys.map((b) => b.row)) + 1,
 			dials: controls.filter((c) => c.type === "encoder").length,
+			infoBar: deck.MODEL === DeviceModelId.NEO,
 		};
 		const slot = (b: Button) => b.row * layout.columns + b.column;
 
 		deck.on("down", (c) => {
-			if (c.type === "button") void api.keyDown(slot(c as Button));
-			else void api.dialNext(c.index);
+			if (c.type === "encoder") void api.dialNext(c.index);
+			else if (isKey(c)) void api.keyDown(slot(c));
 		});
 		deck.on("up", (c) => {
-			if (c.type === "button") void api.keyUp(slot(c as Button));
+			if (isKey(c)) void api.keyUp(slot(c));
 		});
 		deck.on("rotate", (c, amount) => void api.dialRotate(c.index, amount));
 		deck.on("lcdShortPress", (c, position) => {
@@ -75,6 +82,7 @@ export class DeckLink {
 		await api.device(layout, deck.PRODUCT_NAME);
 		this.#onChange(deck.PRODUCT_NAME);
 		if (this.#last) this.draw(this.#last);
+		return true;
 	}
 
 	/** After any HID unplug: close our deck if no Elgato device is still open. */
@@ -104,7 +112,7 @@ export class DeckLink {
 		if (!deck) return;
 		const controls = deck.CONTROLS as unknown as (Button | Lcd)[];
 		const columns = state.layout.columns;
-		for (const button of controls.filter((c): c is Button => c.type === "button" && c.feedbackType === "lcd")) {
+		for (const button of controls.filter(isKey)) {
 			const key = state.keys[button.row * columns + button.column];
 			if (!key || this.#drawn.get(`k${button.index}`) === key.svg) continue;
 			this.#drawn.set(`k${button.index}`, key.svg);
@@ -112,7 +120,13 @@ export class DeckLink {
 			this.#enqueue(async () => deck.fillKeyBuffer(button.index, await rasterize(key.svg, width, height), { format: "rgba" }));
 		}
 		const lcd = controls.find((c): c is Lcd => c.type === "lcd-segment");
-		if (lcd && state.dials.length) {
+		if (lcd && state.bar) {
+			if (this.#drawn.get("bar") !== state.bar) {
+				this.#drawn.set("bar", state.bar);
+				const { width, height } = lcd.pixelSize;
+				this.#enqueue(async () => deck.fillLcd(lcd.id, await rasterize(state.bar, width, height), { format: "rgba" }));
+			}
+		} else if (lcd && state.dials.length) {
 			const width = Math.floor(lcd.pixelSize.width / state.dials.length);
 			const height = lcd.pixelSize.height;
 			for (const dial of state.dials) {

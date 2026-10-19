@@ -33,6 +33,7 @@ The DCS Streamdeck projects I tried had gone quiet. Most no longer worked with t
 - **DCS Caution/status Lights**: caution and warning lights in their cockpit colours, plus combined indicators: AOA indexer and landing gear, and on the Hornet also flaps and L BAR.
 - **DCS Dials** (Stream Deck +): turn to set brightness and volume knobs; press to step through a list. Presets for each jet's displays and cockpit lighting.
 - **VR**: a live copy of the deck for an OpenKneeboard Web Dashboard tab, at `http://127.0.0.1:31730/`. See your streamdeck mirrored in VR. Finally. 
+- **Decks**: made for every Stream Deck with screen keys (tested on the Stream Deck +). The VR copy and the app take your deck's shape and shrink to fit. Stream Deck Neo: its info bar shows the jet and the time (experimental: tell us how it works).
 
 ## Option 1 : Install the plugin
 

@@ -94,7 +94,11 @@ test("plugin drives keys and dials from DCS state and feeds the mirror", async (
 			highlightColor: "#000",
 		},
 		devicePixelRatio: 2,
-		devices: [{ id: "dev1", name: "Stream Deck +", size: { columns: 4, rows: 2 }, type: 7 }],
+		devices: [
+			{ id: "dev1", name: "Stream Deck +", size: { columns: 4, rows: 2 }, type: 7 },
+			{ id: "dev2", name: "Stream Deck + XL", size: { columns: 9, rows: 4 }, type: 13 },
+			{ id: "dev3", name: "Stream Deck Neo", size: { columns: 4, rows: 2 }, type: 9 },
+		],
 		plugin: { uuid: PRODUCT.uuid, version: "0.1.0.0" },
 	};
 	const port = (wss.address() as { port: number }).port;
@@ -176,7 +180,11 @@ test("plugin drives keys and dials from DCS state and feeds the mirror", async (
 		const reader = res.body!.getReader();
 		const snapshot = JSON.parse(new TextDecoder().decode((await reader.read()).value).replace(/^data: /, ""));
 		await reader.cancel();
-		assert.equal(snapshot.devices[0].hasDials, true);
+		const device = (id: string) => snapshot.devices.find((d: any) => d.id === id);
+		assert.deepEqual([device("dev1").dials, device("dev1").infoBar], [4, false], "Stream Deck +");
+		assert.deepEqual([device("dev2").dials, device("dev2").columns], [6, 9], "+ XL: 6 dials under 9 columns");
+		assert.deepEqual([device("dev3").dials, device("dev3").infoBar], [0, true], "Neo");
+		assert.deepEqual(snapshot.bar, { text: "F/A-18C", live: true });
 		assert.ok(snapshot.tiles.find((t: any) => t.kind === "key" && t.column === 0 && t.svg.includes(">OFF<")));
 		assert.ok(snapshot.tiles.find((t: any) => t.kind === "dial" && t.column === 1 && t.dial.title === "L DDI CONT 2/2"));
 		assert.match(await (await fetch(`http://127.0.0.1:${MIRROR_PORT}/`)).text(), /EventSource/);

@@ -5,17 +5,19 @@
 import { readFile } from "node:fs/promises";
 import http from "node:http";
 
-import type { DialView } from "../../core/render.ts";
+import type { DialView, InfoBarView } from "../../core/render.ts";
 
 export type Tile =
 	| { kind: "key"; device: string; column: number; row: number; svg: string }
 	| { kind: "dial"; device: string; column: number; dial: DialView };
 
-export type DeviceView = { id: string; name: string; columns: number; rows: number; hasDials: boolean };
+/** `dials`: touch strip segments (0 = none). `infoBar`: a Stream Deck Neo, drawn with its bar. */
+export type DeviceView = { id: string; name: string; columns: number; rows: number; dials: number; infoBar: boolean };
 
 export class MirrorState {
 	readonly devices = new Map<string, DeviceView>();
 	readonly tiles = new Map<string, Tile>();
+	bar: InfoBarView = { text: "NO DCS", live: false };
 	#listeners = new Set<() => void>();
 
 	setDevice(device: DeviceView): void {
@@ -28,12 +30,19 @@ export class MirrorState {
 		this.#changed();
 	}
 
+	/** Shown only on the mirror's Neo bar; the plugin draws nothing on the real one. */
+	setBar(bar: InfoBarView): void {
+		if (bar.text === this.bar.text && bar.live === this.bar.live) return;
+		this.bar = bar;
+		this.#changed();
+	}
+
 	removeTile(id: string): void {
 		if (this.tiles.delete(id)) this.#changed();
 	}
 
-	snapshot(): { devices: DeviceView[]; tiles: Tile[] } {
-		return { devices: [...this.devices.values()], tiles: [...this.tiles.values()] };
+	snapshot(): { devices: DeviceView[]; tiles: Tile[]; bar: InfoBarView } {
+		return { devices: [...this.devices.values()], tiles: [...this.tiles.values()], bar: this.bar };
 	}
 
 	onChange(listener: () => void): () => void {

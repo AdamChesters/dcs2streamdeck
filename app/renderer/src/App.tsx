@@ -237,6 +237,11 @@ function SettingsDialog({ state, deckName, link, onClose }: { state: DeckState; 
 			</p>
 			<h3>Stream Deck</h3>
 			<p className="muted">{deckName ? `Connected: ${deckName}.` : "No Stream Deck connected. Close the Elgato Stream Deck app, then connect."}</p>
+			{state.bar && (
+				<p className="muted">
+					Experimental: the info bar shows DCS and the time; nothing can be put on it yet. Tell us how it works on your Neo with Feedback / Support.
+				</p>
+			)}
 			<footer>
 				<button onClick={() => void link?.request()}>Connect Stream Deck</button>
 			</footer>

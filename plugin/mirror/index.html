@@ -14,6 +14,7 @@
 		border: 1.5px solid rgba(255, 255, 255, 0.5);
 		box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7), inset 0 0 40px rgba(255, 255, 255, 0.1), 0 14px 40px rgba(0, 0, 0, 0.3);
 		backdrop-filter: blur(18px) saturate(1.2);
+		transform-origin: top left;
 	}
 	.keys { display: grid; gap: 18px; }
 	.key {
@@ -38,6 +39,18 @@
 	.dots { display: flex; gap: 4px; height: 6px; }
 	.dots b { width: 6px; height: 6px; border-radius: 3px; background: rgba(255, 255, 255, 0.25); }
 	.dots b.on { background: #fff; }
+	/* Stream Deck Neo: its info bar between the two touch points. Mirror only: the plugin cannot draw on the real bar. */
+	.neo { display: grid; gap: 18px; align-items: center; }
+	.touch { height: 10px; margin: 0 24px; border-radius: 5px; background: rgba(255, 255, 255, 0.18); box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.12); }
+	.infobar {
+		position: relative; box-sizing: border-box; height: 80px; padding: 0 18px; border-radius: 14px; min-width: 0;
+		display: flex; align-items: center; justify-content: space-between; gap: 12px; background: rgba(4, 8, 14, 0.85);
+		box-shadow: 0 0 0 1.5px rgba(255, 255, 255, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 6px 14px rgba(0, 0, 0, 0.4);
+	}
+	.infobar .text { font-size: 26px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-shadow: 0 0 8px rgba(150, 200, 255, 0.35); }
+	.infobar.dead .text { color: #7b8590; text-shadow: none; }
+	.infobar .time { font-size: 24px; color: #cdd7e2; }
+	.infobar .tag { position: absolute; top: 6px; left: 0; right: 0; text-align: center; font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: rgba(205, 215, 226, 0.55); }
 	.wait {
 		padding: 12px 18px; font-size: 18px; display: inline-block; border-radius: 14px;
 		background: rgba(10, 14, 20, 0.6); border: 1px solid rgba(255, 255, 255, 0.3); backdrop-filter: blur(12px);
@@ -61,13 +74,16 @@
 	// Unlit keys a shade darker than on the deck itself, for the glass-panel look.
 	const glass = (svg) => svg.replace(/^(<svg[^>]*><rect [^>]*?fill=")#(?:2a2a2a|161616)"/, "$1#0c0e12\"");
 
-	function render({ devices, tiles }) {
-		const device = devices.find((d) => d.id === want) || devices.find((d) => d.hasDials) || devices[0];
+	const clock = () => new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+
+	function render({ devices, tiles, bar }) {
+		const device = devices.find((d) => d.id === want) || devices.find((d) => d.dials) || devices[0];
 		const id = device?.id ?? tiles[0]?.device;
 		const mine = tiles.filter((t) => t.device === id);
 		const columns = device?.columns ?? 4;
 		const rows = device?.rows ?? 2;
-		const hasDials = device?.hasDials ?? mine.some((t) => t.kind === "dial");
+		// One strip segment per dial: 4 on the Stream Deck +, 6 on the + XL (fewer than its 9 columns).
+		const dialCount = device?.dials ?? (mine.some((t) => t.kind === "dial") ? 4 : 0);
 
 		const keys = el("div", "keys");
 		keys.style.gridTemplateColumns = `repeat(${columns}, 144px)`;
@@ -85,10 +101,10 @@
 		}
 		const parts = [keys];
 
-		if (hasDials) {
+		if (dialCount) {
 			const dials = el("div", "dials");
-			dials.style.gridTemplateColumns = `repeat(${columns}, 1fr)`;
-			for (let column = 0; column < columns; column++) {
+			dials.style.gridTemplateColumns = `repeat(${dialCount}, 1fr)`;
+			for (let column = 0; column < dialCount; column++) {
 				const tile = mine.find((t) => t.kind === "dial" && t.column === column);
 				if (!tile) {
 					dials.append(el("div", "dial empty"));
@@ -106,8 +122,36 @@
 			}
 			parts.push(dials);
 		}
+
+		if (device?.infoBar) {
+			const tag = el("div", "tag");
+			tag.textContent = "Experimental";
+			const text = el("div", "text");
+			text.textContent = bar.text;
+			const time = el("div", "time");
+			time.textContent = clock();
+			const info = el("div", bar.live ? "infobar" : "infobar dead", [tag, text, time]);
+			info.style.gridColumn = `span ${Math.max(1, columns - 2)}`;
+			const neo = el("div", "neo", [el("div", "touch"), info, el("div", "touch")]);
+			neo.style.gridTemplateColumns = `repeat(${columns}, 144px)`;
+			parts.push(neo);
+		}
 		root.replaceChildren(el("div", "deck", parts));
+		fit();
 	}
+
+	// A deck bigger than the page (XL, + XL) shrinks to fit instead of being cut off; never grows.
+	function fit() {
+		const deck = root.querySelector(".deck");
+		if (!deck) return;
+		const scale = Math.min(1, (innerWidth - 28) / deck.offsetWidth, (innerHeight - 28) / deck.offsetHeight);
+		deck.style.transform = scale < 1 ? `scale(${scale})` : "";
+	}
+	addEventListener("resize", fit);
+	setInterval(() => {
+		const time = root.querySelector(".infobar .time");
+		if (time) time.textContent = clock();
+	}, 10000);
 
 	const events = new EventSource("/events");
 	events.onmessage = (msg) => render(JSON.parse(msg.data));

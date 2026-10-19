@@ -9,6 +9,7 @@ import { test } from "node:test";
 import { DcsBiosClient } from "../../core/dcsbios/client.ts";
 import type { DeckConfig, DeckState } from "../main/engine.ts";
 import { Engine } from "../main/engine.ts";
+import { deckSize } from "../renderer/src/deck-size.ts";
 
 const root = path.resolve(new URL("../..", import.meta.url).pathname);
 const fixture = path.join(root, "aircraft", "fa18c", "test", "fixtures", "controls.json");
@@ -65,11 +66,29 @@ test("keys and dials follow DCS, including a switch the jet releases", async () 
 		engine.dialNext(0);
 		await until(() => state!.dials[0].view.title === "L DDI CONT 2/2", 2000, "second knob");
 
-		engine.setDevice({ model: "Stream Deck XL", columns: 8, rows: 4, dials: 0 }, "Stream Deck XL");
+		engine.setDevice({ model: "Stream Deck XL", columns: 8, rows: 4, dials: 0, infoBar: false }, "Stream Deck XL");
 		await until(() => state!.keys.length === 32 && state!.dials.length === 0, 2000, "XL layout");
 		assert.equal(state!.device, "Stream Deck XL");
+		assert.equal(state!.bar, "");
+
+		engine.setDevice({ model: "Stream Deck + XL", columns: 9, rows: 4, dials: 6, infoBar: false }, "Stream Deck + XL");
+		await until(() => state!.keys.length === 36 && state!.dials.length === 6, 2000, "+ XL layout");
+
+		// The Neo's info bar shows the jet DCS flies and the time.
+		engine.setDevice({ model: "Stream Deck Neo", columns: 4, rows: 2, dials: 0, infoBar: true }, "Stream Deck Neo");
+		await until(() => state!.keys.length === 8 && state!.bar !== "", 2000, "Neo layout with its bar");
+		assert.match(state!.bar, />F\/A-18C</);
+		assert.match(state!.bar, />\d{1,2}[:.]\d{2}/, "time");
 	} finally {
 		engine.stop();
 		sim.kill();
 	}
+});
+
+test("deck window shapes: the + keeps the old default, an XL is wide, a Neo short", () => {
+	assert.deepEqual(deckSize({ model: "Stream Deck +", columns: 4, rows: 2, dials: 4, infoBar: false }), { width: 480, height: 394 });
+	assert.deepEqual(deckSize({ model: "Stream Deck XL", columns: 8, rows: 4, dials: 0, infoBar: false }), { width: 928, height: 480 });
+	const neo = deckSize({ model: "Stream Deck Neo", columns: 4, rows: 2, dials: 0, infoBar: true });
+	assert.equal(neo.width, 480);
+	assert.ok(neo.height < 394 && neo.height > 256 + 16, `Neo height ${neo.height}`);
 });

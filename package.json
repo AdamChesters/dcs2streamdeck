@@ -1,6 +1,6 @@
 {
   "name": "dcs2streamdeck",
-  "version": "0.4.3",
+  "version": "0.4.4",
   "private": true,
   "type": "module",
   "scripts": {
@@ -17,7 +17,7 @@
   "devDependencies": {
     "@elgato/cli": "1.10.2",
     "@elgato/utils": "0.6.1",
-    "@types/node": "24.19.1",
+    "@types/node": "24.19.2",
     "esbuild": "0.28.2",
     "typescript": "7.0.2"
   }

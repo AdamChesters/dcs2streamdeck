@@ -5,7 +5,7 @@ import path from "node:path";
 import { test } from "node:test";
 
 import { MirrorState, startMirrorServer } from "../plugin/src/mirror.ts";
-import { keySvg } from "../core/render.ts";
+import { infoBarSvg, keySvg } from "../core/render.ts";
 
 test("key image shows state, escapes text and marks DCS offline", () => {
 	const svg = keySvg({ title: "A<B & C", state: "ON", lit: true, live: true });
@@ -27,15 +27,26 @@ test("mirror server sends snapshots and live updates", async () => {
 		const res = await fetch(`http://127.0.0.1:${port}/events`);
 		const reader = res.body!.getReader();
 		const next = async () => JSON.parse(new TextDecoder().decode((await reader.read()).value).replace(/^data: /, ""));
-		assert.deepEqual(await next(), { devices: [], tiles: [] });
+		assert.deepEqual(await next(), { devices: [], tiles: [], bar: { text: "NO DCS", live: false } });
 		state.setTile("a", { kind: "key", device: "d", column: 1, row: 0, svg: "<svg/>" });
 		const update = await next();
 		assert.equal(update.tiles[0].column, 1);
+		state.setBar({ text: "NO DCS", live: false });
+		state.setBar({ text: "F/A-18C", live: true });
+		assert.deepEqual((await next()).bar, { text: "F/A-18C", live: true });
 		await reader.cancel();
 	} finally {
 		server.closeAllConnections();
 		server.close();
 	}
+});
+
+test("Neo info bar shows DCS and the time, dimmed when nothing supported flies", () => {
+	const live = infoBarSvg({ text: "F/A-18C", live: true }, "14:05");
+	assert.match(live, /width="248" height="58"/);
+	assert.match(live, />F\/A-18C</);
+	assert.match(live, />14:05</);
+	assert.match(infoBarSvg({ text: "NO DCS", live: false }, "14:05"), /fill="#777">NO DCS</);
 });
 
 test("lit keys take the light's colour", () => {

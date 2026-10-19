@@ -7,7 +7,7 @@ import { execFile } from "node:child_process";
 import { copyFileSync, existsSync, readFileSync, writeFileSync, mkdirSync, renameSync } from "node:fs";
 import path from "node:path";
 
-import { app, BrowserWindow, ipcMain, Menu, session, shell } from "electron";
+import { app, BrowserWindow, ipcMain, Menu, screen, session, shell } from "electron";
 
 import { PRODUCT } from "../../core/aircraft.data.ts";
 import type { DialSettings, KeySettings } from "../../core/bindings.ts";
@@ -15,6 +15,7 @@ import type { DeckConfig, Layout } from "./engine.ts";
 import { Engine } from "./engine.ts";
 import { RELEASES_PAGE, Updater, zipName } from "../../core/updates.ts";
 import { cannotUpdate, startZipUpdate } from "./self-update.ts";
+import { deckSize } from "../renderer/src/deck-size.ts";
 // Shared support component (feedback relay sender).
 import feedback from "../donate/feedback.cjs";
 
@@ -23,7 +24,9 @@ const APP_ID = PRODUCT.appId;
 const TITLE = "dcs2streamdeck";
 const ELGATO_VENDOR_ID = 0x0fd9;
 
-type AppConfig = DeckConfig & { deckWindow?: { open: boolean; bounds?: Electron.Rectangle } };
+type Size = { width: number; height: number };
+/** `sizes`: the deck window's size per Stream Deck model, once resized by hand. */
+type AppConfig = DeckConfig & { deckWindow?: { open: boolean; bounds?: Electron.Rectangle; sizes?: Record<string, Size> } };
 
 // Settings live outside the app folder so a new zip keeps them (set before the single-instance
 // lock, which lives there). The first run takes the keys of the 0.3 F/A-18C app, if any.
@@ -59,6 +62,8 @@ let engine: Engine;
 let updater: Updater;
 let mainWindow: BrowserWindow | undefined;
 let deckWindow: BrowserWindow | undefined;
+/** The connected deck's layout, if any. */
+let deckLayout: Layout | undefined;
 let elgatoRunning = false;
 
 const page = (name: string) => path.join(__dirname, "..", "dist", name);
@@ -107,13 +112,16 @@ function createDeckWindow(): void {
 	});
 	deckWindow.on("page-title-updated", (e) => e.preventDefault());
 	void deckWindow.loadFile(page("deck.html"));
-	const remember = () => {
+	const remember = (resized: boolean) => {
 		if (!deckWindow) return;
-		config.deckWindow = { open: true, bounds: deckWindow.getBounds() };
+		const bounds = deckWindow.getBounds();
+		let sizes = config.deckWindow?.sizes;
+		if (resized && deckLayout) sizes = { ...sizes, [deckLayout.model]: { width: bounds.width, height: bounds.height } };
+		config.deckWindow = { open: true, bounds, sizes };
 		saveConfig(config);
 	};
-	deckWindow.on("moved", remember);
-	deckWindow.on("resized", remember);
+	deckWindow.on("moved", () => remember(false));
+	deckWindow.on("resized", () => remember(true));
 	deckWindow.on("closed", () => {
 		deckWindow = undefined;
 		if (!quitting) {
@@ -123,6 +131,30 @@ function createDeckWindow(): void {
 	});
 	config.deckWindow = { ...config.deckWindow, open: true };
 	saveConfig(config);
+	fitDeckWindow();
+}
+
+/**
+ * The deck window takes the connected deck's shape (an XL is wide, a Neo short): the size it was
+ * given by hand for that model, else the deck's own size, kept on screen.
+ */
+function fitDeckWindow(): void {
+	if (!deckWindow || !deckLayout || !config.deckWindow) return;
+	if (!config.deckWindow.sizes) {
+		// First run with per-model sizes: the size from before belongs to the deck in use now.
+		const bounds = config.deckWindow.bounds;
+		config.deckWindow.sizes = bounds ? { [deckLayout.model]: { width: bounds.width, height: bounds.height } } : {};
+		saveConfig(config);
+	}
+	let size = config.deckWindow.sizes[deckLayout.model];
+	if (!size) {
+		const own = deckSize(deckLayout);
+		const area = screen.getDisplayMatching(deckWindow.getBounds()).workAreaSize;
+		const scale = Math.min(1, (area.width * 0.9) / own.width, (area.height * 0.9) / own.height);
+		size = { width: Math.round(own.width * scale), height: Math.round(own.height * scale) };
+	}
+	const [width, height] = deckWindow.getSize();
+	if (width !== size.width || height !== size.height) deckWindow.setSize(size.width, size.height);
 }
 
 let quitting = false;
@@ -174,7 +206,11 @@ function registerIpc(): void {
 	ipcMain.handle("set-key", (_e, index: number, settings: KeySettings) => engine.setKey(index, settings));
 	ipcMain.handle("set-dial", (_e, index: number, settings: DialSettings) => engine.setDial(index, settings));
 	ipcMain.handle("set-json-dir", (_e, dir: string) => engine.setJsonDir(dir));
-	ipcMain.handle("device", (_e, layout: Layout | null, name: string) => engine.setDevice(layout, name));
+	ipcMain.handle("device", (_e, layout: Layout | null, name: string) => {
+		engine.setDevice(layout, name);
+		deckLayout = layout ?? undefined;
+		fitDeckWindow();
+	});
 	ipcMain.handle("deck-window", (_e, open: boolean) => {
 		if (open) createDeckWindow();
 		else deckWindow?.close();
