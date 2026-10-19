@@ -3,7 +3,7 @@ import streamDeck from "@elgato/streamdeck";
 import { AIRCRAFT_LIST, aircraftOf } from "../../../core/aircraft.data.ts";
 import { catalog } from "../../../core/catalog.ts";
 import { RELEASES_PAGE } from "../../../core/updates.ts";
-import { fleet, installUpdate, runtime } from "../runtime.ts";
+import { addToOpenKneeboard, fleet, installUpdate, runtime } from "../runtime.ts";
 
 type ActionSettings = { aircraft?: string; control?: string; lamp?: string; functions?: string };
 
@@ -44,10 +44,15 @@ export async function sendInspectorData(settings: ActionSettings): Promise<void>
 
 /**
  * Handles messages every property inspector can send: "refresh" carries its current settings;
- * "install" downloads and installs the newer plugin.
+ * "install" downloads and installs the newer plugin; "openkneeboard" adds the VR page to
+ * OpenKneeboard and answers with what happens next.
  */
 export async function handleInspectorMessage(payload: unknown, settings: ActionSettings): Promise<void> {
 	const message = payload as { type?: string; settings?: ActionSettings };
 	if (message.type === "refresh") await sendInspectorData(message.settings ?? settings);
 	if (message.type === "install") installUpdate();
+	if (message.type === "openkneeboard") {
+		const note = await addToOpenKneeboard().catch((e: Error) => `Could not open it: ${e.message}`);
+		await streamDeck.ui.sendToPropertyInspector({ type: "openkneeboard", note });
+	}
 }

@@ -49,8 +49,9 @@ add it to `AIRCRAFT_LIST` in `core/aircraft.data.ts`, and replace the data and t
 
 ## Standalone app (`app/`)
 
-An Electron app that drives the Stream Deck directly (no Elgato app) and has a
-deck-only window for OpenKneeboard window capture. One app for all aircraft.
+An Electron app that drives the Stream Deck directly (no Elgato app), serves the
+same VR page as the plugin (`core/mirror.ts`, same port) and has a deck-only window.
+One app for all aircraft.
 
 ```
 cd app

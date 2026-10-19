@@ -8,7 +8,7 @@ import { test } from "node:test";
 
 import { DcsBiosClient } from "../../core/dcsbios/client.ts";
 import type { DeckConfig, DeckState } from "../main/engine.ts";
-import { Engine } from "../main/engine.ts";
+import { Engine, vrDeck } from "../main/engine.ts";
 import { deckSize } from "../renderer/src/deck-size.ts";
 
 const root = path.resolve(new URL("../..", import.meta.url).pathname);
@@ -73,6 +73,15 @@ test("keys and dials follow DCS, including a switch the jet releases", async () 
 
 		engine.setDevice({ model: "Stream Deck + XL", columns: 9, rows: 4, dials: 6, infoBar: false }, "Stream Deck + XL");
 		await until(() => state!.keys.length === 36 && state!.dials.length === 6, 2000, "+ XL layout");
+
+		// The VR page gets the same deck: keys and dials in use, in their place on this model.
+		const vr = vrDeck(state!, engine.fleet.infoBar());
+		assert.deepEqual(vr.devices, [{ id: "app", name: "Stream Deck + XL", columns: 9, rows: 4, dials: 6, infoBar: false }]);
+		assert.deepEqual(
+			vr.tiles.map((t) => [t.kind, t.column, t.kind === "key" ? t.row : -1]),
+			[["key", 0, 0], ["key", 1, 0], ["dial", 0, -1]],
+		);
+		assert.deepEqual(vr.bar, { text: "F/A-18C", live: true });
 
 		// The Neo's info bar shows the jet DCS flies and the time.
 		engine.setDevice({ model: "Stream Deck Neo", columns: 4, rows: 2, dials: 0, infoBar: true }, "Stream Deck Neo");

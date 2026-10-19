@@ -19,6 +19,8 @@ contextBridge.exposeInMainWorld("d2s", {
 	setJsonDir: (dir: string) => ipcRenderer.invoke("set-json-dir", dir),
 	device: (layout: unknown, name: string) => ipcRenderer.invoke("device", layout, name),
 	deckWindow: (open: boolean) => ipcRenderer.invoke("deck-window", open),
+	vr: () => ipcRenderer.invoke("vr"),
+	addToOpenKneeboard: () => ipcRenderer.invoke("add-to-openkneeboard"),
 	openExternal: (url: string) => ipcRenderer.invoke("open-external", url),
 	sendFeedback: (fields: unknown) => ipcRenderer.invoke("send-feedback", fields),
 	updateStatus: () => ipcRenderer.invoke("update-status"),

@@ -1,11 +1,12 @@
 /**
- * VR mirror: a local web page that shows what this plugin draws on the deck.
- * Add http://127.0.0.1:<port>/ as an OpenKneeboard Web Dashboard tab.
+ * VR mirror: a local web page that shows the deck, served by the plugin and by the app alike.
+ * OpenKneeboard shows it as a tab (see openkneeboard.ts), or as a Web Dashboard tab at
+ * http://127.0.0.1:<port>/.
  */
 import { readFile } from "node:fs/promises";
 import http from "node:http";
 
-import type { DialView, InfoBarView } from "../../core/render.ts";
+import type { DialView, InfoBarView } from "./render.ts";
 
 export type Tile =
 	| { kind: "key"; device: string; column: number; row: number; svg: string }
@@ -13,6 +14,8 @@ export type Tile =
 
 /** `dials`: touch strip segments (0 = none). `infoBar`: a Stream Deck Neo, drawn with its bar. */
 export type DeviceView = { id: string; name: string; columns: number; rows: number; dials: number; infoBar: boolean };
+
+export type MirrorSnapshot = { devices: DeviceView[]; tiles: Tile[]; bar: InfoBarView };
 
 export class MirrorState {
 	readonly devices = new Map<string, DeviceView>();
@@ -41,7 +44,17 @@ export class MirrorState {
 		if (this.tiles.delete(id)) this.#changed();
 	}
 
-	snapshot(): { devices: DeviceView[]; tiles: Tile[]; bar: InfoBarView } {
+	/** Everything at once (the app sends its whole deck on each change). */
+	replace({ devices, tiles, bar }: MirrorSnapshot): void {
+		this.devices.clear();
+		for (const device of devices) this.devices.set(device.id, device);
+		this.tiles.clear();
+		tiles.forEach((tile, i) => this.tiles.set(String(i), tile));
+		this.bar = bar;
+		this.#changed();
+	}
+
+	snapshot(): MirrorSnapshot {
 		return { devices: [...this.devices.values()], tiles: [...this.tiles.values()], bar: this.bar };
 	}
 
@@ -55,8 +68,12 @@ export class MirrorState {
 	}
 }
 
-/** Serves the mirror page and a Server-Sent Events stream of state snapshots. */
-export function startMirrorServer(state: MirrorState, port: number, pagePath: string): http.Server {
+/**
+ * Serves the mirror page and a Server-Sent Events stream of state snapshots. While the port is
+ * taken (the plugin and the app share it), tries again every `retryMs`, so whichever is still
+ * running takes over when the other closes.
+ */
+export function startMirrorServer(state: MirrorState, port: number, pagePath: string, retryMs = 15_000): http.Server {
 	const server = http.createServer(async (req, res) => {
 		if (req.url === "/events") {
 			res.writeHead(200, {
@@ -91,7 +108,13 @@ export function startMirrorServer(state: MirrorState, port: number, pagePath: st
 		}
 		res.writeHead(404).end();
 	});
-	server.on("error", (err) => console.error("mirror server error", err));
+	server.on("error", (err: NodeJS.ErrnoException) => {
+		if (err.code !== "EADDRINUSE") return console.error("mirror server error", err);
+		setTimeout(() => {
+			server.close();
+			server.listen(port, "127.0.0.1");
+		}, retryMs).unref();
+	});
 	server.listen(port, "127.0.0.1");
 	return server;
 }

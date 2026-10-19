@@ -57,7 +57,7 @@ export function App() {
 				<Status on={state.status.dcs} label={state.status.dcs ? `DCS · ${flyingName(state)}` : "DCS"} />
 				<Status on={Boolean(deckName)} label={deckName || "No Stream Deck"} />
 				<span className="spacer" />
-				<button className={`bar-button${deckWindow ? " active" : ""}`} onClick={toggleDeckWindow} title="Deck-only window for OpenKneeboard">
+				<button className={`bar-button${deckWindow ? " active" : ""}`} onClick={toggleDeckWindow} title="A window with only the deck">
 					Deck window
 				</button>
 				<button className="bar-button" onClick={() => setDialog("settings")}>
@@ -223,6 +223,13 @@ function UpdateDialog({ info, update, onClose }: { info: Info; update: UpdateSta
 
 function SettingsDialog({ state, deckName, link, onClose }: { state: DeckState; deckName: string; link?: DeckLink; onClose: () => void }) {
 	const [dir, setDir] = useState(state.status.jsonDir);
+	const [vr, setVr] = useState<{ url: string; serving: boolean }>();
+	const [okb, setOkb] = useState("");
+	useEffect(() => void api.vr().then(setVr), []);
+	const addToOpenKneeboard = () =>
+		void api
+			.addToOpenKneeboard()
+			.then((error) => setOkb(error ? `Could not open it (${error}). Is OpenKneeboard installed?` : "OpenKneeboard asks to install it: click Install, then Add tabs."));
 	const status = state.status;
 	const loaded = useMemo(() => status.loaded.join(" + "), [status.loaded]);
 	return (
@@ -245,11 +252,20 @@ function SettingsDialog({ state, deckName, link, onClose }: { state: DeckState; 
 			<footer>
 				<button onClick={() => void link?.request()}>Connect Stream Deck</button>
 			</footer>
-			<h3>VR</h3>
+			<h3>VR (OpenKneeboard)</h3>
 			<p className="muted">
-				Open the deck window from the top bar, then add it in OpenKneeboard as a Window Capture tab named “{APP_NAME} Deck”. Keep the deck
-				window open (it can sit behind DCS).
+				{okb ||
+					"Add to OpenKneeboard adds a dcs2streamdeck tab with a live copy of your deck (OpenKneeboard 1.9 or later). Or add a Web Dashboard tab with the address below."}
 			</p>
+			{vr && (
+				<p className="muted">
+					<code>{vr.url}</code>
+					{!vr.serving && ": in use, likely by the dcs2streamdeck plugin in the Stream Deck app. This app takes it over once it is free."}
+				</p>
+			)}
+			<footer>
+				<button onClick={addToOpenKneeboard}>Add to OpenKneeboard</button>
+			</footer>
 		</Modal>
 	);
 }

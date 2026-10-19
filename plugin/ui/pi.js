@@ -25,9 +25,12 @@ header.innerHTML = `
 		<div class="status" id="status">Waiting for plugin…</div>
 		<label for="jsonDir">DCS-BIOS JSON folder</label>
 		<input type="text" id="jsonDir" data-global="jsonDir" placeholder="Empty = Saved Games\\DCS\\Scripts\\DCS-BIOS\\doc\\json" />
+		<label>VR (OpenKneeboard)</label>
+		<button id="openkneeboard">Add to OpenKneeboard</button>
+		<div id="openkneeboardNote" class="hint">Adds a dcs2streamdeck tab with a live copy of your deck (OpenKneeboard 1.9 or later). Or add a Web Dashboard tab with <code>http://127.0.0.1:__MIRROR_PORT__/</code>.</div>
 		<label for="mirrorPort">VR mirror port</label>
 		<input type="number" id="mirrorPort" data-global="mirrorPort" placeholder="__MIRROR_PORT__" />
-		<div class="hint">VR mirror page: <code>http://127.0.0.1:__MIRROR_PORT__/</code> (or your port), for an OpenKneeboard Web Dashboard tab. A new port needs a Stream Deck restart.</div>
+		<div class="hint">Change only if another program uses __MIRROR_PORT__. A new port needs a Stream Deck restart, then Add to OpenKneeboard again.</div>
 	</div>
 	<label for="aircraft">Aircraft</label>
 	<select id="aircraft"></select>
@@ -69,6 +72,10 @@ document.getElementById("update").addEventListener("click", () => {
 	else if (updateState === "failed" && releasesPage) send({ event: "openUrl", payload: { url: releasesPage } });
 });
 
+document.getElementById("openkneeboard").addEventListener("click", () => {
+	send({ event: "sendToPlugin", action: actionUuid, context, payload: { type: "openkneeboard" } });
+});
+
 function refresh() {
 	send({ event: "sendToPlugin", action: actionUuid, context, payload: { type: "refresh", settings } });
 }
@@ -108,6 +115,8 @@ window.connectElgatoStreamDeckSocket = (port, uuid, registerEvent, _info, action
 			version = m.payload.version || version;
 			releasesPage = m.payload.releasesPage || releasesPage;
 			showUpdate(m.payload);
+		} else if (m.event === "sendToPropertyInspector" && m.payload.type === "openkneeboard") {
+			document.getElementById("openkneeboardNote").textContent = m.payload.note;
 		} else if (m.event === "sendToPropertyInspector" && m.payload.type === "data") {
 			const data = m.payload;
 			document.getElementById("status").textContent = data.status;

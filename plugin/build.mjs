@@ -57,4 +57,8 @@ if (pack) {
 	const file = path.join(root, "dist", `dcs2streamdeck-${version}.streamDeckPlugin`);
 	renameSync(path.join(root, "dist", `${PRODUCT.uuid}.streamDeckPlugin`), file);
 	console.log(`packed ${path.relative(root, file)}`);
+	// Release asset too, for people who want the OpenKneeboard tab without the button.
+	const { OPENKNEEBOARD_FILE, openKneeboardPlugin } = await import(pathToFileURL(path.join(root, "core", "openkneeboard.ts")).href);
+	writeFileSync(path.join(root, "dist", OPENKNEEBOARD_FILE), openKneeboardPlugin(PRODUCT.mirrorPort));
+	console.log(`wrote dist/${OPENKNEEBOARD_FILE}`);
 }

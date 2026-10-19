@@ -1,4 +1,4 @@
-// The deck-only window (for OpenKneeboard window capture). Display only; drag anywhere to move.
+// The deck-only window, to keep the deck on screen. Display only; drag anywhere to move.
 import { useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 

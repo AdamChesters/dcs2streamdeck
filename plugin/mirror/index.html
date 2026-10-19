@@ -58,7 +58,7 @@
 </style>
 </head>
 <body>
-<div id="root"><div class="wait">Waiting for Stream Deck plugin…</div></div>
+<div id="root"><div class="wait">Waiting for dcs2streamdeck…</div></div>
 <script>
 	// Optional: ?device=<id> picks a deck when several are connected.
 	const want = new URLSearchParams(location.search).get("device");
@@ -138,6 +138,22 @@
 		}
 		root.replaceChildren(el("div", "deck", parts));
 		fit();
+		askSize();
+	}
+
+	// In OpenKneeboard the tab takes the deck's shape (an XL is wide, a Neo short), at full size.
+	let asked = "";
+	function askSize() {
+		const deck = root.querySelector(".deck");
+		const okb = window.OpenKneeboard;
+		if (!deck || !okb?.SetPreferredPixelSize) return;
+		const width = deck.offsetWidth + 28;
+		const height = deck.offsetHeight + 28;
+		if (asked === `${width}x${height}`) return;
+		asked = `${width}x${height}`;
+		try {
+			Promise.resolve(okb.SetPreferredPixelSize(width, height)).catch(() => {});
+		} catch {}
 	}
 
 	// A deck bigger than the page (XL, + XL) shrinks to fit instead of being cut off; never grows.
@@ -155,7 +171,7 @@
 
 	const events = new EventSource("/events");
 	events.onmessage = (msg) => render(JSON.parse(msg.data));
-	events.onerror = () => root.replaceChildren(Object.assign(el("div", "wait"), { textContent: "Stream Deck plugin not running" }));
+	events.onerror = () => root.replaceChildren(Object.assign(el("div", "wait"), { textContent: "dcs2streamdeck is not running" }));
 </script>
 </body>
 </html>

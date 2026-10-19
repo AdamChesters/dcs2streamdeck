@@ -28,6 +28,10 @@ type Api = {
 	setJsonDir(dir: string): Promise<void>;
 	device(layout: Layout | null, name: string): Promise<void>;
 	deckWindow(open: boolean): Promise<void>;
+	/** The VR page's address, and whether this app serves it (else the plugin still has the port). */
+	vr(): Promise<{ url: string; serving: boolean }>;
+	/** Opens the OpenKneeboard plugin file; "" when it opened, else why not. */
+	addToOpenKneeboard(): Promise<string>;
 	openExternal(url: string): Promise<void>;
 	sendFeedback(fields: { name: string; email: string; message: string }): Promise<{ ok: boolean; error?: string }>;
 	updateStatus(): Promise<UpdateStatus>;

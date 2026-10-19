@@ -3,6 +3,7 @@
  * global settings, the update check and the VR mirror.
  */
 import { spawn } from "node:child_process";
+import { writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 
@@ -11,7 +12,8 @@ import { defaultJsonDir, Fleet } from "../../core/aircraft.ts";
 import { DcsBiosClient } from "../../core/dcsbios/client.ts";
 import type { Release } from "../../core/updates.ts";
 import { pluginName, Updater } from "../../core/updates.ts";
-import { MirrorState } from "./mirror.ts";
+import { MirrorState } from "../../core/mirror.ts";
+import { OPENKNEEBOARD_FILE, openKneeboardPlugin } from "../../core/openkneeboard.ts";
 
 export type GlobalSettings = {
 	/** Folder with the DCS-BIOS control JSON files. Empty = default Saved Games location. */
@@ -71,13 +73,31 @@ export function installUpdate(): void {
 }
 
 async function openPluginFile(file: string, release: Release): Promise<string> {
+	if (!(await openFile(file))) return `Downloaded to ${file}; open it to install.`;
+	return `The Stream Deck app is installing ${release.version}: confirm in its window. Your keys are kept.`;
+}
+
+/**
+ * Writes the OpenKneeboard plugin file and opens it: OpenKneeboard then offers to install it and
+ * add a dcs2streamdeck tab showing the VR mirror page. Returns what the settings panel says.
+ */
+export async function addToOpenKneeboard(): Promise<string> {
+	if (process.platform !== "win32") return "OpenKneeboard runs on Windows only.";
+	const file = path.join(os.tmpdir(), OPENKNEEBOARD_FILE);
+	await writeFile(file, openKneeboardPlugin(runtime.settings.mirrorPort || DEFAULT_MIRROR_PORT));
+	await openFile(file);
+	return "OpenKneeboard asks to install it: click Install, then Add tabs. Needs OpenKneeboard 1.9 or later.";
+}
+
+/** Opens a file as a double-click would (false where there is no way to). */
+async function openFile(file: string): Promise<boolean> {
 	const opener =
 		process.platform === "win32"
 			? [path.join(process.env.SystemRoot ?? "C:\\Windows", "explorer.exe"), file]
 			: process.platform === "darwin"
 				? ["open", file]
 				: undefined;
-	if (!opener) return `Downloaded to ${file}; open it to install.`;
+	if (!opener) return false;
 	await new Promise<void>((resolve, reject) => {
 		const child = spawn(opener[0], opener.slice(1), { detached: true, stdio: "ignore" });
 		child.once("error", reject);
@@ -86,5 +106,5 @@ async function openPluginFile(file: string, release: Release): Promise<string> {
 			resolve();
 		});
 	});
-	return `The Stream Deck app is installing ${release.version}: confirm in its window. Your keys are kept.`;
+	return true;
 }

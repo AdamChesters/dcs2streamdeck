@@ -8,7 +8,7 @@ import { DcsDial } from "./actions/dial.ts";
 import { DcsLight } from "./actions/light.ts";
 import { sendInspectorUpdate } from "./actions/common.ts";
 import { DcsSwitch } from "./actions/switch.ts";
-import { startMirrorServer } from "./mirror.ts";
+import { startMirrorServer } from "../../core/mirror.ts";
 import type { GlobalSettings } from "./runtime.ts";
 import { client, DEFAULT_MIRROR_PORT, fleet, loadAircraft, mirror, reset, runtime, startUpdateChecks } from "./runtime.ts";
 

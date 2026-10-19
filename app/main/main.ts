@@ -5,6 +5,7 @@
  */
 import { execFile } from "node:child_process";
 import { copyFileSync, existsSync, readFileSync, writeFileSync, mkdirSync, renameSync } from "node:fs";
+import type { Server } from "node:http";
 import path from "node:path";
 
 import { app, BrowserWindow, ipcMain, Menu, screen, session, shell } from "electron";
@@ -12,7 +13,9 @@ import { app, BrowserWindow, ipcMain, Menu, screen, session, shell } from "elect
 import { PRODUCT } from "../../core/aircraft.data.ts";
 import type { DialSettings, KeySettings } from "../../core/bindings.ts";
 import type { DeckConfig, Layout } from "./engine.ts";
-import { Engine } from "./engine.ts";
+import { Engine, vrDeck } from "./engine.ts";
+import { MirrorState, startMirrorServer } from "../../core/mirror.ts";
+import { OPENKNEEBOARD_FILE, openKneeboardPlugin } from "../../core/openkneeboard.ts";
 import { RELEASES_PAGE, Updater, zipName } from "../../core/updates.ts";
 import { cannotUpdate, startZipUpdate } from "./self-update.ts";
 import { deckSize } from "../renderer/src/deck-size.ts";
@@ -65,6 +68,10 @@ let deckWindow: BrowserWindow | undefined;
 /** The connected deck's layout, if any. */
 let deckLayout: Layout | undefined;
 let elgatoRunning = false;
+/** The VR page for OpenKneeboard: the same page and port as the plugin's. */
+const mirror = new MirrorState();
+let mirrorServer: Server;
+const vrUrl = `http://127.0.0.1:${PRODUCT.mirrorPort}/`;
 
 const page = (name: string) => path.join(__dirname, "..", "dist", name);
 const preload = path.join(__dirname, "preload.cjs");
@@ -91,7 +98,7 @@ function createMainWindow(): void {
 	});
 }
 
-/** Frameless window with only the deck, for OpenKneeboard window capture. */
+/** Frameless window with only the deck, to keep on screen (VR uses the web page instead). */
 function createDeckWindow(): void {
 	if (deckWindow) {
 		deckWindow.show();
@@ -215,6 +222,13 @@ function registerIpc(): void {
 		if (open) createDeckWindow();
 		else deckWindow?.close();
 	});
+	ipcMain.handle("vr", () => ({ url: vrUrl, serving: mirrorServer.listening }));
+	ipcMain.handle("add-to-openkneeboard", async () => {
+		const file = path.join(app.getPath("temp"), OPENKNEEBOARD_FILE);
+		writeFileSync(file, openKneeboardPlugin(PRODUCT.mirrorPort));
+		// "" when it opened; OpenKneeboard then asks to install it.
+		return shell.openPath(file);
+	});
 	ipcMain.handle("open-external", (_e, url: string) => {
 		if (!/^https:\/\//.test(url)) throw new Error("Only https links open.");
 		return shell.openExternal(url);
@@ -250,9 +264,13 @@ app.whenReady().then(() => {
 	config = loadConfig();
 	engine = new Engine(
 		config,
-		(state) => broadcast("state", state),
+		(state) => {
+			broadcast("state", state);
+			mirror.replace(vrDeck(state, engine.fleet.infoBar()));
+		},
 		() => saveConfig(config),
 	);
+	mirrorServer = startMirrorServer(mirror, PRODUCT.mirrorPort, path.join(__dirname, "mirror.html"));
 	updater = new Updater({
 		currentVersion: app.getVersion(),
 		fileName: zipName,

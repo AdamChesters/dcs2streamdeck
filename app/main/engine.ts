@@ -10,7 +10,8 @@ import { catalog } from "../../core/catalog.ts";
 import { dialRotate, dialView, keyDown, keyLook, keyUp, keyWatches, parseFunctions } from "../../core/bindings.ts";
 import { DcsBiosClient } from "../../core/dcsbios/client.ts";
 import type { Control } from "../../core/dcsbios/controls.ts";
-import type { DialView } from "../../core/render.ts";
+import type { MirrorSnapshot, Tile } from "../../core/mirror.ts";
+import type { DialView, InfoBarView } from "../../core/render.ts";
 import { dialSvg, infoBarSvg, keySvg } from "../../core/render.ts";
 
 /** `infoBar`: a Stream Deck Neo, whose info bar shows DCS and the time (nothing can be put on it). */
@@ -223,6 +224,19 @@ export class Engine {
 			this.#onChange(this.state());
 		}, 30);
 	}
+}
+
+/** The deck for the VR page (the plugin's page, served by the app too): keys and dials in use. */
+export function vrDeck(state: DeckState, bar: InfoBarView): MirrorSnapshot {
+	const { columns, rows, dials, infoBar } = state.layout;
+	const device = "app";
+	const tiles: Tile[] = [
+		...state.keys
+			.filter((k) => k.settings.control || k.settings.lamp)
+			.map((k) => ({ kind: "key" as const, device, column: k.index % columns, row: Math.floor(k.index / columns), svg: k.svg })),
+		...state.dials.filter((d) => d.settings.functions?.trim()).map((d) => ({ kind: "dial" as const, device, column: d.index, dial: d.view })),
+	];
+	return { devices: [{ id: device, name: state.device || state.layout.model, columns, rows, dials, infoBar }], tiles, bar };
 }
 
 function clockText(): string {
