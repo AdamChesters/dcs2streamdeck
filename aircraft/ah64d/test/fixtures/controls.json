@@ -1,0 +1,1768 @@
+{
+	"CPG Armament Panel": {
+		"CPG_MASTER_ARM_BTN": {
+			"api_variant": "momentary_last_position",
+			"category": "CPG Armament Panel",
+			"control_type": "selector",
+			"description": "Gunner A/S Pushbutton, ARM/SAFE",
+			"identifier": "CPG_MASTER_ARM_BTN",
+			"inputs": [
+				{
+					"description": "switch to previous or next state",
+					"interface": "fixed_step"
+				},
+				{
+					"description": "set position",
+					"interface": "set_state",
+					"max_value": 1
+				},
+				{
+					"argument": "TOGGLE",
+					"description": "Toggle switch state",
+					"interface": "action"
+				}
+			],
+			"outputs": [
+				{
+					"address": 34548,
+					"address_mask_identifier": "AH_64D_CPG_MASTER_ARM_BTN_AM",
+					"address_mask_shift_identifier": "AH_64D_CPG_MASTER_ARM_BTN",
+					"description": "selector position",
+					"mask": 32768,
+					"max_value": 1,
+					"shift_by": 15,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		}
+	},
+	"CPG COMM Panel": {
+		"CPG_COM_FM1_SQL": {
+			"category": "CPG COMM Panel",
+			"control_type": "3Pos_2Command_Switch_OpenClose",
+			"description": "Gunner FM1 Squelch Switch",
+			"identifier": "CPG_COM_FM1_SQL",
+			"inputs": [
+				{
+					"description": "set the switch position",
+					"interface": "set_state",
+					"max_value": 2
+				}
+			],
+			"outputs": [
+				{
+					"address": 32872,
+					"address_mask_shift_identifier": "AH_64D_CPG_COM_FM1_SQL",
+					"description": "switch position -- 0 = Down, 1 = Mid,  2 = Up",
+					"mask": 49152,
+					"max_value": 2,
+					"shift_by": 14,
+					"suffix": "",
+					"type": "integer"
+				}
+			],
+			"positions": [
+				"DISABLE",
+				"Off",
+				"ENABLE"
+			]
+		},
+		"CPG_COM_MASTER_VOL": {
+			"category": "CPG COMM Panel",
+			"control_type": "limited_dial",
+			"description": "Gunner MASTER Volume Control Knob",
+			"identifier": "CPG_COM_MASTER_VOL",
+			"inputs": [
+				{
+					"description": "set the position of the dial",
+					"interface": "set_state",
+					"max_value": 65535
+				},
+				{
+					"description": "turn the dial left or right",
+					"interface": "variable_step",
+					"max_value": 65535,
+					"suggested_step": 3200
+				}
+			],
+			"outputs": [
+				{
+					"address": 32894,
+					"address_identifier": "AH_64D_CPG_COM_MASTER_VOL_A",
+					"address_mask_shift_identifier": "AH_64D_CPG_COM_MASTER_VOL",
+					"description": "position of the potentiometer",
+					"mask": 65535,
+					"max_value": 65535,
+					"shift_by": 0,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		}
+	},
+	"CPG Cockpit": {
+		"CPG_CANOPY": {
+			"category": "CPG Cockpit",
+			"control_type": "selector",
+			"description": "Gunner Canopy",
+			"identifier": "CPG_CANOPY",
+			"inputs": [
+				{
+					"description": "switch to previous or next state",
+					"interface": "fixed_step"
+				},
+				{
+					"description": "set position",
+					"interface": "set_state",
+					"max_value": 1
+				},
+				{
+					"argument": "TOGGLE",
+					"description": "Toggle switch state",
+					"interface": "action"
+				}
+			],
+			"outputs": [
+				{
+					"address": 34568,
+					"address_mask_identifier": "AH_64D_CPG_CANOPY_AM",
+					"address_mask_shift_identifier": "AH_64D_CPG_CANOPY",
+					"description": "selector position",
+					"mask": 512,
+					"max_value": 1,
+					"shift_by": 9,
+					"suffix": "",
+					"type": "integer"
+				}
+			],
+			"positions": [
+				"CLOSE",
+				"OPEN"
+			]
+		},
+		"CPG_PROC_SEL_SW": {
+			"category": "CPG Cockpit",
+			"control_type": "selector",
+			"description": "Gunner Processor Select Switch",
+			"identifier": "CPG_PROC_SEL_SW",
+			"inputs": [
+				{
+					"description": "switch to previous or next state",
+					"interface": "fixed_step"
+				},
+				{
+					"description": "set position",
+					"interface": "set_state",
+					"max_value": 2
+				}
+			],
+			"outputs": [
+				{
+					"address": 34578,
+					"address_mask_shift_identifier": "AH_64D_CPG_PROC_SEL_SW",
+					"description": "selector position",
+					"mask": 6,
+					"max_value": 2,
+					"shift_by": 1,
+					"suffix": "",
+					"type": "integer"
+				}
+			],
+			"positions": [
+				"SP 1",
+				"AUTO",
+				"SP 2"
+			]
+		},
+		"CPG_STICK_FOLD": {
+			"category": "CPG Cockpit",
+			"control_type": "selector",
+			"description": "Gunner Stick Folding",
+			"identifier": "CPG_STICK_FOLD",
+			"inputs": [
+				{
+					"description": "switch to previous or next state",
+					"interface": "fixed_step"
+				},
+				{
+					"description": "set position",
+					"interface": "set_state",
+					"max_value": 1
+				},
+				{
+					"argument": "TOGGLE",
+					"description": "Toggle switch state",
+					"interface": "action"
+				}
+			],
+			"outputs": [
+				{
+					"address": 34578,
+					"address_mask_identifier": "AH_64D_CPG_STICK_FOLD_AM",
+					"address_mask_shift_identifier": "AH_64D_CPG_STICK_FOLD",
+					"description": "selector position",
+					"mask": 1,
+					"max_value": 1,
+					"shift_by": 0,
+					"suffix": "",
+					"type": "integer"
+				}
+			],
+			"positions": [
+				"UP",
+				"DOWN"
+			]
+		}
+	},
+	"CPG Cyclic": {
+		"CPG_CYCLIC_WEAPON_LR": {
+			"category": "CPG Cyclic",
+			"control_type": "3Pos_2Command_Switch_OpenClose",
+			"description": "Weapons Action Switch L/R",
+			"identifier": "CPG_CYCLIC_WEAPON_LR",
+			"inputs": [
+				{
+					"description": "set the switch position",
+					"interface": "set_state",
+					"max_value": 2
+				}
+			],
+			"outputs": [
+				{
+					"address": 34704,
+					"address_mask_shift_identifier": "AH_64D_CPG_CYCLIC_WEAPON_LR",
+					"description": "switch position -- 0 = Down, 1 = Mid,  2 = Up",
+					"mask": 24576,
+					"max_value": 2,
+					"shift_by": 13,
+					"suffix": "",
+					"type": "integer"
+				}
+			],
+			"positions": [
+				"M",
+				"Off",
+				"R"
+			]
+		}
+	},
+	"CPG Emergency Panel": {
+		"CPG_EMERG_ZERO_SW": {
+			"category": "CPG Emergency Panel",
+			"control_type": "selector",
+			"description": "Gunner Zeroize Switch",
+			"identifier": "CPG_EMERG_ZERO_SW",
+			"inputs": [
+				{
+					"description": "switch to previous or next state",
+					"interface": "fixed_step"
+				},
+				{
+					"description": "set position",
+					"interface": "set_state",
+					"max_value": 1
+				},
+				{
+					"argument": "TOGGLE",
+					"description": "Toggle switch state",
+					"interface": "action"
+				}
+			],
+			"outputs": [
+				{
+					"address": 32898,
+					"address_mask_identifier": "AH_64D_CPG_EMERG_ZERO_SW_AM",
+					"address_mask_shift_identifier": "AH_64D_CPG_EMERG_ZERO_SW",
+					"description": "selector position",
+					"mask": 16384,
+					"max_value": 1,
+					"shift_by": 14,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		}
+	},
+	"CPG Fire Control Panel": {
+		"CPG_FIRE_DETECT_TEST": {
+			"category": "CPG Fire Control Panel",
+			"control_type": "3Pos_2Command_Switch_OpenClose",
+			"description": "Gunner Fire Detection Circuit Test Switch",
+			"identifier": "CPG_FIRE_DETECT_TEST",
+			"inputs": [
+				{
+					"description": "set the switch position",
+					"interface": "set_state",
+					"max_value": 2
+				}
+			],
+			"outputs": [
+				{
+					"address": 34566,
+					"address_mask_shift_identifier": "AH_64D_CPG_FIRE_DETECT_TEST",
+					"description": "switch position -- 0 = Down, 1 = Mid,  2 = Up",
+					"mask": 24576,
+					"max_value": 2,
+					"shift_by": 13,
+					"suffix": "",
+					"type": "integer"
+				}
+			],
+			"positions": [
+				"1",
+				"Off",
+				"2"
+			]
+		},
+		"CPG_FIRE_ENG1_BTN": {
+			"api_variant": "momentary_last_position",
+			"category": "CPG Fire Control Panel",
+			"control_type": "selector",
+			"description": "Gunner ENG 1 Fire Pushbutton",
+			"identifier": "CPG_FIRE_ENG1_BTN",
+			"inputs": [
+				{
+					"description": "switch to previous or next state",
+					"interface": "fixed_step"
+				},
+				{
+					"description": "set position",
+					"interface": "set_state",
+					"max_value": 1
+				},
+				{
+					"argument": "TOGGLE",
+					"description": "Toggle switch state",
+					"interface": "action"
+				}
+			],
+			"outputs": [
+				{
+					"address": 34566,
+					"address_mask_identifier": "AH_64D_CPG_FIRE_ENG1_BTN_AM",
+					"address_mask_shift_identifier": "AH_64D_CPG_FIRE_ENG1_BTN",
+					"description": "selector position",
+					"mask": 32,
+					"max_value": 1,
+					"shift_by": 5,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		},
+		"CPG_FIRE_ENG1_CVR": {
+			"category": "CPG Fire Control Panel",
+			"control_type": "selector",
+			"description": "Gunner ENG 1 Fire Pushbutton Cover",
+			"identifier": "CPG_FIRE_ENG1_CVR",
+			"inputs": [
+				{
+					"description": "switch to previous or next state",
+					"interface": "fixed_step"
+				},
+				{
+					"description": "set position",
+					"interface": "set_state",
+					"max_value": 1
+				},
+				{
+					"argument": "TOGGLE",
+					"description": "Toggle switch state",
+					"interface": "action"
+				}
+			],
+			"outputs": [
+				{
+					"address": 34566,
+					"address_mask_identifier": "AH_64D_CPG_FIRE_ENG1_CVR_AM",
+					"address_mask_shift_identifier": "AH_64D_CPG_FIRE_ENG1_CVR",
+					"description": "selector position",
+					"mask": 64,
+					"max_value": 1,
+					"shift_by": 6,
+					"suffix": "",
+					"type": "integer"
+				}
+			],
+			"positions": [
+				"CLOSE",
+				"OPEN"
+			]
+		}
+	},
+	"CPG Internal Light System": {
+		"CPG_INTL_MCAUTION_BTN": {
+			"api_variant": "momentary_last_position",
+			"category": "CPG Internal Light System",
+			"control_type": "selector",
+			"description": "Gunner Master Caution Button",
+			"identifier": "CPG_INTL_MCAUTION_BTN",
+			"inputs": [
+				{
+					"description": "switch to previous or next state",
+					"interface": "fixed_step"
+				},
+				{
+					"description": "set position",
+					"interface": "set_state",
+					"max_value": 1
+				},
+				{
+					"argument": "TOGGLE",
+					"description": "Toggle switch state",
+					"interface": "action"
+				}
+			],
+			"outputs": [
+				{
+					"address": 32796,
+					"address_mask_identifier": "AH_64D_CPG_INTL_MCAUTION_BTN_AM",
+					"address_mask_shift_identifier": "AH_64D_CPG_INTL_MCAUTION_BTN",
+					"description": "selector position",
+					"mask": 2048,
+					"max_value": 1,
+					"shift_by": 11,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		},
+		"CPG_INTL_MWARN_BTN": {
+			"api_variant": "momentary_last_position",
+			"category": "CPG Internal Light System",
+			"control_type": "selector",
+			"description": "Gunner Master Warning Button",
+			"identifier": "CPG_INTL_MWARN_BTN",
+			"inputs": [
+				{
+					"description": "switch to previous or next state",
+					"interface": "fixed_step"
+				},
+				{
+					"description": "set position",
+					"interface": "set_state",
+					"max_value": 1
+				},
+				{
+					"argument": "TOGGLE",
+					"description": "Toggle switch state",
+					"interface": "action"
+				}
+			],
+			"outputs": [
+				{
+					"address": 32796,
+					"address_mask_identifier": "AH_64D_CPG_INTL_MWARN_BTN_AM",
+					"address_mask_shift_identifier": "AH_64D_CPG_INTL_MWARN_BTN",
+					"description": "selector position",
+					"mask": 4096,
+					"max_value": 1,
+					"shift_by": 12,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		},
+		"CPG_INTL_PRIMARY_L_KNB": {
+			"category": "CPG Internal Light System",
+			"control_type": "limited_dial",
+			"description": "Gunner Primary Lights Control Knob",
+			"identifier": "CPG_INTL_PRIMARY_L_KNB",
+			"inputs": [
+				{
+					"description": "set the position of the dial",
+					"interface": "set_state",
+					"max_value": 65535
+				},
+				{
+					"description": "turn the dial left or right",
+					"interface": "variable_step",
+					"max_value": 65535,
+					"suggested_step": 3200
+				}
+			],
+			"outputs": [
+				{
+					"address": 32814,
+					"address_identifier": "AH_64D_CPG_INTL_PRIMARY_L_KNB_A",
+					"address_mask_shift_identifier": "AH_64D_CPG_INTL_PRIMARY_L_KNB",
+					"description": "position of the potentiometer",
+					"mask": 65535,
+					"max_value": 65535,
+					"shift_by": 0,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		}
+	},
+	"CPG Internal Lights": {
+		"CPG_ENG_1_FIRE_L": {
+			"category": "CPG Internal Lights",
+			"color": "yellow",
+			"control_type": "led",
+			"description": "Gunner Engine 1 Fire Indicator",
+			"identifier": "CPG_ENG_1_FIRE_L",
+			"inputs": [],
+			"outputs": [
+				{
+					"address": 34604,
+					"address_mask_identifier": "AH_64D_CPG_ENG_1_FIRE_L_AM",
+					"address_mask_shift_identifier": "AH_64D_CPG_ENG_1_FIRE_L",
+					"description": "0 if light is off, 1 if light is on",
+					"mask": 16,
+					"max_value": 1,
+					"shift_by": 4,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		},
+		"CPG_MASTER_ARM_ARM_L": {
+			"category": "CPG Internal Lights",
+			"color": "yellow",
+			"control_type": "led",
+			"description": "Gunner Master Arm Armed Indicator",
+			"identifier": "CPG_MASTER_ARM_ARM_L",
+			"inputs": [],
+			"outputs": [
+				{
+					"address": 34614,
+					"address_mask_identifier": "AH_64D_CPG_MASTER_ARM_ARM_L_AM",
+					"address_mask_shift_identifier": "AH_64D_CPG_MASTER_ARM_ARM_L",
+					"description": "0 if light is off, 1 if light is on",
+					"mask": 64,
+					"max_value": 1,
+					"shift_by": 6,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		},
+		"CPG_MASTER_ARM_SAFE_L": {
+			"category": "CPG Internal Lights",
+			"color": "green",
+			"control_type": "led",
+			"description": "Gunner Master Arm Safe Indicator",
+			"identifier": "CPG_MASTER_ARM_SAFE_L",
+			"inputs": [],
+			"outputs": [
+				{
+					"address": 34614,
+					"address_mask_identifier": "AH_64D_CPG_MASTER_ARM_SAFE_L_AM",
+					"address_mask_shift_identifier": "AH_64D_CPG_MASTER_ARM_SAFE_L",
+					"description": "0 if light is off, 1 if light is on",
+					"mask": 128,
+					"max_value": 1,
+					"shift_by": 7,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		},
+		"CPG_MASTER_CAUTION_L": {
+			"category": "CPG Internal Lights",
+			"color": "green",
+			"control_type": "led",
+			"description": "Gunner Master Caution Indicator",
+			"identifier": "CPG_MASTER_CAUTION_L",
+			"inputs": [],
+			"outputs": [
+				{
+					"address": 34604,
+					"address_mask_identifier": "AH_64D_CPG_MASTER_CAUTION_L_AM",
+					"address_mask_shift_identifier": "AH_64D_CPG_MASTER_CAUTION_L",
+					"description": "0 if light is off, 1 if light is on",
+					"mask": 8,
+					"max_value": 1,
+					"shift_by": 3,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		},
+		"CPG_MASTER_WARNING_L": {
+			"category": "CPG Internal Lights",
+			"color": "yellow",
+			"control_type": "led",
+			"description": "Gunner Master Warning Indicator",
+			"identifier": "CPG_MASTER_WARNING_L",
+			"inputs": [],
+			"outputs": [
+				{
+					"address": 34604,
+					"address_mask_identifier": "AH_64D_CPG_MASTER_WARNING_L_AM",
+					"address_mask_shift_identifier": "AH_64D_CPG_MASTER_WARNING_L",
+					"description": "0 if light is off, 1 if light is on",
+					"mask": 4,
+					"max_value": 1,
+					"shift_by": 2,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		},
+		"CPG_PROCESSOR_SP_1_L": {
+			"category": "CPG Internal Lights",
+			"color": "green",
+			"control_type": "led",
+			"description": "Gunner Processor Select SP 1 Indicator",
+			"identifier": "CPG_PROCESSOR_SP_1_L",
+			"inputs": [],
+			"outputs": [
+				{
+					"address": 34614,
+					"address_mask_identifier": "AH_64D_CPG_PROCESSOR_SP_1_L_AM",
+					"address_mask_shift_identifier": "AH_64D_CPG_PROCESSOR_SP_1_L",
+					"description": "0 if light is off, 1 if light is on",
+					"mask": 512,
+					"max_value": 1,
+					"shift_by": 9,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		}
+	},
+	"CPG Keyboard Unit": {
+		"CPG_KU_DISPLAY": {
+			"category": "CPG Keyboard Unit",
+			"control_type": "display",
+			"description": "Gunner Keyboard Unit Display",
+			"identifier": "CPG_KU_DISPLAY",
+			"inputs": [],
+			"outputs": [
+				{
+					"address": 32940,
+					"address_identifier": "AH_64D_CPG_KU_DISPLAY_A",
+					"description": "Gunner Keyboard Unit Display",
+					"max_length": 22,
+					"suffix": "",
+					"type": "string"
+				}
+			]
+		},
+		"CPG_KU_ENT": {
+			"api_variant": "momentary_last_position",
+			"category": "CPG Keyboard Unit",
+			"control_type": "selector",
+			"description": "Gunner Keyboard Unit ENTER Key",
+			"identifier": "CPG_KU_ENT",
+			"inputs": [
+				{
+					"description": "switch to previous or next state",
+					"interface": "fixed_step"
+				},
+				{
+					"description": "set position",
+					"interface": "set_state",
+					"max_value": 1
+				},
+				{
+					"argument": "TOGGLE",
+					"description": "Toggle switch state",
+					"interface": "action"
+				}
+			],
+			"outputs": [
+				{
+					"address": 32936,
+					"address_mask_identifier": "AH_64D_CPG_KU_ENT_AM",
+					"address_mask_shift_identifier": "AH_64D_CPG_KU_ENT",
+					"description": "selector position",
+					"mask": 4,
+					"max_value": 1,
+					"shift_by": 2,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		}
+	},
+	"CPG MPD Left": {
+		"CPG_MPD_L_MODE": {
+			"category": "CPG MPD Left",
+			"control_type": "selector",
+			"description": "Gunner Left MPD Mode Knob",
+			"identifier": "CPG_MPD_L_MODE",
+			"inputs": [
+				{
+					"description": "switch to previous or next state",
+					"interface": "fixed_step"
+				},
+				{
+					"description": "set position",
+					"interface": "set_state",
+					"max_value": 2
+				}
+			],
+			"outputs": [
+				{
+					"address": 32784,
+					"address_mask_shift_identifier": "AH_64D_CPG_MPD_L_MODE",
+					"description": "selector position",
+					"mask": 3,
+					"max_value": 2,
+					"shift_by": 0,
+					"suffix": "",
+					"type": "integer"
+				}
+			],
+			"positions": [
+				"MONO",
+				"NIGHT",
+				"DAY"
+			]
+		}
+	},
+	"CPG TEDAC Display": {
+		"CPG_TEDAC_DISP_MODE": {
+			"category": "CPG TEDAC Display",
+			"control_type": "selector",
+			"description": "Gunner TEDAC Display Mode Knob",
+			"identifier": "CPG_TEDAC_DISP_MODE",
+			"inputs": [
+				{
+					"description": "switch to previous or next state",
+					"interface": "fixed_step"
+				},
+				{
+					"description": "set position",
+					"interface": "set_state",
+					"max_value": 2
+				}
+			],
+			"outputs": [
+				{
+					"address": 34536,
+					"address_mask_shift_identifier": "AH_64D_CPG_TEDAC_DISP_MODE",
+					"description": "selector position",
+					"mask": 12288,
+					"max_value": 2,
+					"shift_by": 12,
+					"suffix": "",
+					"type": "integer"
+				}
+			],
+			"positions": [
+				"OFF",
+				"NT",
+				"DAY"
+			]
+		}
+	},
+	"CPG Up-Front Display": {
+		"CPG_EUFD_LINE1": {
+			"category": "CPG Up-Front Display",
+			"control_type": "display",
+			"description": "Gunner Up-Front Display Line 1",
+			"identifier": "CPG_EUFD_LINE1",
+			"inputs": [],
+			"outputs": [
+				{
+					"address": 33746,
+					"address_identifier": "AH_64D_CPG_EUFD_LINE1_A",
+					"description": "Gunner Up-Front Display Line 1",
+					"max_length": 56,
+					"suffix": "",
+					"type": "string"
+				}
+			]
+		}
+	},
+	"PLT Armament Panel": {
+		"PLT_MASTER_ARM_BTN": {
+			"api_variant": "momentary_last_position",
+			"category": "PLT Armament Panel",
+			"control_type": "selector",
+			"description": "Pilot A/S Pushbutton, ARM/SAFE",
+			"identifier": "PLT_MASTER_ARM_BTN",
+			"inputs": [
+				{
+					"description": "switch to previous or next state",
+					"interface": "fixed_step"
+				},
+				{
+					"description": "set position",
+					"interface": "set_state",
+					"max_value": 1
+				},
+				{
+					"argument": "TOGGLE",
+					"description": "Toggle switch state",
+					"interface": "action"
+				}
+			],
+			"outputs": [
+				{
+					"address": 34548,
+					"address_mask_identifier": "AH_64D_PLT_MASTER_ARM_BTN_AM",
+					"address_mask_shift_identifier": "AH_64D_PLT_MASTER_ARM_BTN",
+					"description": "selector position",
+					"mask": 8192,
+					"max_value": 1,
+					"shift_by": 13,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		}
+	},
+	"PLT CMWS": {
+		"PLT_CMWS_ARM": {
+			"category": "PLT CMWS",
+			"control_type": "selector",
+			"description": "Pilot CMWS Flare Squibs Switch",
+			"identifier": "PLT_CMWS_ARM",
+			"inputs": [
+				{
+					"description": "switch to previous or next state",
+					"interface": "fixed_step"
+				},
+				{
+					"description": "set position",
+					"interface": "set_state",
+					"max_value": 1
+				},
+				{
+					"argument": "TOGGLE",
+					"description": "Toggle switch state",
+					"interface": "action"
+				}
+			],
+			"outputs": [
+				{
+					"address": 34578,
+					"address_mask_identifier": "AH_64D_PLT_CMWS_ARM_AM",
+					"address_mask_shift_identifier": "AH_64D_PLT_CMWS_ARM",
+					"description": "selector position",
+					"mask": 32,
+					"max_value": 1,
+					"shift_by": 5,
+					"suffix": "",
+					"type": "integer"
+				}
+			],
+			"positions": [
+				"SAFE",
+				"ARM"
+			]
+		},
+		"PLT_CMWS_PW": {
+			"category": "PLT CMWS",
+			"control_type": "3Pos_2Command_Switch_OpenClose",
+			"description": "Pilot CMWS PWR Switch",
+			"identifier": "PLT_CMWS_PW",
+			"inputs": [
+				{
+					"description": "set the switch position",
+					"interface": "set_state",
+					"max_value": 2
+				}
+			],
+			"outputs": [
+				{
+					"address": 34636,
+					"address_mask_shift_identifier": "AH_64D_PLT_CMWS_PW",
+					"description": "switch position -- 0 = Down, 1 = Mid,  2 = Up",
+					"mask": 49152,
+					"max_value": 2,
+					"shift_by": 14,
+					"suffix": "",
+					"type": "integer"
+				}
+			],
+			"positions": [
+				"Off",
+				"On",
+				"Test"
+			]
+		}
+	},
+	"PLT COMM Panel": {
+		"PLT_COM_FM1_SQL": {
+			"category": "PLT COMM Panel",
+			"control_type": "3Pos_2Command_Switch_OpenClose",
+			"description": "Pilot FM1 Squelch Switch",
+			"identifier": "PLT_COM_FM1_SQL",
+			"inputs": [
+				{
+					"description": "set the switch position",
+					"interface": "set_state",
+					"max_value": 2
+				}
+			],
+			"outputs": [
+				{
+					"address": 32850,
+					"address_mask_shift_identifier": "AH_64D_PLT_COM_FM1_SQL",
+					"description": "switch position -- 0 = Down, 1 = Mid,  2 = Up",
+					"mask": 3072,
+					"max_value": 2,
+					"shift_by": 10,
+					"suffix": "",
+					"type": "integer"
+				}
+			],
+			"positions": [
+				"DISABLE",
+				"Off",
+				"ENABLE"
+			]
+		},
+		"PLT_COM_MASTER_VOL": {
+			"category": "PLT COMM Panel",
+			"control_type": "limited_dial",
+			"description": "Pilot MASTER Volume Control Knob",
+			"identifier": "PLT_COM_MASTER_VOL",
+			"inputs": [
+				{
+					"description": "set the position of the dial",
+					"interface": "set_state",
+					"max_value": 65535
+				},
+				{
+					"description": "turn the dial left or right",
+					"interface": "variable_step",
+					"max_value": 65535,
+					"suggested_step": 3200
+				}
+			],
+			"outputs": [
+				{
+					"address": 32868,
+					"address_identifier": "AH_64D_PLT_COM_MASTER_VOL_A",
+					"address_mask_shift_identifier": "AH_64D_PLT_COM_MASTER_VOL",
+					"description": "position of the potentiometer",
+					"mask": 65535,
+					"max_value": 65535,
+					"shift_by": 0,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		}
+	},
+	"PLT Cockpit": {
+		"PLT_CANOPY": {
+			"category": "PLT Cockpit",
+			"control_type": "selector",
+			"description": "Pilot Canopy",
+			"identifier": "PLT_CANOPY",
+			"inputs": [
+				{
+					"description": "switch to previous or next state",
+					"interface": "fixed_step"
+				},
+				{
+					"description": "set position",
+					"interface": "set_state",
+					"max_value": 1
+				},
+				{
+					"argument": "TOGGLE",
+					"description": "Toggle switch state",
+					"interface": "action"
+				}
+			],
+			"outputs": [
+				{
+					"address": 34568,
+					"address_mask_identifier": "AH_64D_PLT_CANOPY_AM",
+					"address_mask_shift_identifier": "AH_64D_PLT_CANOPY",
+					"description": "selector position",
+					"mask": 1,
+					"max_value": 1,
+					"shift_by": 0,
+					"suffix": "",
+					"type": "integer"
+				}
+			],
+			"positions": [
+				"CLOSE",
+				"OPEN"
+			]
+		},
+		"PLT_MASTER_IGN_SW": {
+			"category": "PLT Cockpit",
+			"control_type": "selector",
+			"description": "Pilot Master Ignition Switch",
+			"identifier": "PLT_MASTER_IGN_SW",
+			"inputs": [
+				{
+					"description": "switch to previous or next state",
+					"interface": "fixed_step"
+				},
+				{
+					"description": "set position",
+					"interface": "set_state",
+					"max_value": 2
+				}
+			],
+			"outputs": [
+				{
+					"address": 34568,
+					"address_mask_shift_identifier": "AH_64D_PLT_MASTER_IGN_SW",
+					"description": "selector position",
+					"mask": 384,
+					"max_value": 2,
+					"shift_by": 7,
+					"suffix": "",
+					"type": "integer"
+				}
+			],
+			"positions": [
+				"OFF",
+				"BATT",
+				"EXT PWR"
+			]
+		},
+		"PLT_PARK_BRAKE": {
+			"category": "PLT Cockpit",
+			"control_type": "selector",
+			"description": "Pilot Parking Brake Handle",
+			"identifier": "PLT_PARK_BRAKE",
+			"inputs": [
+				{
+					"description": "switch to previous or next state",
+					"interface": "fixed_step"
+				},
+				{
+					"description": "set position",
+					"interface": "set_state",
+					"max_value": 1
+				},
+				{
+					"argument": "TOGGLE",
+					"description": "Toggle switch state",
+					"interface": "action"
+				}
+			],
+			"outputs": [
+				{
+					"address": 34566,
+					"address_mask_identifier": "AH_64D_PLT_PARK_BRAKE_AM",
+					"address_mask_shift_identifier": "AH_64D_PLT_PARK_BRAKE",
+					"description": "selector position",
+					"mask": 32768,
+					"max_value": 1,
+					"shift_by": 15,
+					"suffix": "",
+					"type": "integer"
+				}
+			],
+			"positions": [
+				"Stow",
+				"Pull"
+			]
+		}
+	},
+	"PLT Cyclic": {
+		"PLT_CYCLIC_WEAPON_LR": {
+			"category": "PLT Cyclic",
+			"control_type": "3Pos_2Command_Switch_OpenClose",
+			"description": "Weapons Action Switch L/R",
+			"identifier": "PLT_CYCLIC_WEAPON_LR",
+			"inputs": [
+				{
+					"description": "set the switch position",
+					"interface": "set_state",
+					"max_value": 2
+				}
+			],
+			"outputs": [
+				{
+					"address": 34702,
+					"address_mask_shift_identifier": "AH_64D_PLT_CYCLIC_WEAPON_LR",
+					"description": "switch position -- 0 = Down, 1 = Mid,  2 = Up",
+					"mask": 768,
+					"max_value": 2,
+					"shift_by": 8,
+					"suffix": "",
+					"type": "integer"
+				}
+			],
+			"positions": [
+				"M",
+				"Off",
+				"R"
+			]
+		}
+	},
+	"PLT Emergency Panel": {
+		"PLT_EMERG_ZERO_SW": {
+			"category": "PLT Emergency Panel",
+			"control_type": "selector",
+			"description": "Pilot Zeroize Switch",
+			"identifier": "PLT_EMERG_ZERO_SW",
+			"inputs": [
+				{
+					"description": "switch to previous or next state",
+					"interface": "fixed_step"
+				},
+				{
+					"description": "set position",
+					"interface": "set_state",
+					"max_value": 1
+				},
+				{
+					"argument": "TOGGLE",
+					"description": "Toggle switch state",
+					"interface": "action"
+				}
+			],
+			"outputs": [
+				{
+					"address": 32898,
+					"address_mask_identifier": "AH_64D_PLT_EMERG_ZERO_SW_AM",
+					"address_mask_shift_identifier": "AH_64D_PLT_EMERG_ZERO_SW",
+					"description": "selector position",
+					"mask": 512,
+					"max_value": 1,
+					"shift_by": 9,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		}
+	},
+	"PLT Fire Control Panel": {
+		"PLT_FIRE_DETECT_TEST": {
+			"category": "PLT Fire Control Panel",
+			"control_type": "3Pos_2Command_Switch_OpenClose",
+			"description": "Pilot Fire Detection Circuit Test Switch",
+			"identifier": "PLT_FIRE_DETECT_TEST",
+			"inputs": [
+				{
+					"description": "set the switch position",
+					"interface": "set_state",
+					"max_value": 2
+				}
+			],
+			"outputs": [
+				{
+					"address": 34566,
+					"address_mask_shift_identifier": "AH_64D_PLT_FIRE_DETECT_TEST",
+					"description": "switch position -- 0 = Down, 1 = Mid,  2 = Up",
+					"mask": 24,
+					"max_value": 2,
+					"shift_by": 3,
+					"suffix": "",
+					"type": "integer"
+				}
+			],
+			"positions": [
+				"1",
+				"Off",
+				"2"
+			]
+		},
+		"PLT_FIRE_ENG1_BTN": {
+			"api_variant": "momentary_last_position",
+			"category": "PLT Fire Control Panel",
+			"control_type": "selector",
+			"description": "Pilot ENG 1 Fire Pushbutton",
+			"identifier": "PLT_FIRE_ENG1_BTN",
+			"inputs": [
+				{
+					"description": "switch to previous or next state",
+					"interface": "fixed_step"
+				},
+				{
+					"description": "set position",
+					"interface": "set_state",
+					"max_value": 1
+				},
+				{
+					"argument": "TOGGLE",
+					"description": "Toggle switch state",
+					"interface": "action"
+				}
+			],
+			"outputs": [
+				{
+					"address": 34564,
+					"address_mask_identifier": "AH_64D_PLT_FIRE_ENG1_BTN_AM",
+					"address_mask_shift_identifier": "AH_64D_PLT_FIRE_ENG1_BTN",
+					"description": "selector position",
+					"mask": 2048,
+					"max_value": 1,
+					"shift_by": 11,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		},
+		"PLT_FIRE_ENG1_CVR": {
+			"category": "PLT Fire Control Panel",
+			"control_type": "selector",
+			"description": "Pilot ENG 1 Fire Pushbutton Cover",
+			"identifier": "PLT_FIRE_ENG1_CVR",
+			"inputs": [
+				{
+					"description": "switch to previous or next state",
+					"interface": "fixed_step"
+				},
+				{
+					"description": "set position",
+					"interface": "set_state",
+					"max_value": 1
+				},
+				{
+					"argument": "TOGGLE",
+					"description": "Toggle switch state",
+					"interface": "action"
+				}
+			],
+			"outputs": [
+				{
+					"address": 34564,
+					"address_mask_identifier": "AH_64D_PLT_FIRE_ENG1_CVR_AM",
+					"address_mask_shift_identifier": "AH_64D_PLT_FIRE_ENG1_CVR",
+					"description": "selector position",
+					"mask": 4096,
+					"max_value": 1,
+					"shift_by": 12,
+					"suffix": "",
+					"type": "integer"
+				}
+			],
+			"positions": [
+				"CLOSE",
+				"OPEN"
+			]
+		}
+	},
+	"PLT Internal Light System": {
+		"PLT_INTL_MCAUTION_BTN": {
+			"api_variant": "momentary_last_position",
+			"category": "PLT Internal Light System",
+			"control_type": "selector",
+			"description": "Pilot Master Caution Button",
+			"identifier": "PLT_INTL_MCAUTION_BTN",
+			"inputs": [
+				{
+					"description": "switch to previous or next state",
+					"interface": "fixed_step"
+				},
+				{
+					"description": "set position",
+					"interface": "set_state",
+					"max_value": 1
+				},
+				{
+					"argument": "TOGGLE",
+					"description": "Toggle switch state",
+					"interface": "action"
+				}
+			],
+			"outputs": [
+				{
+					"address": 32796,
+					"address_mask_identifier": "AH_64D_PLT_INTL_MCAUTION_BTN_AM",
+					"address_mask_shift_identifier": "AH_64D_PLT_INTL_MCAUTION_BTN",
+					"description": "selector position",
+					"mask": 256,
+					"max_value": 1,
+					"shift_by": 8,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		},
+		"PLT_INTL_MWARN_BTN": {
+			"api_variant": "momentary_last_position",
+			"category": "PLT Internal Light System",
+			"control_type": "selector",
+			"description": "Pilot Master Warning Button",
+			"identifier": "PLT_INTL_MWARN_BTN",
+			"inputs": [
+				{
+					"description": "switch to previous or next state",
+					"interface": "fixed_step"
+				},
+				{
+					"description": "set position",
+					"interface": "set_state",
+					"max_value": 1
+				},
+				{
+					"argument": "TOGGLE",
+					"description": "Toggle switch state",
+					"interface": "action"
+				}
+			],
+			"outputs": [
+				{
+					"address": 32796,
+					"address_mask_identifier": "AH_64D_PLT_INTL_MWARN_BTN_AM",
+					"address_mask_shift_identifier": "AH_64D_PLT_INTL_MWARN_BTN",
+					"description": "selector position",
+					"mask": 512,
+					"max_value": 1,
+					"shift_by": 9,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		},
+		"PLT_INTL_PRIMARY_L_KNB": {
+			"category": "PLT Internal Light System",
+			"control_type": "limited_dial",
+			"description": "Pilot Primary Lights Control Knob",
+			"identifier": "PLT_INTL_PRIMARY_L_KNB",
+			"inputs": [
+				{
+					"description": "set the position of the dial",
+					"interface": "set_state",
+					"max_value": 65535
+				},
+				{
+					"description": "turn the dial left or right",
+					"interface": "variable_step",
+					"max_value": 65535,
+					"suggested_step": 3200
+				}
+			],
+			"outputs": [
+				{
+					"address": 32806,
+					"address_identifier": "AH_64D_PLT_INTL_PRIMARY_L_KNB_A",
+					"address_mask_shift_identifier": "AH_64D_PLT_INTL_PRIMARY_L_KNB",
+					"description": "position of the potentiometer",
+					"mask": 65535,
+					"max_value": 65535,
+					"shift_by": 0,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		}
+	},
+	"PLT Internal Lights": {
+		"PLT_APU_L": {
+			"category": "PLT Internal Lights",
+			"color": "green",
+			"control_type": "led",
+			"description": "Pilot APU On Indicator",
+			"identifier": "PLT_APU_L",
+			"inputs": [],
+			"outputs": [
+				{
+					"address": 34604,
+					"address_mask_identifier": "AH_64D_PLT_APU_L_AM",
+					"address_mask_shift_identifier": "AH_64D_PLT_APU_L",
+					"description": "0 if light is off, 1 if light is on",
+					"mask": 2,
+					"max_value": 1,
+					"shift_by": 1,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		},
+		"PLT_ENG_1_FIRE_L": {
+			"category": "PLT Internal Lights",
+			"color": "yellow",
+			"control_type": "led",
+			"description": "Pilot Engine 1 Fire Indicator",
+			"identifier": "PLT_ENG_1_FIRE_L",
+			"inputs": [],
+			"outputs": [
+				{
+					"address": 34578,
+					"address_mask_identifier": "AH_64D_PLT_ENG_1_FIRE_L_AM",
+					"address_mask_shift_identifier": "AH_64D_PLT_ENG_1_FIRE_L",
+					"description": "0 if light is off, 1 if light is on",
+					"mask": 4096,
+					"max_value": 1,
+					"shift_by": 12,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		},
+		"PLT_MASTER_ARM_ARM_L": {
+			"category": "PLT Internal Lights",
+			"color": "yellow",
+			"control_type": "led",
+			"description": "Pilot Master Arm Armed Indicator",
+			"identifier": "PLT_MASTER_ARM_ARM_L",
+			"inputs": [],
+			"outputs": [
+				{
+					"address": 34602,
+					"address_mask_identifier": "AH_64D_PLT_MASTER_ARM_ARM_L_AM",
+					"address_mask_shift_identifier": "AH_64D_PLT_MASTER_ARM_ARM_L",
+					"description": "0 if light is off, 1 if light is on",
+					"mask": 16384,
+					"max_value": 1,
+					"shift_by": 14,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		},
+		"PLT_MASTER_ARM_SAFE_L": {
+			"category": "PLT Internal Lights",
+			"color": "green",
+			"control_type": "led",
+			"description": "Pilot Master Arm Safe Indicator",
+			"identifier": "PLT_MASTER_ARM_SAFE_L",
+			"inputs": [],
+			"outputs": [
+				{
+					"address": 34602,
+					"address_mask_identifier": "AH_64D_PLT_MASTER_ARM_SAFE_L_AM",
+					"address_mask_shift_identifier": "AH_64D_PLT_MASTER_ARM_SAFE_L",
+					"description": "0 if light is off, 1 if light is on",
+					"mask": 32768,
+					"max_value": 1,
+					"shift_by": 15,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		},
+		"PLT_MASTER_CAUTION_L": {
+			"category": "PLT Internal Lights",
+			"color": "green",
+			"control_type": "led",
+			"description": "Pilot Master Caution Indicator",
+			"identifier": "PLT_MASTER_CAUTION_L",
+			"inputs": [],
+			"outputs": [
+				{
+					"address": 34578,
+					"address_mask_identifier": "AH_64D_PLT_MASTER_CAUTION_L_AM",
+					"address_mask_shift_identifier": "AH_64D_PLT_MASTER_CAUTION_L",
+					"description": "0 if light is off, 1 if light is on",
+					"mask": 2048,
+					"max_value": 1,
+					"shift_by": 11,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		},
+		"PLT_MASTER_WARNING_L": {
+			"category": "PLT Internal Lights",
+			"color": "yellow",
+			"control_type": "led",
+			"description": "Pilot Master Warning Indicator",
+			"identifier": "PLT_MASTER_WARNING_L",
+			"inputs": [],
+			"outputs": [
+				{
+					"address": 34578,
+					"address_mask_identifier": "AH_64D_PLT_MASTER_WARNING_L_AM",
+					"address_mask_shift_identifier": "AH_64D_PLT_MASTER_WARNING_L",
+					"description": "0 if light is off, 1 if light is on",
+					"mask": 1024,
+					"max_value": 1,
+					"shift_by": 10,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		}
+	},
+	"PLT Keyboard Unit": {
+		"PLT_KU_DISPLAY": {
+			"category": "PLT Keyboard Unit",
+			"control_type": "display",
+			"description": "Pilot Keyboard Unit Display",
+			"identifier": "PLT_KU_DISPLAY",
+			"inputs": [],
+			"outputs": [
+				{
+					"address": 32910,
+					"address_identifier": "AH_64D_PLT_KU_DISPLAY_A",
+					"description": "Pilot Keyboard Unit Display",
+					"max_length": 22,
+					"suffix": "",
+					"type": "string"
+				}
+			]
+		},
+		"PLT_KU_ENT": {
+			"api_variant": "momentary_last_position",
+			"category": "PLT Keyboard Unit",
+			"control_type": "selector",
+			"description": "Pilot Keyboard Unit ENTER Key",
+			"identifier": "PLT_KU_ENT",
+			"inputs": [
+				{
+					"description": "switch to previous or next state",
+					"interface": "fixed_step"
+				},
+				{
+					"description": "set position",
+					"interface": "set_state",
+					"max_value": 1
+				},
+				{
+					"argument": "TOGGLE",
+					"description": "Toggle switch state",
+					"interface": "action"
+				}
+			],
+			"outputs": [
+				{
+					"address": 32906,
+					"address_mask_identifier": "AH_64D_PLT_KU_ENT_AM",
+					"address_mask_shift_identifier": "AH_64D_PLT_KU_ENT",
+					"description": "selector position",
+					"mask": 2,
+					"max_value": 1,
+					"shift_by": 1,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		}
+	},
+	"PLT Left Console": {
+		"PLT_APU_BTN": {
+			"api_variant": "momentary_last_position",
+			"category": "PLT Left Console",
+			"control_type": "selector",
+			"description": "Pilot APU Pushbutton",
+			"identifier": "PLT_APU_BTN",
+			"inputs": [
+				{
+					"description": "switch to previous or next state",
+					"interface": "fixed_step"
+				},
+				{
+					"description": "set position",
+					"interface": "set_state",
+					"max_value": 1
+				},
+				{
+					"argument": "TOGGLE",
+					"description": "Toggle switch state",
+					"interface": "action"
+				}
+			],
+			"outputs": [
+				{
+					"address": 34560,
+					"address_mask_identifier": "AH_64D_PLT_APU_BTN_AM",
+					"address_mask_shift_identifier": "AH_64D_PLT_APU_BTN",
+					"description": "selector position",
+					"mask": 4096,
+					"max_value": 1,
+					"shift_by": 12,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		},
+		"PLT_APU_BTN_CVR": {
+			"category": "PLT Left Console",
+			"control_type": "selector",
+			"description": "Pilot APU Pushbutton Cover",
+			"identifier": "PLT_APU_BTN_CVR",
+			"inputs": [
+				{
+					"description": "switch to previous or next state",
+					"interface": "fixed_step"
+				},
+				{
+					"description": "set position",
+					"interface": "set_state",
+					"max_value": 1
+				},
+				{
+					"argument": "TOGGLE",
+					"description": "Toggle switch state",
+					"interface": "action"
+				}
+			],
+			"outputs": [
+				{
+					"address": 34560,
+					"address_mask_identifier": "AH_64D_PLT_APU_BTN_CVR_AM",
+					"address_mask_shift_identifier": "AH_64D_PLT_APU_BTN_CVR",
+					"description": "selector position",
+					"mask": 8192,
+					"max_value": 1,
+					"shift_by": 13,
+					"suffix": "",
+					"type": "integer"
+				}
+			],
+			"positions": [
+				"CLOSE",
+				"OPEN"
+			]
+		},
+		"PLT_ENG1_START": {
+			"category": "PLT Left Console",
+			"control_type": "3Pos_2Command_Switch_OpenClose",
+			"description": "Pilot No.1 Engine Start Switch",
+			"identifier": "PLT_ENG1_START",
+			"inputs": [
+				{
+					"description": "set the switch position",
+					"interface": "set_state",
+					"max_value": 2
+				}
+			],
+			"outputs": [
+				{
+					"address": 34560,
+					"address_mask_shift_identifier": "AH_64D_PLT_ENG1_START",
+					"description": "switch position -- 0 = Down, 1 = Mid,  2 = Up",
+					"mask": 49152,
+					"max_value": 2,
+					"shift_by": 14,
+					"suffix": "",
+					"type": "integer"
+				}
+			],
+			"positions": [
+				"IGN ORIDE",
+				"OFF",
+				"START"
+			]
+		},
+		"PLT_ROTOR_BRK": {
+			"category": "PLT Left Console",
+			"control_type": "selector",
+			"description": "Pilot Rotor Brake Switch",
+			"identifier": "PLT_ROTOR_BRK",
+			"inputs": [
+				{
+					"description": "switch to previous or next state",
+					"interface": "fixed_step"
+				},
+				{
+					"description": "set position",
+					"interface": "set_state",
+					"max_value": 2
+				}
+			],
+			"outputs": [
+				{
+					"address": 34560,
+					"address_mask_shift_identifier": "AH_64D_PLT_ROTOR_BRK",
+					"description": "selector position",
+					"mask": 3072,
+					"max_value": 2,
+					"shift_by": 10,
+					"suffix": "",
+					"type": "integer"
+				}
+			],
+			"positions": [
+				"LOCK",
+				"BRK",
+				"OFF"
+			]
+		}
+	},
+	"PLT MPD Left": {
+		"PLT_MPD_L_MODE": {
+			"category": "PLT MPD Left",
+			"control_type": "selector",
+			"description": "Pilot Left MPD Mode Knob",
+			"identifier": "PLT_MPD_L_MODE",
+			"inputs": [
+				{
+					"description": "switch to previous or next state",
+					"interface": "fixed_step"
+				},
+				{
+					"description": "set position",
+					"interface": "set_state",
+					"max_value": 2
+				}
+			],
+			"outputs": [
+				{
+					"address": 32776,
+					"address_mask_shift_identifier": "AH_64D_PLT_MPD_L_MODE",
+					"description": "selector position",
+					"mask": 3,
+					"max_value": 2,
+					"shift_by": 0,
+					"suffix": "",
+					"type": "integer"
+				}
+			],
+			"positions": [
+				"MONO",
+				"NIGHT",
+				"DAY"
+			]
+		}
+	},
+	"PLT Up-Front Display": {
+		"PLT_EUFD_LINE1": {
+			"category": "PLT Up-Front Display",
+			"control_type": "display",
+			"description": "Pilot Up-Front Display Line 1",
+			"identifier": "PLT_EUFD_LINE1",
+			"inputs": [],
+			"outputs": [
+				{
+					"address": 32962,
+					"address_identifier": "AH_64D_PLT_EUFD_LINE1_A",
+					"description": "Pilot Up-Front Display Line 1",
+					"max_length": 56,
+					"suffix": "",
+					"type": "string"
+				}
+			]
+		}
+	},
+	"Radio Frequencies": {
+		"UHF_RADIO": {
+			"category": "Radio Frequencies",
+			"control_type": "radio",
+			"description": "UHF Radio",
+			"identifier": "UHF_RADIO",
+			"inputs": [
+				{
+					"description": "The frequency to set, with or without a decimal place",
+					"interface": "set_string"
+				}
+			],
+			"outputs": [
+				{
+					"address": 34656,
+					"address_identifier": "AH_64D_UHF_RADIO_A",
+					"description": "The current frequency the radio is set to",
+					"max_length": 7,
+					"suffix": "",
+					"type": "string"
+				}
+			]
+		}
+	},
+	"Seat": {
+		"SEAT_POSITION": {
+			"category": "Seat",
+			"control_type": "metadata",
+			"description": "Player's current seat position (0 = Pilot, 1 = CP/G)",
+			"identifier": "SEAT_POSITION",
+			"inputs": [],
+			"outputs": [
+				{
+					"address": 34640,
+					"address_mask_identifier": "AH_64D_SEAT_POSITION_AM",
+					"address_mask_shift_identifier": "AH_64D_SEAT_POSITION",
+					"description": "Player's current seat position (0 = Pilot, 1 = CP/G)",
+					"mask": 256,
+					"max_value": 1,
+					"shift_by": 8,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		}
+	}
+}

@@ -26,6 +26,12 @@ export type Control = {
 	outputs: ControlOutput[];
 	positions?: string[];
 	api_variant?: string;
+	/** A light's colour, where DCS-BIOS gives it as a field (AH-64D) rather than in the description. */
+	color?: string;
+	/** A control both seats have, shown once: the player's seat picks which seat's control it is. */
+	seat?: { position: Control; variants: Control[] };
+	/** One seat's own copy of a control both seats have (hidden from the lists; typed identifiers still work). */
+	seatVariant?: boolean;
 	/** Set by parseControls on lights: every light that is part of the same cockpit light (incl. this one). */
 	family?: string[];
 	/** Name of a multi-light indicator, e.g. "AOA Indexer". */
@@ -40,6 +46,8 @@ export type Control = {
 	knownLamp?: string;
 	/** From the aircraft data: the lever's special knob. */
 	leverKnob?: "wheel" | "hook";
+	/** From the aircraft data: a switch that turns rather than flips, and which way its highest position is. */
+	rotary?: "cw" | "ccw";
 	/** 2- and 3-position switches: where the lever points at the highest position, as seen from the seat. */
 	highEnd?: LeverEnd;
 };
@@ -51,6 +59,14 @@ export type LeverAt = LeverEnd | "middle";
 const OPPOSITE: Record<LeverEnd, LeverEnd> = { up: "down", down: "up", left: "right", right: "left" };
 
 export type ControlMap = Map<string, Control>;
+
+/** Two-seat aircraft: what tells the seats' controls apart (see `mergeSeats`). */
+export type Seats = {
+	/** DCS-BIOS output with the player's seat: 0 for the first seat below, 1 for the second. */
+	position: string;
+	/** Each seat's identifier, category and description prefix, and its name. */
+	seats: { prefix: string; category: string; description: string; name: string }[];
+};
 
 /** Position names that mean "resting / normal", most resting first. */
 export const RESTING = ["OFF", "SAFE", "RETRACT", "CLOSED", "CLOSE", "STBY", "NORM", "AUTO", "DISABLE"];
@@ -79,11 +95,13 @@ export function parseControls(json: unknown, aircraft: AircraftData): ControlMap
 	for (const category of Object.values(json as Record<string, Record<string, Control>>)) {
 		for (const control of Object.values(category)) map.set(control.identifier, control);
 	}
+	if (aircraft.SEATS) mergeSeats(map, aircraft.SEATS);
 	for (const c of map.values()) {
 		if (aircraft.KNOWN_PUSH_BUTTONS.includes(c.identifier)) c.pushButton = true;
 		if (aircraft.KNOWN_COLOURS[c.identifier]) c.knownColour = aircraft.KNOWN_COLOURS[c.identifier];
 		if (aircraft.KNOWN_LAMPS[c.identifier]) c.knownLamp = aircraft.KNOWN_LAMPS[c.identifier];
 		if (aircraft.LEVER_KNOBS[c.identifier]) c.leverKnob = aircraft.LEVER_KNOBS[c.identifier];
+		if (aircraft.ROTARY_KNOBS?.[c.identifier]) c.rotary = aircraft.ROTARY_KNOBS[c.identifier];
 	}
 	for (const c of map.values()) {
 		const named = aircraft.POSITION_NAMES[c.identifier];
@@ -110,6 +128,46 @@ export function parseControls(json: unknown, aircraft: AircraftData): ControlMap
 		for (const id of ids) Object.assign(map.get(id)!, { family: ids, familyName: name, indicator: { kind, roles } });
 	}
 	return map;
+}
+
+/**
+ * Two seats, one list: a control both seats have (PLT_KU_ENT, CPG_KU_ENT) becomes one (KU_ENT) that
+ * reads and sends as the player's own seat; the seats' own stay for typed identifiers but leave the
+ * lists. A control only one seat has keeps its identifier, and its panel is named for the seat.
+ */
+function mergeSeats(map: ControlMap, { position, seats }: Seats): void {
+	const seat = map.get(position);
+	if (!seat) return;
+	const unprefix = (text: string, prefix: string) => (text.startsWith(prefix) ? text.slice(prefix.length) : text);
+	const groups = new Map<string, Control[]>();
+	for (const c of map.values()) {
+		const i = seats.findIndex((s) => c.identifier.startsWith(s.prefix));
+		if (i < 0) continue;
+		const base = c.identifier.slice(seats[i].prefix.length);
+		const variants = groups.get(base) ?? [];
+		variants[i] = c;
+		groups.set(base, variants);
+	}
+	for (const [base, variants] of groups) {
+		if (variants.filter(Boolean).length === seats.length && !map.has(base)) {
+			const first = variants[0];
+			map.set(base, {
+				...first,
+				identifier: base,
+				category: unprefix(first.category, seats[0].category),
+				description: unprefix(first.description, seats[0].description),
+				positions: first.positions && [...first.positions],
+				seat: { position: seat, variants },
+			});
+			for (const v of variants) v.seatVariant = true;
+			continue;
+		}
+		variants.forEach((c, i) => {
+			if (!c) return;
+			c.category = `${unprefix(c.category, seats[i].category)} (${seats[i].name})`;
+			c.description = unprefix(c.description, seats[i].description);
+		});
+	}
 }
 
 export function loadControls(path: string, aircraft: AircraftData): ControlMap {
@@ -151,12 +209,11 @@ export function stripColour(description: string): string {
 	return description.replace(COLOUR_SUFFIX, "").trim();
 }
 
-/** The light's colour from its DCS-BIOS description, e.g. "MASTER CAUTION (yellow)". */
+/** The light's colour from its DCS-BIOS description, e.g. "MASTER CAUTION (yellow)", or its colour field. */
 export function lampColour(control: Control): LampColour | undefined {
 	if (control.knownColour) return control.knownColour;
-	const m = COLOUR_SUFFIX.exec(control.description);
-	if (!m) return undefined;
-	const colour = m[1].toLowerCase();
+	const colour = (COLOUR_SUFFIX.exec(control.description)?.[1] ?? control.color)?.toLowerCase();
+	if (!colour || !/^(green|yellow|amber|red|white|blue)$/.test(colour)) return undefined;
 	return (colour === "amber" ? "yellow" : colour) as LampColour;
 }
 

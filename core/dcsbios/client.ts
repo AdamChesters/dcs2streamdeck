@@ -73,11 +73,19 @@ export class DcsBiosClient {
 	/** Current value of a control, or undefined before DCS has sent it. */
 	read(control: Control): Value | undefined {
 		if (!this.connected) return undefined;
+		if (control.seat) return this.read(this.seatControl(control));
 		const int = intOutput(control);
 		if (int) return this.parser.readInt(int.address, int.mask, int.shift_by);
 		const str = stringOutput(control);
 		if (str) return this.parser.readString(str.address, str.max_length);
 		return undefined;
+	}
+
+	/** A control both seats have, as the player's own seat's (the first seat until DCS says). */
+	seatControl(control: Control): Control {
+		if (!control.seat) return control;
+		const at = this.read(control.seat.position);
+		return control.seat.variants[typeof at === "number" ? at : 0] ?? control.seat.variants[0];
 	}
 
 	/** Calls `listener` whenever the control's value changes in DCS. Returns an unsubscribe function. */
@@ -126,6 +134,7 @@ export class DcsBiosClient {
 }
 
 function touches(control: Control, changed: ReadonlySet<number>): boolean {
+	if (control.seat) return [control.seat.position, ...control.seat.variants].some((c) => touches(c, changed));
 	for (const out of control.outputs) {
 		const length = out.type === "string" ? out.max_length : 2;
 		for (let a = out.address & ~1; a < out.address + length; a += 2) {

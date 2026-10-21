@@ -5,7 +5,8 @@
  *   node tools/fake-dcs.ts --aircraft F-16C_50 --json <F-16C_50.json> [--magnetic HDPT_SW_L:10]
  *   node tools/fake-dcs.ts --play <recording.jsonl>
  *
- * --aircraft sets the aircraft (DCS-BIOS module name) it flies (default FA-18C_hornet).
+ * --aircraft sets the aircraft (DCS-BIOS module name) it flies (default FA-18C_hornet); DCS's own
+ * name for it (AH-64D_BLK_II for module AH-64D) goes in the stream.
  * Sim mode keeps a memory map, applies commands sent to UDP 7778 and sends
  * the export stream to 239.255.50.10:5010 at 30 frames a second.
  * --magnetic ID:seconds drops that switch back to 0 after the delay, like the
@@ -16,7 +17,7 @@ import dgram from "node:dgram";
 import { readFileSync } from "node:fs";
 import { parseArgs } from "node:util";
 
-import { aircraftByModule, DEFAULT_AIRCRAFT } from "../core/aircraft.data.ts";
+import { aircraftByModule, dcsName, DEFAULT_AIRCRAFT } from "../core/aircraft.data.ts";
 import { DEFAULT_OPTIONS } from "../core/dcsbios/client.ts";
 import type { Control } from "../core/dcsbios/controls.ts";
 import { intOutput, loadControls } from "../core/dcsbios/controls.ts";
@@ -66,9 +67,10 @@ function play(file: string): void {
 }
 
 function simulate(jsonPath: string): void {
-	const controls = loadControls(jsonPath, aircraftByModule(values.aircraft!) ?? DEFAULT_AIRCRAFT);
+	const aircraft = aircraftByModule(values.aircraft!);
+	const controls = loadControls(jsonPath, aircraft ?? DEFAULT_AIRCRAFT);
 	const memory = new Uint8Array(0x10000);
-	const name = new TextEncoder().encode(values.aircraft);
+	const name = new TextEncoder().encode(aircraft ? dcsName(aircraft) : values.aircraft);
 	memory.set(name.subarray(0, 23), 0);
 
 	let low = 0xffff;

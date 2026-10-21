@@ -145,7 +145,7 @@ test("plugin drives keys and dials from DCS state and feeds the mirror", async (
 			"settings panel data with update current",
 		);
 		assert.equal(data.aircraft, "f16c");
-		assert.deepEqual(data.aircraftList.map((a: { id: string }) => a.id), ["fa18c", "f16c"]);
+		assert.deepEqual(data.aircraftList.map((a: { id: string }) => a.id), ["fa18c", "f16c", "ah64d"]);
 		assert.ok(data.catalog.find((i: { id: string }) => i.id === key.settings.control));
 		assert.equal(data.releasesPage, RELEASES_PAGE);
 		assert.equal(data.version, "0.1.0");

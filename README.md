@@ -12,9 +12,9 @@
 
 ## What
 
-Sync Stream Deck keys, lights and dials to what your jet is actually doing in DCS World. Live updating. 
+Sync Stream Deck keys, lights and dials to what your aircraft is actually doing in DCS World. Live updating. 
 
-Two ways to run this. Both cover every supported jet: each key picks its jet, and new keys start on the jet DCS is flying.
+Two ways to run this. Both cover every supported aircraft (F/A-18C, F-16C, AH-64D): each key picks its aircraft, and new keys start on the aircraft DCS is flying.
 - **Stream Deck plugin: Fully integrated.** Installs into Elgato's Stream Deck app, with your other plugins, profiles and pages.
 - **Standalone Desktop app: Lightweight** Standalone app, cannot be run with Elgato's software. Drives your deck directly. Same VR copy as the plugin, plus a popout deck window.
 - **There are dependencies** You need DCS-Bios installed. 
@@ -31,9 +31,10 @@ The DCS Streamdeck projects I tried had gone quiet. Most no longer worked with t
 
 - **DCS Switches**: any switch, button or lever. Shows its real position (ARM/SAFE, START 1/OFF/START 2) and can light up from its own cockpit light.
 - **DCS Caution/status Lights**: caution and warning lights in their cockpit colours, plus combined indicators: AOA indexer and landing gear, and on the Hornet also flaps and L BAR.
-- **DCS Dials** (Stream Deck +): turn to set brightness and volume knobs; press to step through a list. Presets for each jet's displays and cockpit lighting.
+- **DCS Dials** (Stream Deck +): turn to set brightness and volume knobs; press to step through a list. Presets for each aircraft's displays and cockpit lighting.
+- **AH-64D Apache** (new, not yet tested in DCS): both seats. A control both seats have is listed once and works from the seat you are in.
 - **VR**: a live copy of the deck in OpenKneeboard (1.9 or later). Click **Add to OpenKneeboard** in any key's settings or the app's Settings, and OpenKneeboard adds a dcs2streamdeck tab. Or add a Web Dashboard tab at `http://127.0.0.1:31730/`. See your streamdeck mirrored in VR. Finally. 
-- **Decks**: made for every Stream Deck with screen keys (tested on the Stream Deck +). The VR copy and the app take your deck's shape and shrink to fit. Stream Deck Neo: its info bar shows the jet and the time (experimental: tell us how it works).
+- **Decks**: made for every Stream Deck with screen keys (tested on the Stream Deck +). The VR copy and the app take your deck's shape and shrink to fit. Stream Deck Neo: its info bar shows the aircraft and the time (experimental: tell us how it works).
 
 ## Option 1 : Install the plugin
 

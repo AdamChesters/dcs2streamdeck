@@ -34,7 +34,7 @@ header.innerHTML = `
 	</div>
 	<label for="aircraft">Aircraft</label>
 	<select id="aircraft"></select>
-	<div class="hint">New keys start on the jet DCS is flying. Each key keeps its own jet; the lists below show only its controls. Keys for another jet go dark until DCS flies it.</div>`;
+	<div class="hint">New keys start on the aircraft DCS is flying. Each key keeps its own aircraft; the lists below show only its controls. Keys for another aircraft go dark until DCS flies it. AH-64D: a control both seats have follows the seat you are in.</div>`;
 document.body.prepend(...header.children);
 
 // The update row always shows this version: green tick when it is the newest release, red
@@ -80,7 +80,7 @@ function refresh() {
 	send({ event: "sendToPlugin", action: actionUuid, context, payload: { type: "refresh", settings } });
 }
 
-// A different jet has different controls: the key starts again (its text stays).
+// A different aircraft has different controls: the key starts again (its text stays).
 document.getElementById("aircraft").addEventListener("change", (ev) => {
 	const id = ev.target.value;
 	if (!id || id === aircraft) return;
@@ -127,7 +127,7 @@ window.connectElgatoStreamDeckSocket = (port, uuid, registerEvent, _info, action
 			const select = document.getElementById("aircraft");
 			select.replaceChildren(...(data.aircraftList || []).map((a) => Object.assign(document.createElement("option"), { value: a.id, textContent: a.name })));
 			select.value = aircraft;
-			// A new key keeps the jet the plugin chose for it.
+			// A new key keeps the aircraft the plugin chose for it.
 			if (!settings.aircraft && aircraft) saveSetting("aircraft", aircraft);
 			catalog = data.catalog || [];
 			presets = data.presets || [];

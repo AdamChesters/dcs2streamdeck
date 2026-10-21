@@ -268,7 +268,7 @@ export function dialSvg(view: DialView, width = 200, height = 100): string {
 	);
 }
 
-/** What the Stream Deck Neo's info bar shows: the jet DCS flies, or why there is none. */
+/** What the Stream Deck Neo's info bar shows: the aircraft DCS flies, or why there is none. */
 export type InfoBarView = { text: string; live: boolean };
 
 /** The Stream Deck Neo's info bar (248 × 58): DCS on the left, the time on the right. */

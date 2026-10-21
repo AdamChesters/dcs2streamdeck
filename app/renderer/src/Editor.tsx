@@ -47,7 +47,7 @@ function useItems(aircraft: string, version: string): PickerItem[] {
 	return items;
 }
 
-/** The key's or dial's jet. A different jet has different controls, so changing it starts the key again. */
+/** The key's or dial's aircraft. A different aircraft has different controls, so changing it starts the key again. */
 function AircraftPicker({ value, onChange }: { value: string; onChange: (id: string) => void }) {
 	return (
 		<>
@@ -61,7 +61,7 @@ function AircraftPicker({ value, onChange }: { value: string; onChange: (id: str
 					))}
 				</select>
 			</label>
-			<p className="hint">New keys start on the jet DCS is flying. Keys for another jet go dark until DCS flies it.</p>
+			<p className="hint">New keys start on the aircraft DCS is flying. Keys for another aircraft go dark until DCS flies it. AH-64D: a control both seats have follows the seat you are in.</p>
 		</>
 	);
 }
@@ -147,7 +147,7 @@ function KeyEditor({ index, flying, version, initial, onClose }: EditorProps<Key
 	const [s, setS] = useState<KeySettings>(initial);
 	const aircraft = aircraftOf(s, flying).AIRCRAFT.id;
 	const items = useItems(aircraft, version);
-	// The first save keeps the jet shown (a new key's default can change with what DCS flies).
+	// The first save keeps the aircraft shown (a new key's default can change with what DCS flies).
 	const save = (next: KeySettings) => {
 		const pinned = { ...next, aircraft: next.aircraft ?? aircraft };
 		setS(pinned);
@@ -244,7 +244,7 @@ function KeyEditor({ index, flying, version, initial, onClose }: EditorProps<Key
 				Matches appear in the list as you type; click one, or press Enter for the top match. The text shows the switch; the
 				highlight shows the light, in its cockpit colour. A light with several colours or parts (AOA indexer) shows all of
 				them. For a light-only key (e.g. a caution light), leave Control as
-				(none). Held and magnetic switches stay lit while on and go dark when the jet releases them.
+				(none). Held and magnetic switches stay lit while on and go dark when the aircraft releases them.
 			</p>
 			<footer>
 				<button onMouseDown={() => void api.keyDown(index)} onMouseUp={() => void api.keyUp(index)} onMouseLeave={() => void api.keyUp(index)}>

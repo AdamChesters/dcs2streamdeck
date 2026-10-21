@@ -130,15 +130,17 @@ function lightGlyph(lights: { control: Control; on: boolean; colour: Colour }[],
 /** The picture for a switch, from its type and position count. */
 function switchGlyph(c: Control, value: number | undefined): Glyph | undefined {
 	const max = intOutput(c)?.max_value ?? 0;
+	// Knobs turn clockwise to their highest position, unless the aircraft data says otherwise.
+	const turned = c.rotary === "ccw" && value !== undefined ? max - value : (value ?? 0);
 	if (isMomentary(c)) return { kind: "button", pressed: value === 1 };
-	if (max === 1 && /_COVER$/.test(c.identifier)) return { kind: "guard", open: value === 1 };
+	if (max === 1 && /_(COVER|CVR)$/.test(c.identifier)) return { kind: "guard", open: value === 1 };
 	// 3-position knobs (DDI brightness: OFF/NIGHT/DAY) turn rather than flip.
-	if (max === 2 && /\bknob\b/i.test(c.description)) return { kind: "rotary", position: value ?? 0, count: 3 };
+	if (max === 2 && (c.rotary || /\bknob\b/i.test(c.description))) return { kind: "rotary", position: turned, count: 3 };
 	if (max === 1 || max === 2) {
 		const at = leverAt(c, value);
 		return c.leverKnob ? { kind: "lever", at, knob: c.leverKnob } : { kind: "lever", at };
 	}
-	if (max >= 3 && max <= 11) return { kind: "rotary", position: value ?? 0, count: max + 1 };
+	if (max >= 3 && max <= 11) return { kind: "rotary", position: turned, count: max + 1 };
 	return undefined;
 }
 

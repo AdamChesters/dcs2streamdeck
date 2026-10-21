@@ -71,6 +71,7 @@ function familyEntry(c: Control, controls: ControlMap): { skip: boolean; descrip
 export function catalog(controls: ControlMap): PickerItem[] {
 	const items: PickerItem[] = [];
 	for (const c of controls.values()) {
+		if (c.seatVariant) continue;
 		const entry = familyEntry(c, controls);
 		if (entry.skip) continue;
 		const max = intOutput(c)?.max_value;

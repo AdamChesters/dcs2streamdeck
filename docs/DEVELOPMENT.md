@@ -25,10 +25,16 @@ npm run pack      # writes dist/dcs2streamdeck-<version>.streamDeckPlugin
 - `app/`: the standalone desktop app (see below).
 
 Each key and dial saves its aircraft (`aircraft` setting). Keys without one were made with
-the F/A-18C plugin before 0.4.0 and stay F/A-18C keys; a new key starts on the jet DCS is
-flying. Keys of another jet stay dark and show its name.
+the F/A-18C plugin before 0.4.0 and stay F/A-18C keys; a new key starts on the aircraft DCS is
+flying. Keys of another aircraft stay dark and show its name.
 
-To add an aircraft: copy an `aircraft/<id>` folder, give it a new id, module and names,
+Two-seat aircraft (AH-64D) set `SEATS` in their data: a control both seats have (`PLT_KU_ENT`,
+`CPG_KU_ENT`) is listed once (`KU_ENT`) and reads and sends as the seat DCS-BIOS says the player
+is in (`SEAT_POSITION`). A control only one seat has keeps its identifier. If DCS calls the
+aircraft something other than the DCS-BIOS module, `dcsName` says what (`AH-64D_BLK_II`).
+
+To add an aircraft: copy an `aircraft/<id>` folder, give it a new id, module (and `dcsName` if DCS
+uses another name) and names,
 add it to `AIRCRAFT_LIST` in `core/aircraft.data.ts`, and replace the data and tests.
 
 ## Testing without DCS
@@ -37,6 +43,8 @@ add it to `AIRCRAFT_LIST` in `core/aircraft.data.ts`, and replace the data and t
   pretends to be DCS with DCS-BIOS. It applies the commands it receives and drops
   the APU switch after 10 seconds, like the jet. For the F-16C:
   `node tools/fake-dcs.ts --aircraft F-16C_50 --json <path>/F-16C_50.json --magnetic HDPT_SW_L:10`.
+  For the AH-64D: `--aircraft AH-64D --json <path>/AH-64D.json`; send it `SEAT_POSITION 1` to
+  move to the front seat.
 - `node tools/record.ts recordings/session.jsonl` records a real DCS-BIOS stream;
   `node tools/fake-dcs.ts --play recordings/session.jsonl` plays it back.
 - `D2S_RELEASES_API=<url>` points the plugin's and the app's update check at another releases

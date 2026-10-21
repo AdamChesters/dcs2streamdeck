@@ -7,7 +7,7 @@ import os from "node:os";
 import path from "node:path";
 
 import type { AircraftData } from "./aircraft.data.ts";
-import { AIRCRAFT_LIST, aircraftById, aircraftByModule } from "./aircraft.data.ts";
+import { AIRCRAFT_LIST, aircraftByDcsName, aircraftById, aircraftByModule, dcsName } from "./aircraft.data.ts";
 import type { Dcs, Lookup } from "./bindings.ts";
 import type { DcsBiosClient } from "./dcsbios/client.ts";
 import type { ControlMap } from "./dcsbios/controls.ts";
@@ -68,10 +68,10 @@ export class Fleet {
 
 	/** The supported aircraft DCS is flying, if any. */
 	flying(): AircraftData | undefined {
-		return this.client.connected ? aircraftByModule(this.client.aircraft) : undefined;
+		return this.client.connected ? aircraftByDcsName(this.client.aircraft) : undefined;
 	}
 
-	/** The Neo info bar: the jet DCS flies (dimmed when not supported), or NO DCS. */
+	/** The Neo info bar: the aircraft DCS flies (dimmed when not supported), or NO DCS. */
 	infoBar(): InfoBarView {
 		if (!this.client.connected) return { text: "NO DCS", live: false };
 		const flying = this.flying();
@@ -80,7 +80,7 @@ export class Fleet {
 
 	/** True when DCS is flying this aircraft. Keys of other aircraft stay dark and send nothing. */
 	isFlying(id: string): boolean {
-		return this.client.aircraft === aircraftById(id).AIRCRAFT.module;
+		return this.client.aircraft === dcsName(aircraftById(id));
 	}
 
 	/** DCS as this aircraft's keys see it: live only while DCS flies it. */
@@ -98,8 +98,11 @@ export class Fleet {
 					return client.connected ? aircraft.AIRCRAFT.name : "NO DCS";
 				},
 				read: (c) => (flying() ? client.read(c) : undefined),
+				// A control both seats have goes to the player's own seat.
 				send: (identifier, argument) => {
-					if (flying()) client.send(identifier, argument);
+					if (!flying()) return;
+					const c = this.controls(aircraft.AIRCRAFT.id).get(identifier);
+					client.send(c?.seat ? client.seatControl(c).identifier : identifier, argument);
 				},
 			};
 			this.#dcs.set(aircraft.AIRCRAFT.id, dcs);
