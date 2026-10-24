@@ -15,7 +15,7 @@ let releasesPage = "";
 /** This plugin's version ("0.4.2"), shown in the update row. */
 let version = "__VERSION__".split(".").slice(0, 3).join(".");
 
-// Every page starts with the update row, Setup (folds away; stays as the user left it) and the key's aircraft.
+// Every page starts with the update row, Setup (open until folded; stays as the user left it) and the key's aircraft.
 const header = document.createElement("div");
 header.innerHTML = `
 	<div id="update" class="update"><b></b><span></span></div>
@@ -37,10 +37,11 @@ header.innerHTML = `
 	<div class="hint">New keys start on the aircraft DCS is flying. Each key keeps its own aircraft; the lists below show only its controls. Keys for another aircraft go dark until DCS flies it. AH-64D: a control both seats have follows the seat you are in.</div>`;
 document.body.prepend(...header.children);
 
-// Setup starts folded; open or folded, it stays that way on every key's page.
+// Setup starts open (a new user's first step); once folded, it stays folded on every key's page.
 const setup = document.getElementById("setup");
+setup.open = true;
 try {
-	setup.open = localStorage.getItem("setupOpen") === "1";
+	setup.open = localStorage.getItem("setupOpen") !== "0";
 } catch {}
 setup.addEventListener("toggle", () => {
 	try {
