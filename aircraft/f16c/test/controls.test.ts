@@ -20,7 +20,7 @@ const single = (identifier: string, description: string, control_type = "selecto
 	}, aircraft).get(identifier)!;
 
 test("loads every control by identifier", () => {
-	assert.equal(controls.size, 18);
+	assert.equal(controls.size, 21);
 	assert.equal(get("JFS_SW").category, "Engine");
 });
 
@@ -76,6 +76,9 @@ test("what a key can do: hold a rocker's ends, set a switch's positions", () => 
 	assert.deepEqual(labels("MASTER_ARM_SW"), ["Set MASTER ARM", "Set OFF", "Set SIMULATE", "Next position (wraps)", "Step up", "Step down"]);
 	assert.deepEqual(labels("PRI_CONSOLES_BRT_KNB"), ["Turn up", "Turn down"]);
 	assert.deepEqual(labels("MASTER_CAUTION"), ["Press (hold 1, release 0)"]);
+	assert.deepEqual(labels("ICP_DATA_RTN_SEQ_SW"), ["Hold RTN", "Hold SEQ"], "sideways: RTN left, SEQ right");
+	assert.deepEqual(labels("UHF_FUNC_KNB").slice(0, 4), ["Set OFF", "Set MAIN", "Set BOTH", "Set ADF"]);
+	assert.deepEqual(labels("ECM_1_BTN").slice(0, 2), ["Set DEPRESSED", "Set RELEASED"]);
 });
 
 test("light colours: from the description, and the F-16C light DCS-BIOS gives no colour", () => {

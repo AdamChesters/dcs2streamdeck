@@ -18,6 +18,7 @@ test("catalog groups by panel and marks key, dial and lamp use", () => {
 	assert.deepEqual([...new Set(items.map((i) => i.category))], [
 		"Angle of Attack Indexer Lights",
 		"Auxiliary Power Unit Panel",
+		"Communication Panel",
 		"Ejection Seat",
 		"Electrical Power Panel",
 		"Flaps, Landing Gear, Stores Indicator Panel",
@@ -27,6 +28,7 @@ test("catalog groups by panel and marks key, dial and lamp use", () => {
 		"LH Advisory Panel",
 		"Master Caution Light",
 		"Select Jettison Button",
+		"Sensor Panel",
 	]);
 	const by = Object.fromEntries(items.map((i) => [i.id, i]));
 	assert.deepEqual(by.FLAP_SW.order?.map((v) => by.FLAP_SW.positions?.[v]), ["AUTO", "HALF", "FULL"], "positions listed top first");

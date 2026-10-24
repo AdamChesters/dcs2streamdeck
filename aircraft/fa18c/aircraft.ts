@@ -74,6 +74,10 @@ export const POSITION_NAMES: Record<string, string[]> = {
 	CMSD_DISPENSE_SW: ["OFF", "ON", "BYPASS"],
 	THROTTLE_DISP_SW: ["FLARE", "OFF", "CHAFF"],
 	EMERGENCY_PARKING_BRAKE_ROTATE: ["EMERG", "PARK", "RELEASE"],
+	WING_FOLD_PULL: ["STOW", "PULL"],
+	RADAR_SW: ["OFF", "STBY", "OPR", "EMERG"],
+	// DCS binds the ILS channel only as CW/CCW: channel 1 at value 0 (panel order, not checked in DCS).
+	COM_ILS_CHANNEL_SW: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20"],
 };
 
 /** On the F/A-18C a switch's highest position is up (forward on the consoles), unless listed in HIGH_END. */

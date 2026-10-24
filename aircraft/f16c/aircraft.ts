@@ -106,6 +106,23 @@ export const POSITION_NAMES: Record<string, string[]> = {
 	COMM2_MODE_KNB: ["OFF", "SQL", "GD"],
 	ECM_PW_SW: ["OFF", "STBY", "OPR"],
 	ECM_XMIT_SW: ["3", "2", "1"],
+	HIDE_STICK: ["SHOW", "HIDE"],
+	ADV_MODE_SW: ["RELEASED", "DEPRESSED"],
+	ECM_1_BTN: ["RELEASED", "DEPRESSED"],
+	ECM_2_BTN: ["RELEASED", "DEPRESSED"],
+	ECM_3_BTN: ["RELEASED", "DEPRESSED"],
+	ECM_4_BTN: ["RELEASED", "DEPRESSED"],
+	ECM_5_BTN: ["RELEASED", "DEPRESSED"],
+	ECM_6_BTN: ["RELEASED", "DEPRESSED"],
+	ECM_FRM_BTN: ["RELEASED", "DEPRESSED"],
+	ECM_SPL_BTN: ["RELEASED", "DEPRESSED"],
+	RWR_PWR_BTN: ["RELEASED", "DEPRESSED"],
+	ICP_DATA_RTN_SEQ_SW: ["RTN", "OFF", "SEQ"],
+	UHF_FREQ_0025_KNB: ["00", "25", "50", "75"],
+	// DCS binds these only as keyboard commands (no value): named in panel order, not checked in DCS.
+	UHF_CHAN_KNB: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20"],
+	UHF_FUNC_KNB: ["OFF", "MAIN", "BOTH", "ADF"],
+	UHF_MODE_KNB: ["MANUAL", "PRESET", "GUARD"],
 };
 
 /**
@@ -127,6 +144,8 @@ export const HIGH_END: Record<string, "up" | "down" | "left" | "right"> = {
 	IFF_M4_CODE_SW: "down",
 	IFF_M4_REPLY_SW: "down",
 	SEAT_ADJ: "down",
+	// The ICP's sideways rocker: RTN left, SEQ right.
+	ICP_DATA_RTN_SEQ_SW: "right",
 };
 
 /**

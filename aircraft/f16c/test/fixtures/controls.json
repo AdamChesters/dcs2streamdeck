@@ -479,5 +479,100 @@
 				}
 			]
 		}
+	},
+	"ECM": {
+		"ECM_1_BTN": {
+			"category": "ECM",
+			"control_type": "selector",
+			"description": "ECM 1 Button",
+			"identifier": "ECM_1_BTN",
+			"inputs": [
+				{
+					"description": "switch to previous or next state",
+					"interface": "fixed_step"
+				},
+				{
+					"description": "set position",
+					"interface": "set_state",
+					"max_value": 1
+				},
+				{
+					"argument": "TOGGLE",
+					"description": "Toggle switch state",
+					"interface": "action"
+				}
+			],
+			"outputs": [
+				{
+					"address": 17702,
+					"address_mask_identifier": "F_16C_50_ECM_1_BTN_AM",
+					"address_mask_shift_identifier": "F_16C_50_ECM_1_BTN",
+					"description": "selector position",
+					"mask": 16384,
+					"max_value": 1,
+					"shift_by": 14,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		}
+	},
+	"UFC": {
+		"ICP_DATA_RTN_SEQ_SW": {
+			"category": "UFC",
+			"control_type": "3Pos_2Command_Switch_OpenClose",
+			"description": "ICP Data Control Switch, RTN-SEQ",
+			"identifier": "ICP_DATA_RTN_SEQ_SW",
+			"inputs": [
+				{
+					"description": "set the switch position",
+					"interface": "set_state",
+					"max_value": 2
+				}
+			],
+			"outputs": [
+				{
+					"address": 17460,
+					"address_mask_shift_identifier": "F_16C_50_ICP_DATA_RTN_SEQ_SW",
+					"description": "switch position -- 0 = Down, 1 = Mid,  2 = Up",
+					"mask": 3,
+					"max_value": 2,
+					"shift_by": 0,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		}
+	},
+	"UHF": {
+		"UHF_FUNC_KNB": {
+			"category": "UHF",
+			"control_type": "selector",
+			"description": "UHF Function Knob",
+			"identifier": "UHF_FUNC_KNB",
+			"inputs": [
+				{
+					"description": "switch to previous or next state",
+					"interface": "fixed_step"
+				},
+				{
+					"description": "set position",
+					"interface": "set_state",
+					"max_value": 3
+				}
+			],
+			"outputs": [
+				{
+					"address": 17484,
+					"address_mask_shift_identifier": "F_16C_50_UHF_FUNC_KNB",
+					"description": "selector position",
+					"mask": 768,
+					"max_value": 3,
+					"shift_by": 8,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		}
 	}
 }

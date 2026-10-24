@@ -18,11 +18,14 @@ test("catalog groups by panel and marks key, dial and lamp use", () => {
 	const items = catalog(controls);
 	assert.deepEqual([...new Set(items.map((i) => i.category))], [
 		"CMDS",
+		"ECM",
 		"Engine",
 		"Gear System",
 		"Interior Lights",
 		"MMC",
 		"Sensor Panel",
+		"UFC",
+		"UHF",
 		"Warning, Caution and IndicatorLights",
 	]);
 	const by = Object.fromEntries(items.map((i) => [i.id, i]));
