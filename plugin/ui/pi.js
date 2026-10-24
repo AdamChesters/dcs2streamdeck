@@ -15,13 +15,13 @@ let releasesPage = "";
 /** This plugin's version ("0.4.2"), shown in the update row. */
 let version = "__VERSION__".split(".").slice(0, 3).join(".");
 
-// Every page starts with Setup (always open, with the update row) and the key's aircraft.
+// Every page starts with the update row, Setup (folds away; stays as the user left it) and the key's aircraft.
 const header = document.createElement("div");
 header.innerHTML = `
-	<div class="setup">
-		<div class="setup-title">Setup (all keys and dials)</div>
-		<div id="update" class="update"><b></b><span></span></div>
-		<div id="updateNote" class="hint" hidden></div>
+	<div id="update" class="update"><b></b><span></span></div>
+	<div id="updateNote" class="hint" hidden></div>
+	<details class="setup" id="setup">
+		<summary class="setup-title">Setup (all keys and dials)</summary>
 		<div class="status" id="status">Waiting for plugin…</div>
 		<label for="jsonDir">DCS-BIOS JSON folder</label>
 		<input type="text" id="jsonDir" data-global="jsonDir" placeholder="Empty = Saved Games\\DCS\\Scripts\\DCS-BIOS\\doc\\json" />
@@ -31,11 +31,22 @@ header.innerHTML = `
 		<label for="mirrorPort">VR mirror port</label>
 		<input type="number" id="mirrorPort" data-global="mirrorPort" placeholder="__MIRROR_PORT__" />
 		<div class="hint">Change only if another program uses __MIRROR_PORT__. A new port needs a Stream Deck restart, then Add to OpenKneeboard again.</div>
-	</div>
+	</details>
 	<label for="aircraft">Aircraft</label>
 	<select id="aircraft"></select>
 	<div class="hint">New keys start on the aircraft DCS is flying. Each key keeps its own aircraft; the lists below show only its controls. Keys for another aircraft go dark until DCS flies it. AH-64D: a control both seats have follows the seat you are in.</div>`;
 document.body.prepend(...header.children);
+
+// Setup starts folded; open or folded, it stays that way on every key's page.
+const setup = document.getElementById("setup");
+try {
+	setup.open = localStorage.getItem("setupOpen") === "1";
+} catch {}
+setup.addEventListener("toggle", () => {
+	try {
+		localStorage.setItem("setupOpen", setup.open ? "1" : "0");
+	} catch {}
+});
 
 // The update row always shows this version: green tick when it is the newest release, red
 // cross when a newer one is out (click installs it), amber "!" when GitHub could not be asked
