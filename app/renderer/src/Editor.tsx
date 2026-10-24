@@ -93,6 +93,7 @@ function ControlPicker({
 		return [...map];
 	}, [items, search, value, keep]);
 	const matches = groups.reduce((n, [, list]) => n + list.length, 0);
+	const picked = items.find((i) => i.id === value);
 	const pick = (id: string) => {
 		onChange(id);
 		setSearch("");
@@ -113,7 +114,7 @@ function ControlPicker({
 					}
 				}}
 			/>
-			{/* While searching, the matches show as an open list (live results). */}
+			{/* While searching, the matches show as an open list (live results). Long names wrap there and show in full below. */}
 			<select value={value} size={search.trim() ? Math.max(2, Math.min(8, matches + 1 + groups.length)) : 1} onChange={(e) => pick(e.target.value)}>
 				<option value="">(none)</option>
 				{groups.map(([category, list]) => (
@@ -126,15 +127,26 @@ function ControlPicker({
 					</optgroup>
 				))}
 			</select>
+			{picked && (
+				<p className="picked">
+					{picked.description} <code>{picked.id}</code>
+				</p>
+			)}
 		</div>
 	);
 }
 
 const forKeys = (i: PickerItem) => i.key;
-const forLamps = (i: PickerItem) => i.led || i.key;
+const forLamps = (i: PickerItem) => !i.action && (i.led || i.key);
 const forDials = (i: PickerItem) => i.dial;
 
 /** [value, name] pairs from the top (or left) of the switch, like the cockpit. */
+/** The list entry for a key: its bind ("PTT/RTS Switch - ICS") when it is one, else its control. */
+function pickedId(items: PickerItem[], control: string | undefined, mode: string | undefined): string {
+	if (!control) return "";
+	return items.find((i) => i.action?.control === control && i.action.mode === mode)?.id ?? control;
+}
+
 /** Positions "Next position" can land on, top (or left) first, like the cockpit. */
 function positionsOf(item: PickerItem | undefined): [number, string][] {
 	if (!item?.maxValue || item.maxValue < 2) return [];
@@ -171,13 +183,16 @@ function KeyEditor({ index, flying, version, initial, onClose }: EditorProps<Key
 	const item = items.find((i) => i.id === s.control);
 	const positions = positionsOf(item);
 	const chosen = new Set(s.cycle ?? []);
+	// The list shows the key's bind ("PTT/RTS Switch - ICS") when it is one, else its control.
+	const shown = pickedId(items, s.control, s.mode);
 
-	// Picking a switch fills in its own light when it has one and none is set.
+	// Picking a bind sets its control and mode; picking a control starts on Automatic (a mode for the
+	// old control may mean nothing). A switch fills in its own light when it has one and none is set.
 	const pickControl = (id: string) => {
 		const picked = items.find((i) => i.id === id);
-		// A mode for the old control may mean nothing for the new one.
-		const mode = s.mode === "custom" ? s.mode : "";
-		save({ ...s, control: id, mode, cycle: [], lamp: s.lamp || picked?.lamp || "" });
+		const control = picked?.action?.control ?? id;
+		const mode = picked?.action?.mode ?? (s.mode === "custom" ? s.mode : "");
+		save({ ...s, control, mode: mode as KeySettings["mode"], cycle: [], lamp: s.lamp || picked?.lamp || "" });
 	};
 
 	return (
@@ -191,7 +206,7 @@ function KeyEditor({ index, flying, version, initial, onClose }: EditorProps<Key
 			<AircraftPicker value={aircraft} onChange={(id) => save({ aircraft: id, ...(s.title ? { title: s.title } : {}) })} />
 			<label>
 				Control
-				<ControlPicker items={items} value={s.control ?? ""} onChange={pickControl} keep={forKeys} placeholder="Type to search (e.g. apu), then pick below" />
+				<ControlPicker items={items} value={shown} onChange={pickControl} keep={forKeys} placeholder="Type to search (e.g. apu), then pick below" />
 			</label>
 			<label>
 				Key text

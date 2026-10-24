@@ -11,6 +11,10 @@ code { color: #e8e8e8; }
 .checks { display: flex; flex-wrap: wrap; gap: 4px 12px; margin-top: 4px; }
 .checks label { display: inline-flex; align-items: center; gap: 4px; margin: 0; color: #d8d8d8; }
 .row select { flex: 1; }
+/* Long names wrap in the open list and show in full under the dropdown, never cut off. */
+select[size] option { white-space: normal; overflow-wrap: anywhere; padding: 2px 0; }
+.picked { margin: 4px 0 0; color: #d8d8d8; overflow-wrap: anywhere; }
+.picked code { color: #9a9a9a; }
 input[type=search] { box-sizing: border-box; width: 100%; padding: 5px 6px; margin-bottom: 4px; background: #3d3d3d; color: #e8e8e8; border: 1px solid #555; border-radius: 3px; font: inherit; }
 button { padding: 5px 10px; background: #4a4a4a; color: #e8e8e8; border: 1px solid #5a5a5a; border-radius: 3px; font: inherit; cursor: pointer; }
 .setup { margin: 2px 0 6px; padding: 8px; border: 1px solid #444; border-radius: 4px; background: #282828; }

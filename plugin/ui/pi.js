@@ -186,17 +186,18 @@ document.addEventListener("change", (ev) => {
 
 /**
  * A dropdown of controls grouped by cockpit panel, with a search box that
- * narrows it. `keep(item)` limits which controls appear.
+ * narrows it. `keep(item)` limits which controls appear; `current()` is the entry to show
+ * (default: the setting the dropdown saves).
  */
-function picker(select, search, keep) {
+function picker(select, search, keep, current = () => settings[select.dataset.setting] ?? "") {
 	const fill = () => {
 		const words = search.value.toLowerCase().split(/\s+/).filter(Boolean);
-		const current = settings[select.dataset.setting] ?? "";
+		const picked = current();
 		const groups = new Map();
 		for (const item of catalog) {
 			if (!keep(item)) continue;
 			const text = `${item.id} ${item.description} ${item.category}`.toLowerCase();
-			if (!words.every((w) => text.includes(w)) && item.id !== current) continue;
+			if (!words.every((w) => text.includes(w)) && item.id !== picked) continue;
 			if (!groups.has(item.category)) groups.set(item.category, []);
 			groups.get(item.category).push(item);
 		}
@@ -209,7 +210,7 @@ function picker(select, search, keep) {
 				return group;
 			}),
 		);
-		select.value = current;
+		select.value = picked;
 		// While searching, show the matches as an open list (like live results).
 		const matches = select.querySelectorAll("option").length - 1;
 		select.size = words.length ? Math.max(2, Math.min(8, matches + 1 + groups.size)) : 1;

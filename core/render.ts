@@ -221,16 +221,9 @@ function switchGlyph(g: Glyph, ink: string, live: boolean): string {
 	}
 }
 
-/** One or two short title lines above a glyph. */
+/** The title above a glyph, in the band over the picture. */
 function smallTitle(title: string, colour: string): string {
-	const lines = wrap(title, 14).slice(0, 2);
-	const y = lines.length === 1 ? [26] : [20, 40];
-	return lines
-		.map(
-			(line, i) =>
-				`<text x="72" y="${y[i]}" ${FONT} font-size="${Math.min(lines.length === 1 ? 20 : 17, fit(line, 20))}" fill="${colour}" text-anchor="middle">${escape(line)}</text>`,
-		)
-		.join("");
+	return fittedLines(title, colour, 4, 46, 20);
 }
 
 export type DialView = {
@@ -289,14 +282,42 @@ export function svgDataUrl(svg: string): string {
 }
 
 function titleLines(title: string, colour: string): string {
-	const lines = wrap(title, 11).slice(0, 2);
-	const y = lines.length === 1 ? [52] : [40, 70];
-	return lines
+	return fittedLines(title, colour, 14, 84, 26);
+}
+
+/**
+ * Text centred in the band from `top` to `bottom`: as many lines (up to 4) as give the biggest font, never
+ * bigger than `max`. Nothing is cut: a long name gets smaller and wraps, and a word too long for a line splits.
+ */
+function fittedLines(text: string, colour: string, top: number, bottom: number, max: number): string {
+	const room = 130;
+	let best = { lines: [""], size: 0 };
+	for (let count = 1; count <= 4; count++) {
+		const lines = wrapInto(text, count);
+		const longest = Math.max(1, ...lines.map((l) => l.length));
+		const size = Math.min(max, room / (0.62 * longest), (bottom - top) / (lines.length * 1.12));
+		if (size > best.size + 0.5) best = { lines, size };
+	}
+	const size = Math.max(6, Math.floor(best.size));
+	const start = top + (bottom - top - best.lines.length * size * 1.12) / 2;
+	return best.lines
 		.map(
 			(line, i) =>
-				`<text x="72" y="${y[i]}" font-family="Arial, sans-serif" font-size="${fit(line, 26)}" fill="${colour}" text-anchor="middle">${escape(line)}</text>`,
+				`<text x="72" y="${Math.round(start + size * (1.12 * i + 0.9))}" ${FONT} font-size="${size}" fill="${colour}" text-anchor="middle">${escape(line)}</text>`,
 		)
 		.join("");
+}
+
+/** Words into at most `count` balanced lines. Words stay whole unless one is too long to read on a line (19+). */
+function wrapInto(text: string, count: number): string[] {
+	const words = text.split(/\s+/).filter(Boolean);
+	if (!words.length) return [""];
+	const total = words.join(" ").length;
+	const longest = Math.max(...words.map((w) => w.length));
+	for (let width = Math.max(Math.ceil(total / count), Math.min(longest, 19)); ; width++) {
+		const lines = wrap(words.flatMap((w) => (w.length > width ? (w.match(new RegExp(`.{1,${width}}`, "g")) ?? [w]) : [w])).join(" "), width);
+		if (lines.length <= count) return lines;
+	}
 }
 
 function wrap(text: string, width: number): string[] {
@@ -316,7 +337,7 @@ function wrap(text: string, width: number): string[] {
 
 /** Font size that keeps `text` inside `room` pixels (Arial is about 0.62 em per capital letter). */
 function fit(text: string, max: number, room = 130): number {
-	return Math.max(12, Math.min(max, Math.floor(room / (0.62 * Math.max(1, text.length)))));
+	return Math.max(7, Math.min(max, Math.floor(room / (0.62 * Math.max(1, text.length)))));
 }
 
 function escape(text: string): string {

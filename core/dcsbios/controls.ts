@@ -320,6 +320,31 @@ export function positionName(control: Control, value: number): string {
 	return String(value);
 }
 
+/**
+ * A control's name without its position list ("APU Control Switch, ON/OFF"), a trailing dash ("PTT/RTS Switch -")
+ * or a mouse hint ("RWR Intensity Knob - Rotate to adjust brightness", "SAI Cage Knob, (MW) Adjust ...").
+ */
+export function controlName(control: Control): string {
+	return control.description
+		.replace(/,\s*\((MW|LMB|RMB)\).*$/, "")
+		.replace(/\s+-\s+(Rotate|Press|Push|Pull|Turn|Hold|Lift)\b.*$/, "")
+		.replace(/,[^,]*\/[^,]*$/, "")
+		.replace(/\s*-\s*$/, "")
+		.trim();
+}
+
+/**
+ * What a key mode does, in the words of DCS's own key binds ("ICS", "Depress", "Increase"), or undefined
+ * for modes that are not a bind of their own (a push button's press, Custom).
+ */
+export function actionName(control: Control, mode: string): string | undefined {
+	const position = positionMode(mode);
+	if (position) return positionName(control, position[1]);
+	if (mode === "push:low" || mode === "push:high") return control.centred?.[mode === "push:low" ? 0 : 1];
+	if (mode === "inc" || mode === "dec") return isKnob(control) ? (mode === "inc" ? "Increase" : "Decrease") : mode === "inc" ? "Step up" : "Step down";
+	return { depress: "Depress", cycle: "Cycle", toggle: "Toggle" }[mode];
+}
+
 /** Positions a key can set (not those that spring back), from the top or left like the cockpit. */
 export function latchedPositions(control: Control): number[] {
 	const max = intOutput(control)?.max_value;

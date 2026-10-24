@@ -3,6 +3,8 @@
  */
 import type { Control, KeyMode } from "./dcsbios/controls.ts";
 import {
+	actionName,
+	controlName,
 	defaultKeyMode,
 	formatValue,
 	input,
@@ -111,7 +113,7 @@ export function keyLook(s: KeySettings, lookup: Lookup, dcs: Dcs): KeyLook {
 	// A push button with its own light (MASTER CAUTION, fire buttons): the text shows the light.
 	const showLight = c !== undefined && isMomentary(c) && lamp !== undefined && lamp !== c;
 	return {
-		title: s.title?.trim() || (c ? shortName(c) : s.control || "SET UP"),
+		title: s.title?.trim() || (c ? keyTitle(c, s.mode) : s.control || "SET UP"),
 		state: showLight
 			? anyOn
 				? "ON"
@@ -295,7 +297,18 @@ function isLit(c: Control, value: number): boolean {
 	return value > 0 && (intOutput(c)?.max_value ?? 1) > 0;
 }
 
-/** "APU Control Switch, ON/OFF" → "APU Control Switch"; "L BAR (red)" → "L BAR". */
+/** "APU Control Switch, ON/OFF" → "APU Control Switch"; "L BAR (red)" → "L BAR"; "Up-Front Display" keeps its hyphen. */
 function shortName(c: Control): string {
-	return stripColour(c.description.split(",")[0].replace(/\s*-.*$/, ""));
+	return stripColour(c.description.split(",")[0].replace(/\s+-(\s.*)?$/, ""));
+}
+
+/** A key's default text: the control, and for a key that is one bind of it, the bind ("PTT/RTS ICS"). */
+function keyTitle(c: Control, mode: string | undefined): string {
+	const action = mode && /^(hold|set|push):|^(depress|inc|dec)$/.test(mode) ? actionName(c, mode) : undefined;
+	if (!action) return shortName(c);
+	// "IFF MODE 1 Selector Lever, DIGIT 1" keeps its digit; "Switch", "Knob" and a thumb stick's "U/D" go.
+	const base = controlName(c)
+		.replace(/\s+(rocker\s+)?(switch|button|knob|lever|control knob)(?=,|$)/i, "")
+		.replace(/\s+(U\/D|L\/R)$/i, "");
+	return base.toUpperCase() === action.toUpperCase() ? action : `${base} ${action}`;
 }

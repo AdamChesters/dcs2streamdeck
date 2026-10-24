@@ -8,7 +8,8 @@
 <body>
 	<label for="control">Control</label>
 	<input type="search" id="controlSearch" placeholder="Type to search (e.g. apu), then pick below" />
-	<select id="control" data-setting="control"></select>
+	<select id="control"></select>
+	<div id="picked" class="picked"></div>
 	<div class="hint">For a light-only key (e.g. a caution or fault light), leave this as (none) and pick the light below.</div>
 
 	<label for="title">Key text</label>
@@ -39,8 +40,14 @@
 	<script src="pi.js"></script>
 	<script>
 		const $ = (id) => document.getElementById(id);
-		const controls = picker($("control"), $("controlSearch"), (i) => i.key);
-		picker($("lamp"), $("lampSearch"), (i) => i.led || i.key);
+		// The key's control, or one of its binds ("PTT/RTS Switch - ICS"), which also sets the mode.
+		const controls = picker($("control"), $("controlSearch"), (i) => i.key, () => pickedId(settings));
+		picker($("lamp"), $("lampSearch"), (i) => !i.action && (i.led || i.key));
+
+		function pickedId(s) {
+			if (!s.control) return "";
+			return catalog.find((i) => i.action?.control === s.control && i.action.mode === s.mode)?.id ?? s.control;
+		}
 
 		// [value, name] pairs "Next position" can land on, from the top (or left) of the switch, like the cockpit.
 		function positionsOf(item) {
@@ -63,6 +70,8 @@
 
 		function refreshExtras() {
 			const item = controls.item(settings.control);
+			const shown = controls.item(pickedId(settings));
+			$("picked").replaceChildren(...(shown ? [`${shown.description} `, Object.assign(document.createElement("code"), { textContent: shown.id })] : []));
 			fillModes(item);
 			const mode = $("mode").value;
 			$("custom").style.display = mode === "custom" ? "" : "none";
@@ -85,14 +94,13 @@
 		}
 
 		// Picking a switch fills in its own light when it has one and none is set.
-		// These run before pi.js saves the change, so note the new value first (refreshExtras reads it).
+		// A bind sets the control and its mode; a control starts on Automatic (a mode for the old control may mean nothing).
 		$("control").addEventListener("change", () => {
-			settings.control = $("control").value;
 			const item = controls.item($("control").value);
+			settings.control = item?.action?.control ?? $("control").value;
+			settings.mode = item?.action?.mode ?? (settings.mode === "custom" ? "custom" : "");
 			settings.cycle = [];
 			saveSetting("cycle", []);
-			// A mode for the old control may mean nothing for the new one.
-			if (settings.mode && settings.mode !== "custom") saveSetting("mode", "");
 			if (item?.lamp && !settings.lamp) {
 				saveSetting("lamp", item.lamp);
 				$("lamp").value = item.lamp;
@@ -102,6 +110,7 @@
 		});
 		$("mode").addEventListener("change", () => {
 			settings.mode = $("mode").value;
+			controls.refresh();
 			refreshExtras();
 		});
 		document.addEventListener("pi-filled", refreshExtras);

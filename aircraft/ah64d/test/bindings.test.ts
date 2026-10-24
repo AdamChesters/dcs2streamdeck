@@ -124,3 +124,13 @@ test("the collective cursor: a Push key deflects it while held, further the long
 	keyUp({ control: "COLLECTIVE_CURSOR_LR", mode: "push:low" }, lookup, left);
 	assert.deepEqual(left.sent, ["COLLECTIVE_CURSOR_LR 26214", "COLLECTIVE_CURSOR_LR 32768"]);
 });
+
+test("a key that is one bind of a control says which in its default text", () => {
+	const title = (control: string, mode?: string) => keyLook({ control, mode: mode as never }, lookup, dcs({})).title;
+	assert.equal(title("CYCLIC_RTS", "hold:2"), "PTT/RTS ICS");
+	assert.equal(title("CYCLIC_RTS", "depress"), "PTT/RTS Depress");
+	assert.equal(title("COLLECTIVE_CURSOR_LR", "push:low"), "Cursor Controller Left");
+	assert.equal(title("COM_MASTER_VOL", "dec"), "MASTER Volume Decrease");
+	assert.equal(title("CYCLIC_RTS"), "PTT/RTS Switch", "Automatic: just the control");
+	assert.equal(keyLook({ control: "CYCLIC_RTS", mode: "hold:2", title: "RTS ICS" }, lookup, dcs({})).title, "RTS ICS", "the user's text wins");
+});

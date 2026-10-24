@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { catalog } from "../../../core/catalog.ts";
+import { catalog, pickedId } from "../../../core/catalog.ts";
 import { defaultKeyMode, formatValue, keyModes, lampColour, loadControls } from "../../../core/dcsbios/controls.ts";
 import * as aircraft from "../aircraft.ts";
 
@@ -57,4 +57,22 @@ test("what a key can do: hold a rocker, set what stays, push the RTS rocker", ()
 	const item = catalog(controls).find((i) => i.id === "CYCLIC_RTS")!;
 	assert.equal(item.auto, "hold:0");
 	assert.deepEqual(item.modes?.map((m) => m.value), ["hold:0", "hold:2", "depress"]);
+});
+
+test("each bind is its own list entry right under its control, named like DCS's key binds", () => {
+	const items = catalog(controls);
+	const at = items.findIndex((i) => i.id === "CYCLIC_RTS");
+	assert.equal(items[at].description, "PTT/RTS Switch", "DCS-BIOS's trailing dash dropped");
+	const binds = items.slice(at + 1, at + 4);
+	assert.deepEqual(binds.map((i) => [i.id, i.description, i.action?.mode]), [
+		["CYCLIC_RTS_RADIO", "PTT/RTS Switch - RADIO", "hold:0"],
+		["CYCLIC_RTS_ICS", "PTT/RTS Switch - ICS", "hold:2"],
+		["CYCLIC_RTS_PRESS", "PTT/RTS Switch - Depress", undefined],
+	], "Depress is DCS-BIOS's own control, listed once");
+	assert.ok(binds.slice(0, 2).every((i) => i.key && !i.dial && !i.led && i.action?.control === "CYCLIC_RTS"));
+	assert.equal(pickedId(items, "CYCLIC_RTS", "hold:2"), "CYCLIC_RTS_ICS", "a saved key shows as its bind");
+	assert.equal(pickedId(items, "CYCLIC_RTS", ""), "CYCLIC_RTS", "Automatic shows as the control");
+	assert.deepEqual(items.filter((i) => i.action?.control === "COLLECTIVE_CURSOR_UD").map((i) => i.description), ["Cursor Controller U/D - Up", "Cursor Controller U/D - Down"]);
+	assert.equal(items.filter((i) => i.action?.control === "KU_ENT").length, 0, "a push button is one bind: no extra entries");
+	assert.equal(new Set(items.map((i) => i.id)).size, items.length, "every entry has its own id");
 });

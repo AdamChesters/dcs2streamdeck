@@ -42,6 +42,9 @@ holding turns faster on a smooth curve), and a rocker with its own push (`CYCLIC
 spring-loaded at both ends; `SPRING_LOADED` in the aircraft data corrects that by value. A thumb
 stick that DCS-BIOS only gives as a knob (its axis, e.g. the AH-64D collective cursor) goes in
 `CENTRED`: its keys push it while held, further the longer, and centre it on release.
+The control lists show each of these binds as its own entry under its control, named like DCS's
+own key binds ("PTT/RTS Switch - ICS", `CYCLIC_RTS_ICS`; `catalog` in `core/catalog.ts`). Picking
+one saves the control and its mode, so a key's settings stay `control` + `mode`.
 
 To add an aircraft: copy an `aircraft/<id>` folder, give it a new id, module (and `dcsName` if DCS
 uses another name) and names,
