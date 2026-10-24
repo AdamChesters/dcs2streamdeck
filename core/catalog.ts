@@ -3,7 +3,7 @@
  * suggested light for switches that have their own lamp.
  */
 import type { Control, ControlMap } from "./dcsbios/controls.ts";
-import { input, intOutput, lampColour, leverOrder, stripColour } from "./dcsbios/controls.ts";
+import { defaultKeyMode, input, intOutput, keyModes, lampColour, latchedPositions, leverOrder, stripColour } from "./dcsbios/controls.ts";
 
 export type PickerItem = {
 	id: string;
@@ -23,6 +23,12 @@ export type PickerItem = {
 	led: boolean;
 	/** Suggested "Light the key from" control. */
 	lamp?: string;
+	/** What a key press can do ("Press does"), Automatic and Custom aside. */
+	modes?: { value: string; label: string }[];
+	/** What Automatic does for this control (a `modes` value). */
+	auto?: string;
+	/** Positions "Next position" can step through (those that stay put), top first. */
+	cycle?: number[];
 };
 
 const NOISE = new Set(["SW", "BTN", "LT", "L", "SWITCH", "LIGHT", "LEVER", "KNOB", "SEL", "LAMP"]);
@@ -87,6 +93,11 @@ export function catalog(controls: ControlMap): PickerItem[] {
 			dial: Boolean(input(c, "variable_step")) || (set !== undefined && set.max_value >= 2),
 			led: c.control_type === "led",
 			lamp: suggestLamp(c, controls),
+			...(c.inputs.length > 0 && {
+				modes: keyModes(c).map(({ mode, label }) => ({ value: mode, label })),
+				auto: defaultKeyMode(c),
+				cycle: latchedPositions(c),
+			}),
 		});
 	}
 	return items.sort((a, b) => a.category.localeCompare(b.category) || a.description.localeCompare(b.description));

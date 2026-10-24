@@ -7,7 +7,7 @@ import { defaultJsonDir, Fleet } from "../../core/aircraft.ts";
 import type { DialSettings, KeySettings } from "../../core/bindings.ts";
 import type { PickerItem } from "../../core/catalog.ts";
 import { catalog } from "../../core/catalog.ts";
-import { dialRotate, dialView, keyDown, keyLook, keyUp, keyWatches, parseFunctions } from "../../core/bindings.ts";
+import { dialRotate, dialView, keyDown, keyHold, keyLook, keyUp, keyWatches, parseFunctions } from "../../core/bindings.ts";
 import { DcsBiosClient } from "../../core/dcsbios/client.ts";
 import type { Control } from "../../core/dcsbios/controls.ts";
 import type { MirrorSnapshot, Tile } from "../../core/mirror.ts";
@@ -45,6 +45,8 @@ export class Engine {
 	#layout: Layout = DEFAULT_LAYOUT;
 	#device = "";
 	#dialIndex = new Map<number, number>();
+	/** Step and turn keys that keep going while held: key index → stop. */
+	#held = new Map<number, () => void>();
 	#stops: (() => void)[] = [];
 	#pending?: NodeJS.Timeout;
 	#clock?: NodeJS.Timeout;
@@ -79,6 +81,8 @@ export class Engine {
 	}
 
 	stop(): void {
+		for (const release of this.#held.values()) release();
+		this.#held.clear();
 		this.client.stop();
 		clearTimeout(this.#pending);
 		clearTimeout(this.#clock);
@@ -129,12 +133,19 @@ export class Engine {
 	keyDown(index: number): boolean {
 		const s = this.config.keys[index] ?? {};
 		const { lookup, dcs } = this.#for(s);
-		return keyDown(s, lookup, dcs);
+		this.#held.get(index)?.();
+		this.#held.delete(index);
+		if (!keyDown(s, lookup, dcs)) return false;
+		const release = keyHold(s, lookup, dcs);
+		if (release) this.#held.set(index, release);
+		return true;
 	}
 
 	keyUp(index: number): void {
 		const s = this.config.keys[index] ?? {};
 		const { lookup, dcs } = this.#for(s);
+		this.#held.get(index)?.();
+		this.#held.delete(index);
 		keyUp(s, lookup, dcs);
 	}
 

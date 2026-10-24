@@ -15,20 +15,13 @@
 	<input type="text" id="title" data-setting="title" placeholder="Empty = control name" />
 
 	<label for="mode">Press does</label>
-	<select id="mode" data-setting="mode">
-		<option value="">Automatic</option>
-		<option value="toggle">Toggle</option>
-		<option value="cycle">Next position (wraps)</option>
-		<option value="momentary">Hold (press 1, release 0)</option>
-		<option value="inc">Step up</option>
-		<option value="dec">Step down</option>
-		<option value="custom">Custom command</option>
-	</select>
+	<select id="mode" data-setting="mode"></select>
+	<div class="hint">Hold: the switch springs back when you let go. Set: it stays. Turn: a short press is a small step; hold to turn faster.</div>
 
 	<div id="cycleBox">
 		<label>Positions a press steps through</label>
 		<div id="cycle" class="checks"></div>
-		<div class="hint">Untick spring-loaded positions (e.g. EMERG EXTD). None ticked = all.</div>
+		<div class="hint">Untick any you don't want a press to land on. None ticked = all listed.</div>
 	</div>
 
 	<div id="custom">
@@ -49,18 +42,32 @@
 		const controls = picker($("control"), $("controlSearch"), (i) => i.key);
 		picker($("lamp"), $("lampSearch"), (i) => i.led || i.key);
 
-		// [value, name] pairs from the top (or left) of the switch, like the cockpit.
+		// [value, name] pairs "Next position" can land on, from the top (or left) of the switch, like the cockpit.
 		function positionsOf(item) {
 			if (!item || !item.maxValue || item.maxValue < 2) return [];
-			const values = item.order ?? Array.from({ length: item.maxValue + 1 }, (_, i) => i);
-			return values.map((v) => [v, item.positions?.[v] ?? String(v)]);
+			return (item.cycle ?? []).map((v) => [v, item.positions?.[v] ?? String(v)]);
+		}
+
+		// "Press does": what this control can do. A saved choice it can't do any more stays listed.
+		function fillModes(item) {
+			const select = $("mode");
+			const current = settings.mode ?? "";
+			const modes = item?.modes ?? [];
+			const auto = modes.find((m) => m.value === item?.auto);
+			const options = [["", auto ? `Automatic (${auto.label})` : "Automatic"], ...modes.map((m) => [m.value, m.label])];
+			if (current && current !== "custom" && !options.some(([v]) => v === current)) options.push([current, current]);
+			options.push(["custom", "Custom command"]);
+			select.replaceChildren(...options.map(([value, label]) => Object.assign(document.createElement("option"), { value, textContent: label })));
+			select.value = current;
 		}
 
 		function refreshExtras() {
+			const item = controls.item(settings.control);
+			fillModes(item);
 			const mode = $("mode").value;
 			$("custom").style.display = mode === "custom" ? "" : "none";
-			const positions = positionsOf(controls.item(settings.control));
-			const showCycle = positions.length > 0 && (mode === "" || mode === "cycle");
+			const positions = positionsOf(item);
+			const showCycle = positions.length > 1 && (mode === "cycle" || (mode === "" && item?.auto === "cycle"));
 			$("cycleBox").style.display = showCycle ? "" : "none";
 			const chosen = new Set(settings.cycle ?? []);
 			$("cycle").replaceChildren(
@@ -78,10 +85,14 @@
 		}
 
 		// Picking a switch fills in its own light when it has one and none is set.
+		// These run before pi.js saves the change, so note the new value first (refreshExtras reads it).
 		$("control").addEventListener("change", () => {
+			settings.control = $("control").value;
 			const item = controls.item($("control").value);
 			settings.cycle = [];
 			saveSetting("cycle", []);
+			// A mode for the old control may mean nothing for the new one.
+			if (settings.mode && settings.mode !== "custom") saveSetting("mode", "");
 			if (item?.lamp && !settings.lamp) {
 				saveSetting("lamp", item.lamp);
 				$("lamp").value = item.lamp;
@@ -89,7 +100,10 @@
 			}
 			refreshExtras();
 		});
-		$("mode").addEventListener("change", refreshExtras);
+		$("mode").addEventListener("change", () => {
+			settings.mode = $("mode").value;
+			refreshExtras();
+		});
 		document.addEventListener("pi-filled", refreshExtras);
 		document.addEventListener("pi-catalog", refreshExtras);
 		refreshExtras();

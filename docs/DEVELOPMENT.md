@@ -33,9 +33,22 @@ Two-seat aircraft (AH-64D) set `SEATS` in their data: a control both seats have 
 is in (`SEAT_POSITION`). A control only one seat has keeps its identifier. If DCS calls the
 aircraft something other than the DCS-BIOS module, `dcsName` says what (`AH-64D_BLK_II`).
 
+What a key press can do ("Press does") comes from the control (`keyModes` in
+`core/dcsbios/controls.ts`): a spring-loaded position gets "Hold X" (press goes there, release
+springs back), a position that stays gets "Set X", a static switch also gets "Next position"
+(one key cycles it) and Step up/down, a knob gets Turn up/down (a short press is a small step;
+holding turns faster on a smooth curve), and a rocker with its own push (`CYCLIC_RTS` and
+`CYCLIC_RTS_PRESS`) gets "Depress". DCS-BIOS's spring-loaded and rocker switches count as
+spring-loaded at both ends; `SPRING_LOADED` in the aircraft data corrects that by value.
+
 To add an aircraft: copy an `aircraft/<id>` folder, give it a new id, module (and `dcsName` if DCS
 uses another name) and names,
-add it to `AIRCRAFT_LIST` in `core/aircraft.data.ts`, and replace the data and tests.
+add it to `AIRCRAFT_LIST` in `core/aircraft.data.ts`, and replace the data and tests. Check every
+2- and 3-position switch against DCS's own key bindings (`Input/<module>/joystick/default.lua`):
+a bind with the same command and value as DCS-BIOS gives the position's name, and a bind with
+a release means that position springs back. Put names that differ in `POSITION_NAMES`, and
+switches that latch at one end, or that spring back although DCS-BIOS does not treat them as
+spring-loaded, in `SPRING_LOADED`.
 
 ## Testing without DCS
 

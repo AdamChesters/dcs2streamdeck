@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 
 import { catalog } from "../../../core/catalog.ts";
-import { defaultKeyMode, formatValue, lampColour, loadControls } from "../../../core/dcsbios/controls.ts";
+import { defaultKeyMode, formatValue, keyModes, lampColour, loadControls } from "../../../core/dcsbios/controls.ts";
 import * as aircraft from "../aircraft.ts";
 
 const controls = loadControls(new URL("fixtures/controls.json", import.meta.url).pathname, aircraft);
@@ -41,4 +41,16 @@ test("light colours from DCS-BIOS's colour field", () => {
 test("position names", () => {
 	assert.equal(formatValue(get("CANOPY"), 1), "OPEN");
 	assert.equal(formatValue(get("PLT_CMWS_ARM"), 0), "SAFE");
+});
+
+test("what a key can do: hold a rocker, set what stays, push the RTS rocker", () => {
+	const labels = (id: string) => keyModes(get(id)).map((m) => m.label);
+	assert.deepEqual(labels("CYCLIC_RTS"), ["Hold RADIO", "Hold ICS", "Depress"]);
+	assert.equal(defaultKeyMode(get("CYCLIC_RTS")), "hold:0");
+	assert.deepEqual(labels("COLLECTIVE_SEARCHLIGHT"), ["Set ON", "Set Off", "Hold STOW", "Next position (wraps)"], "STOW springs back, ON stays");
+	assert.deepEqual(labels("PLT_CMWS_PW"), ["Hold Test", "Set On", "Set Off", "Next position (wraps)"]);
+	assert.equal(defaultKeyMode(get("PLT_CMWS_PW")), "cycle", "Next position skips Test");
+	const item = catalog(controls).find((i) => i.id === "CYCLIC_RTS")!;
+	assert.equal(item.auto, "hold:0");
+	assert.deepEqual(item.modes?.map((m) => m.value), ["hold:0", "hold:2", "depress"]);
 });

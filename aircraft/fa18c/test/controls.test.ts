@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { defaultKeyMode, formatValue, lampColour, loadControls, parseControls, pressArgument, rotateArguments } from "../../../core/dcsbios/controls.ts";
+import { defaultKeyMode, formatValue, keyModes, lampColour, loadControls, parseControls, pressArgument, rotateArguments } from "../../../core/dcsbios/controls.ts";
 import * as aircraft from "../aircraft.ts";
 
 const controls = loadControls(new URL("fixtures/controls.json", import.meta.url).pathname, aircraft);
@@ -115,4 +115,13 @@ test("latching buttons are not push buttons", () => {
 	assert.equal(defaultKeyMode(ctl("ECM_1_BTN", "ECM 1 Button")), "cycle", "latching: toggles");
 	assert.equal(defaultKeyMode(ctl("X_RESET", "Reset Button - Press to reset")), "momentary");
 	assert.equal(defaultKeyMode(ctl("FCS_RESET_BTN", "FCS RESET Button")), "momentary", "listed in the aircraft data");
+});
+
+test("what a key can do: a rocker holds, a held-by-the-jet switch sets, a static switch also steps", () => {
+	const labels = (id: string) => keyModes(get(id)).map((m) => m.label);
+	assert.deepEqual(labels("SEAT_HEIGHT_SW"), ["Hold UP", "Hold DOWN"]);
+	assert.deepEqual(labels("ENGINE_CRANK_SW"), ["Set LEFT", "Set OFF", "Set RIGHT", "Next position (wraps)"], "the aircraft lets go of it");
+	assert.equal(defaultKeyMode(get("ENGINE_CRANK_SW")), "cycle");
+	assert.deepEqual(labels("LEFT_DDI_BRT_SELECT").slice(-3), ["Next position (wraps)", "Step up", "Step down"]);
+	assert.deepEqual(labels("SEAT_HEIGHT_SW").includes("Step up"), false, "a step would leave a rocker held");
 });

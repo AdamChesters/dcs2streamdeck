@@ -102,6 +102,25 @@ export const HIGH_END: Record<string, "up" | "down" | "left" | "right"> = {
 	GND_PWR_4_SW: "right",
 };
 
+/**
+ * Positions that spring back, where the DCS-BIOS switch type does not say (by value; `from` = the positions
+ * that spring back to the middle, `[]` = none). From ED's key binds (a bind with a release), 24 Oct.
+ */
+export const SPRING_LOADED: Record<string, { from: number[]; rest?: number }> = {
+	// AMPCD rockers.
+	AMPCD_CONT_SW: { from: [0, 2] },
+	AMPCD_GAIN_SW: { from: [0, 2] },
+	AMPCD_SYM_SW: { from: [0, 2] },
+	AMPCD_NIGHT_DAY: { from: [0, 2] },
+	EXT_PWR_SW: { from: [2] },
+	THROTTLE_SPEED_BRK: { from: [0] },
+	// Held by the aircraft (DCS-BIOS lets go for it), or latched: a key sets them.
+	ENGINE_CRANK_SW: { from: [] },
+	CANOPY_SW: { from: [] },
+	MC_SW: { from: [] },
+	EMERGENCY_PARKING_BRAKE_ROTATE: { from: [] },
+};
+
 /** Push buttons (press = 1, release = 0) that DCS-BIOS does not mark as momentary. */
 export const KNOWN_PUSH_BUTTONS: string[] = ["FCS_RESET_BTN", "TO_TRIM_BTN"];
 

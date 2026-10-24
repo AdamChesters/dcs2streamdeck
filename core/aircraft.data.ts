@@ -26,6 +26,8 @@ export type AircraftData = {
 	INDICATORS: { name: string; kind: "aoa" | "gear" | "flaps"; roles: Record<string, string> }[];
 	DIAL_PRESETS: [string, string][];
 	ROTARY_KNOBS?: Record<string, "cw" | "ccw">;
+	/** Positions that spring back when let go, where the DCS-BIOS switch type does not say (see `springBack`). */
+	SPRING_LOADED?: Record<string, { from: number[]; rest?: number }>;
 	SEATS?: Seats;
 };
 

@@ -135,10 +135,20 @@ const forLamps = (i: PickerItem) => i.led || i.key;
 const forDials = (i: PickerItem) => i.dial;
 
 /** [value, name] pairs from the top (or left) of the switch, like the cockpit. */
+/** Positions "Next position" can land on, top (or left) first, like the cockpit. */
 function positionsOf(item: PickerItem | undefined): [number, string][] {
 	if (!item?.maxValue || item.maxValue < 2) return [];
-	const values = item.order ?? Array.from({ length: item.maxValue + 1 }, (_, i) => i);
-	return values.map((v) => [v, item.positions?.[v] ?? String(v)]);
+	return (item.cycle ?? []).map((v) => [v, item.positions?.[v] ?? String(v)]);
+}
+
+/** "Press does": what this control can do. A saved choice it can't do any more stays listed. */
+function modesOf(item: PickerItem | undefined, current: string): [string, string][] {
+	const modes = item?.modes ?? [];
+	const auto = modes.find((m) => m.value === item?.auto);
+	const options: [string, string][] = [["", auto ? `Automatic (${auto.label})` : "Automatic"], ...modes.map((m): [string, string] => [m.value, m.label])];
+	if (current && current !== "custom" && !options.some(([v]) => v === current)) options.push([current, current]);
+	options.push(["custom", "Custom command"]);
+	return options;
 }
 
 type EditorProps<T> = { index: number; flying?: AircraftData; version: string; initial: T; onClose: () => void };
@@ -165,7 +175,9 @@ function KeyEditor({ index, flying, version, initial, onClose }: EditorProps<Key
 	// Picking a switch fills in its own light when it has one and none is set.
 	const pickControl = (id: string) => {
 		const picked = items.find((i) => i.id === id);
-		save({ ...s, control: id, cycle: [], lamp: s.lamp || picked?.lamp || "" });
+		// A mode for the old control may mean nothing for the new one.
+		const mode = s.mode === "custom" ? s.mode : "";
+		save({ ...s, control: id, mode, cycle: [], lamp: s.lamp || picked?.lamp || "" });
 	};
 
 	return (
@@ -188,16 +200,15 @@ function KeyEditor({ index, flying, version, initial, onClose }: EditorProps<Key
 			<label>
 				Press does
 				<select value={s.mode ?? ""} onChange={(e) => save({ ...s, mode: e.target.value as KeySettings["mode"] })}>
-					<option value="">Automatic</option>
-					<option value="toggle">Toggle</option>
-					<option value="cycle">Next position (wraps)</option>
-					<option value="momentary">Hold (press 1, release 0)</option>
-					<option value="inc">Step up</option>
-					<option value="dec">Step down</option>
-					<option value="custom">Custom command</option>
+					{modesOf(item, s.mode ?? "").map(([value, label]) => (
+						<option key={value} value={value}>
+							{label}
+						</option>
+					))}
 				</select>
 			</label>
-			{positions.length > 0 && (!s.mode || s.mode === "cycle") && (
+			<p className="hint">Hold: the switch springs back when you let go. Set: it stays. Turn: a short press is a small step; hold to turn faster.</p>
+			{positions.length > 1 && (s.mode === "cycle" || (!s.mode && item?.auto === "cycle")) && (
 				<div className="field">
 					<span>Positions a press steps through</span>
 					<div className="checks">
@@ -217,7 +228,7 @@ function KeyEditor({ index, flying, version, initial, onClose }: EditorProps<Key
 							</label>
 						))}
 					</div>
-					<p className="hint">Untick spring-loaded positions (e.g. EMERG EXTD). None ticked = all.</p>
+					<p className="hint">Untick any you don't want a press to land on. None ticked = all listed.</p>
 				</div>
 			)}
 			{s.mode === "custom" && (

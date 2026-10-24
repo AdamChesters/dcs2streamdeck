@@ -124,6 +124,19 @@ export const ROTARY_KNOBS: Record<string, "cw" | "ccw"> = {
 	CPG_TEDAC_DISP_MODE: "ccw",
 };
 
+/**
+ * Positions that spring back, where the DCS-BIOS switch type does not say (by value; `from` = the positions
+ * that spring back, to `rest` or the middle). Every other DCS-BIOS spring-loaded switch springs back from both ends.
+ */
+export const SPRING_LOADED: Record<string, { from: number[]; rest?: number }> = {
+	// STOW springs back; ON stays.
+	COLLECTIVE_SEARCHLIGHT: { from: [0] },
+	// TEST springs back to ON; OFF stays.
+	PLT_CMWS_PW: { from: [2] },
+	// The trigger springs back to Off from either detent.
+	CYCLIC_TRIGGER: { from: [1, 2], rest: 0 },
+};
+
 /** Dial presets: [name, knob list as "IDENTIFIER | Label" lines]. PLT_ knobs are in the pilot's seat only. */
 export const DIAL_PRESETS: [string, string][] = [
 	[

@@ -18,7 +18,7 @@ const dcs = (values: Record<string, number>): Dcs => ({
 test("with a lamp, the text follows the switch and the highlight follows the lamp", () => {
 	const s = { control: "JFS_SW", lamp: "LIGHT_JFS_RUN", title: "JFS" };
 	const spooling = keyLook(s, lookup, dcs({ JFS_SW: 2, LIGHT_JFS_RUN: 0 }));
-	assert.equal(spooling.state, "START 2");
+	assert.equal(spooling.state, "START 1");
 	assert.equal(spooling.lit, false, "JFS starting, RUN light not yet on");
 	assert.equal(keyLook(s, lookup, dcs({ JFS_SW: 2, LIGHT_JFS_RUN: 1 })).lit, true, "JFS RUN: highlighted");
 	assert.equal(keyLook(s, lookup, dcs({ JFS_SW: 1, LIGHT_JFS_RUN: 0 })).state, "OFF", "jet released the switch");
@@ -91,14 +91,14 @@ test("gear indicator key and gear handle", () => {
 });
 
 test("switch pictures follow the switch type", () => {
-	assert.deepEqual(keyLook({ control: "JFS_SW" }, lookup, dcs({ JFS_SW: 2 })).glyph, { kind: "lever", at: "down" }, "F-16C: position 0 up (not yet checked in DCS)");
+	assert.deepEqual(keyLook({ control: "JFS_SW" }, lookup, dcs({ JFS_SW: 2 })).glyph, { kind: "lever", at: "up" }, "F-16C: START 1 (2) up, the first name in DCS's tooltip (not yet checked in DCS)");
 	assert.deepEqual(keyLook({ control: "MASTER_ARM_SW" }, lookup, dcs({ MASTER_ARM_SW: 1 })).glyph, { kind: "lever", at: "middle" });
 	assert.deepEqual(keyLook({ control: "MASTER_CAUTION" }, lookup, dcs({ MASTER_CAUTION: 0 })).glyph, { kind: "button", pressed: false });
 });
 
 test("resting positions stay dark", () => {
 	assert.equal(keyLook({ control: "MASTER_ARM_SW" }, lookup, dcs({ MASTER_ARM_SW: 1 })).lit, false, "OFF");
-	assert.equal(keyLook({ control: "MASTER_ARM_SW" }, lookup, dcs({ MASTER_ARM_SW: 0 })).lit, true, "MASTER ARM");
+	assert.equal(keyLook({ control: "MASTER_ARM_SW" }, lookup, dcs({ MASTER_ARM_SW: 0 })).lit, true, "SIMULATE");
 	assert.equal(keyLook({ control: "HDPT_SW_L" }, lookup, dcs({ HDPT_SW_L: 0 })).lit, false);
 });
 

@@ -71,13 +71,77 @@ export const POSITION_NAMES: Record<string, string[]> = {
 	OXY_DILUTER_LVR: ["NORM", "100%"],
 	// No names in DCS; ON/OFF order assumed like the "X/OFF" switches.
 	UHF_SQUELCH_SW: ["OFF", "ON"],
+	// DCS-BIOS lists these 3-position switches top first, but value 0 is the bottom: names by value from
+	// ED's own key binds, which send the same command and value as DCS-BIOS (checked 24 Oct, DCS-BIOS v0.11.7).
+	AB_RESET_SW: ["ENG DATA", "NORM", "AB RESET"],
+	CANOPY_SW: ["CLOSE", "HOLD", "OPEN"],
+	ENG_ANTI_ICE: ["OFF", "AUTO", "ON"],
+	EPU_SW: ["OFF", "NORM", "ON"],
+	HOT_MIC_SW: ["CIPHER", "OFF", "HOT MIC"],
+	HUD_ALT_SW: ["AUTO", "BARO", "RADAR"],
+	HUD_BRT_SW: ["NIGHT", "AUTO BRT", "DAY"],
+	HUD_DED_DATA_SW: ["OFF", "PFL", "DED"],
+	HUD_DEPRESS_RET_SW: ["OFF", "PRI", "STBY"],
+	HUD_FP_MARKER_SW: ["OFF", "FPM", "ATT/FPM"],
+	HUD_SCALES_SW: ["OFF", "VAH", "VV/VAH"],
+	HUD_SPEED_SW: ["GND SPD", "TAS", "CAS"],
+	HUD_TEST_SW: ["OFF", "ON", "STEP"],
+	ICP_DRIFT_SW: ["WARN RESET", "NORM", "DRIFT C/O"],
+	ICP_FLIR_GAIN_SW: ["AUTO", "LVL", "GAIN"],
+	JFS_SW: ["START 2", "OFF", "START 1"],
+	LAND_TAXI_LIGHT_SW: ["TAXI", "OFF", "LANDING"],
+	MAIN_PWR_SW: ["OFF", "BATT", "MAIN PWR"],
+	MAL_IND_LTS_BRT_SW: ["DIM", "CENTER", "BRT"],
+	MASTER_ARM_SW: ["SIMULATE", "OFF", "MASTER ARM"],
+	OXY_EMERG_LVR: ["TEST MASK", "NORMAL", "EMERGENCY"],
+	OXY_SUPPLY_LVR: ["OFF", "ON", "PBG"],
+	PLAIN_CIPHER_SW: ["CRAD 2", "PLAIN", "CRAD 1"],
+	POS_FUSELAGE_LIGHT_SW: ["DIM", "OFF", "BRT"],
+	POS_WING_TAIL_LIGHT_SW: ["DIM", "OFF", "BRT"],
+	PROBE_HEAT_SW: ["TEST", "OFF", "PROBE HEAT"],
+	RDR_ALT_PWR_SW: ["OFF", "STBY", "RDR ALT"],
+	ZEROIZE_SW: ["DATA", "OFF", "OFP"],
+	// No names in DCS-BIOS; ED's key binds by value.
+	COMM1_MODE_KNB: ["OFF", "SQL", "GD"],
+	COMM2_MODE_KNB: ["OFF", "SQL", "GD"],
+	ECM_PW_SW: ["OFF", "STBY", "OPR"],
+	ECM_XMIT_SW: ["3", "2", "1"],
 };
 
-/** Not yet checked in DCS: 2-position switches are drawn with position 1 up, 3-position with position 0 up. */
-export const HIGH_END_OF_THREE = "down";
+/**
+ * Not yet checked in DCS: 2-position switches are drawn with position 1 up, 3-position with position 2 up
+ * (with the names above, the first name in DCS's tooltip is on top: MASTER ARM, LANDING, MAIN PWR).
+ */
+export const HIGH_END_OF_THREE = "up";
 
-/** Switches that point elsewhere at their highest position. None known for the F-16C. */
-export const HIGH_END: Record<string, "up" | "down" | "left" | "right"> = {};
+/**
+ * Switches that point elsewhere at their highest position. These keep position 0 up, as before
+ * 0.5.1: DCS-BIOS's names already go by value and the physical order is not checked.
+ */
+export const HIGH_END: Record<string, "up" | "down" | "left" | "right"> = {
+	ALT_MODE_LV: "down",
+	ECM_PW_SW: "down",
+	ECM_XMIT_SW: "down",
+	FLCS_PWR_TEST_SW: "down",
+	IFF_ENABLE_SW: "down",
+	IFF_M4_CODE_SW: "down",
+	IFF_M4_REPLY_SW: "down",
+	SEAT_ADJ: "down",
+};
+
+/**
+ * Switches DCS-BIOS treats as spring-loaded at both ends where ED's key binds latch one end
+ * (by value; `from` = the positions that spring back to the middle).
+ */
+export const SPRING_LOADED: Record<string, { from: number[]; rest?: number }> = {
+	CANOPY_SW: { from: [0] },
+	FLCS_PWR_TEST_SW: { from: [2] },
+	ICP_DRIFT_SW: { from: [0] },
+	OXY_EMERG_LVR: { from: [0] },
+	PROBE_HEAT_SW: { from: [0] },
+	// PARKING BRAKE is held by the aircraft, not by the pilot.
+	ANTI_SKID_SW: { from: [] },
+};
 
 /** Push buttons (press = 1, release = 0) that DCS-BIOS does not mark as momentary. None needed for the F-16C. */
 export const KNOWN_PUSH_BUTTONS: string[] = [];

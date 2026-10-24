@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 
 import type { Dcs } from "../../../core/bindings.ts";
-import { keyLook } from "../../../core/bindings.ts";
+import { keyDown, keyHold, keyLook, keyUp } from "../../../core/bindings.ts";
 import { suggestLamp } from "../../../core/catalog.ts";
 import { loadControls } from "../../../core/dcsbios/controls.ts";
 import * as aircraft from "../aircraft.ts";
@@ -46,4 +46,52 @@ test("buttons light from their own cockpit light", () => {
 	assert.equal(warning.state, "ON");
 	assert.equal(keyLook({ control: "FIRE_ENG1_BTN", lamp: "ENG_1_FIRE_L" }, lookup, dcs({ ENG_1_FIRE_L: 1 })).colour, "yellow");
 	assert.equal(keyLook({ control: "INTL_MCAUTION_BTN", lamp: "MASTER_CAUTION_L" }, lookup, dcs({ MASTER_CAUTION_L: 1 })).colour, "green", "the Apache's caution light is green");
+});
+
+/** A DCS that records what the keys send. */
+function recorder(values: Record<string, number> = {}): Dcs & { sent: string[] } {
+	const sent: string[] = [];
+	return { ...dcs(values), sent, send: (id, argument) => void sent.push(`${id} ${argument}`) };
+}
+
+test("the RTS rocker: hold RADIO or ICS while pressed, or push it", () => {
+	const live = recorder({ CYCLIC_RTS: 1 });
+	const radio = { control: "CYCLIC_RTS", mode: "hold:0" as const };
+	assert.equal(keyDown(radio, lookup, live), true);
+	keyUp(radio, lookup, live);
+	const push = { control: "CYCLIC_RTS", mode: "depress" as const };
+	assert.equal(keyDown(push, lookup, live), true);
+	keyUp(push, lookup, live);
+	assert.deepEqual(live.sent, ["CYCLIC_RTS 0", "CYCLIC_RTS 1", "CYCLIC_RTS_PRESS TOGGLE"], "the push has no hold in DCS-BIOS");
+	const auto = recorder({ CYCLIC_RTS: 1 });
+	keyDown({ control: "CYCLIC_RTS" }, lookup, auto);
+	keyUp({ control: "CYCLIC_RTS" }, lookup, auto);
+	assert.deepEqual(auto.sent, ["CYCLIC_RTS 0", "CYCLIC_RTS 1"], "Automatic holds the first end (RADIO, left)");
+});
+
+test("a knob key: a short press is a small step, holding turns faster and faster", (t) => {
+	t.mock.timers.enable({ apis: ["setTimeout"] });
+	let clock = 0;
+	const wait = (ms: number) => {
+		for (let i = 0; i < ms; i += 10) {
+			clock += 10;
+			t.mock.timers.tick(10);
+		}
+	};
+	const live = recorder({ COM_MASTER_VOL: 30000 });
+	const up = { control: "COM_MASTER_VOL", mode: "inc" as const };
+	assert.equal(keyDown(up, lookup, live), true);
+	const stop = keyHold(up, lookup, live, () => clock);
+	assert.ok(stop);
+	wait(280);
+	assert.deepEqual(live.sent, ["COM_MASTER_VOL +1311"], "2% for a short press, nothing more yet");
+	wait(2000);
+	stop();
+	const steps = live.sent.slice(1).map((s) => Number(s.split(" +")[1]));
+	assert.ok(steps.length > 40, "a step every 40 ms");
+	assert.ok(steps.every((n, i) => i === 0 || n >= steps[i - 1]), "never slows down");
+	assert.ok(steps[0] < 700 && steps.at(-1) === 3277, "1% at first, 5% after 1.5 s");
+	const count = live.sent.length;
+	wait(500);
+	assert.equal(live.sent.length, count, "stops when the key is let go");
 });

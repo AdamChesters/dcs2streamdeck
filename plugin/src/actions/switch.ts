@@ -16,14 +16,14 @@ import type { JsonValue } from "@elgato/utils";
 
 import { aircraftOf, PRODUCT } from "../../../core/aircraft.data.ts";
 import type { KeySettings } from "../../../core/bindings.ts";
-import { keyDown, keyLook, keyUp, keyWatches } from "../../../core/bindings.ts";
+import { keyDown, keyHold, keyLook, keyUp, keyWatches } from "../../../core/bindings.ts";
 import { keySvg, svgDataUrl } from "../../../core/render.ts";
 import { client, fleet, mirror, onReset } from "../runtime.ts";
 import { handleInspectorMessage, sendInspectorData } from "./common.ts";
 
 export type SwitchSettings = KeySettings;
 
-type Instance = { action: KeyAction<SwitchSettings>; settings: SwitchSettings; stop?: () => void };
+type Instance = { action: KeyAction<SwitchSettings>; settings: SwitchSettings; stop?: () => void; release?: () => void };
 
 export class DcsSwitch extends SingletonAction<SwitchSettings> {
 	override readonly manifestId: string = `${PRODUCT.uuid}.switch`;
@@ -44,7 +44,9 @@ export class DcsSwitch extends SingletonAction<SwitchSettings> {
 	}
 
 	override onWillDisappear(ev: WillDisappearEvent<SwitchSettings>): void {
-		this.#instances.get(ev.action.id)?.stop?.();
+		const instance = this.#instances.get(ev.action.id);
+		instance?.stop?.();
+		instance?.release?.();
 		this.#instances.delete(ev.action.id);
 		mirror.removeTile(ev.action.id);
 	}
@@ -66,11 +68,21 @@ export class DcsSwitch extends SingletonAction<SwitchSettings> {
 
 	override onKeyDown(ev: KeyDownEvent<SwitchSettings>): void {
 		const id = aircraftOf(ev.payload.settings).AIRCRAFT.id;
-		if (!keyDown(ev.payload.settings, fleet.lookup(id), fleet.dcs(id))) void ev.action.showAlert();
+		const instance = this.#instances.get(ev.action.id);
+		instance?.release?.();
+		if (!keyDown(ev.payload.settings, fleet.lookup(id), fleet.dcs(id))) {
+			void ev.action.showAlert();
+			return;
+		}
+		// Step and turn keys keep going while held.
+		if (instance) instance.release = keyHold(ev.payload.settings, fleet.lookup(id), fleet.dcs(id));
 	}
 
 	override onKeyUp(ev: KeyUpEvent<SwitchSettings>): void {
 		const id = aircraftOf(ev.payload.settings).AIRCRAFT.id;
+		const instance = this.#instances.get(ev.action.id);
+		instance?.release?.();
+		if (instance) instance.release = undefined;
 		keyUp(ev.payload.settings, fleet.lookup(id), fleet.dcs(id));
 	}
 

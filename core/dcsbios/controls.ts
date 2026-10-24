@@ -50,6 +50,12 @@ export type Control = {
 	rotary?: "cw" | "ccw";
 	/** 2- and 3-position switches: where the lever points at the highest position, as seen from the seat. */
 	highEnd?: LeverEnd;
+	/** Positions (values) that spring back when let go, to `rest` (see `springBack`). */
+	springs?: number[];
+	/** Where a spring-loaded switch comes back to (default: the middle). */
+	rest?: number;
+	/** A rocker's own push (CYCLIC_RTS → CYCLIC_RTS_PRESS). */
+	depress?: string;
 };
 
 /** A lever's direction as seen from the seat ("up" is forward on the consoles). */
@@ -112,6 +118,11 @@ export function parseControls(json: unknown, aircraft: AircraftData): ControlMap
 		const sideways = (c.positions ?? []).some((p) => /^(LEFT|RIGHT|L|R)$/i.test(p));
 		c.highEnd = aircraft.HIGH_END[c.identifier] ?? (sideways ? "right" : max === 2 ? aircraft.HIGH_END_OF_THREE : "up");
 	}
+	for (const c of map.values()) springBack(c, aircraft.SPRING_LOADED?.[c.identifier]);
+	for (const c of map.values()) {
+		const push = map.get(`${c.identifier}_PRESS`);
+		if (c.springs?.length && push && !push.seatVariant && push.inputs.length > 0) c.depress = push.identifier;
+	}
 	// One cockpit light, several colours: same panel, same legend, e.g. "L BAR (green)" and "L BAR (red)".
 	const legends = new Map<string, string[]>();
 	for (const c of map.values()) {
@@ -168,6 +179,21 @@ function mergeSeats(map: ControlMap, { position, seats }: Seats): void {
 			c.description = unprefix(c.description, seats[i].description);
 		});
 	}
+}
+
+/**
+ * Which positions spring back when let go. DCS-BIOS sends a spring-loaded or rocker switch to an end and
+ * holds it there until it is sent the middle; those switches take `set_state` 0 to 2 and no INC/DEC.
+ * The aircraft data corrects that where ED's own key binds differ (one end latches, other switches spring).
+ */
+function springBack(c: Control, known: { from: number[]; rest?: number } | undefined): void {
+	if (known) {
+		c.springs = [...known.from];
+		if (known.rest !== undefined) c.rest = known.rest;
+		return;
+	}
+	const set = input(c, "set_state");
+	if (set?.max_value === 2 && !input(c, "fixed_step") && intOutput(c)?.max_value === 2) c.springs = [0, 2];
 }
 
 export function loadControls(path: string, aircraft: AircraftData): ControlMap {
@@ -243,6 +269,77 @@ export function formatValue(control: Control, value: number): string {
 	return String(value);
 }
 
+/** Where a spring-loaded switch comes back to when let go. */
+export function restOf(control: Control): number {
+	return control.rest ?? ((intOutput(control)?.max_value ?? 0) === 2 ? 1 : 0);
+}
+
+/** A knob that turns through a range (volume, brightness) rather than clicking between positions. */
+export function isKnob(control: Control): boolean {
+	return input(control, "variable_step") !== undefined;
+}
+
+/**
+ * What a key press can do: `set:N` puts a switch in position N, `hold:N` holds a spring-loaded one there
+ * while pressed, `depress` pushes a rocker's own button, `inc`/`dec` step or turn, `cycle` steps through
+ * positions, `toggle` flips, `momentary` presses 1 and releases 0.
+ */
+export type KeyMode = "toggle" | "cycle" | "momentary" | "inc" | "dec" | "depress" | `set:${number}` | `hold:${number}`;
+
+/** "set:2" → ["set", 2]. */
+function positionMode(mode: string): ["set" | "hold", number] | undefined {
+	const m = /^(set|hold):(\d+)$/.exec(mode);
+	return m ? [m[1] as "set" | "hold", Number(m[2])] : undefined;
+}
+
+/** A position's name: DCS-BIOS's or the aircraft data's, else the way the lever points (Up, Left, Centre). */
+export function positionName(control: Control, value: number): string {
+	const named = control.positions?.[value];
+	if (named) return named;
+	if (control.highEnd) {
+		const at = leverAt(control, value);
+		return at === "middle" ? "Centre" : at[0].toUpperCase() + at.slice(1);
+	}
+	return String(value);
+}
+
+/** Positions a key can set (not those that spring back), from the top or left like the cockpit. */
+export function latchedPositions(control: Control): number[] {
+	const max = intOutput(control)?.max_value;
+	if (!input(control, "set_state") || isKnob(control) || max === undefined || max > 20) return [];
+	const values = leverOrder(control) ?? Array.from({ length: max + 1 }, (_, i) => i);
+	const springs = control.springs ?? [];
+	// A rocker that springs back from both ends has nothing to set: its middle is where it rests anyway.
+	const latched = values.filter((v) => !springs.includes(v));
+	return latched.length === 1 && springs.length > 0 ? [] : latched;
+}
+
+/** The modes a key on this control can use, in the order the settings list them, with their names. */
+export function keyModes(control: Control): { mode: KeyMode; label: string }[] {
+	const modes: { mode: KeyMode; label: string }[] = [];
+	if (isMomentary(control)) return [{ mode: "momentary", label: "Press (hold 1, release 0)" }];
+	const max = intOutput(control)?.max_value;
+	// A push with nothing to read back (CYCLIC_RTS_PRESS).
+	if (max === undefined && input(control, "action")?.argument === "TOGGLE") return [{ mode: "toggle", label: "Press" }];
+	const order = leverOrder(control) ?? (max !== undefined && max <= 20 ? Array.from({ length: max + 1 }, (_, i) => i) : []);
+	const latched = latchedPositions(control);
+	for (const v of order) {
+		if (control.springs?.includes(v)) modes.push({ mode: `hold:${v}`, label: `Hold ${positionName(control, v)}` });
+		else if (latched.includes(v)) modes.push({ mode: `set:${v}`, label: `Set ${positionName(control, v)}` });
+	}
+	if (control.depress) modes.push({ mode: "depress", label: "Depress" });
+	if (max === 1 && latched.length === 2) modes.push({ mode: "toggle", label: "Toggle" });
+	if ((max ?? 0) >= 2 && latched.length >= 2) modes.push({ mode: "cycle", label: "Next position (wraps)" });
+	if (isKnob(control)) {
+		modes.push({ mode: "inc", label: "Turn up" }, { mode: "dec", label: "Turn down" });
+	} else if (input(control, "fixed_step") && !control.springs?.length && (max === undefined || max >= 2)) {
+		// One notch at a time, no wrapping. Not on spring-loaded switches: a step would leave them held.
+		modes.push({ mode: "inc", label: "Step up" }, { mode: "dec", label: "Step down" });
+	}
+	if (max === 1 && !control.springs?.length) modes.push({ mode: "momentary", label: "Hold (press 1, release 0)" });
+	return modes;
+}
+
 /**
  * Command argument for one press of a key, by key mode.
  * Returns undefined when the control cannot do that mode.
@@ -251,9 +348,14 @@ export function pressArgument(
 	control: Control,
 	mode: KeyMode,
 	current: number | undefined,
-	/** For "cycle": the positions to step through, in order (empty = all). */
+	/** For "cycle": the positions to step through, in order (empty = every position that stays put). */
 	cycle?: number[],
 ): string | undefined {
+	const position = positionMode(mode);
+	if (position) {
+		const set = input(control, "set_state");
+		return set && position[1] <= set.max_value ? String(position[1]) : undefined;
+	}
 	switch (mode) {
 		case "toggle":
 			if (input(control, "action")?.argument === "TOGGLE") return "TOGGLE";
@@ -263,7 +365,8 @@ export function pressArgument(
 			if (!set) return input(control, "fixed_step") ? "INC" : undefined;
 			const all = Array.from({ length: set.max_value + 1 }, (_, i) => i);
 			const order = cycle?.filter((v) => v >= 0 && v <= set.max_value) ?? [];
-			const steps = order.length ? order : all;
+			const latched = all.filter((v) => !control.springs?.includes(v));
+			const steps = order.length ? order : latched.length ? latched : all;
 			// From a position outside the list (e.g. a spring-loaded one), go to the first.
 			const at = current === undefined ? -1 : steps.indexOf(current);
 			return String(steps[(at + 1) % steps.length]);
@@ -271,21 +374,63 @@ export function pressArgument(
 		case "momentary":
 			return "1";
 		case "inc":
-			return input(control, "fixed_step") ? "INC" : undefined;
-		case "dec":
-			return input(control, "fixed_step") ? "DEC" : undefined;
+		case "dec": {
+			const sign = mode === "inc" ? "+" : "-";
+			if (isKnob(control)) return `${sign}${knobStep(control, TAP)}`;
+			return input(control, "fixed_step") ? mode.toUpperCase() : undefined;
+		}
+		case "depress":
+			return undefined;
 	}
+	return undefined;
 }
 
-export type KeyMode = "toggle" | "cycle" | "momentary" | "inc" | "dec";
+/** Command argument when the key is let go, if any: a held switch springs back, a pressed button lifts. */
+export function releaseArgument(control: Control, mode: KeyMode): string | undefined {
+	if (positionMode(mode)?.[0] === "hold") return String(restOf(control));
+	if (mode === "momentary") return "0";
+	return undefined;
+}
+
+/** Share of a knob's range for one short press. */
+const TAP = 0.02;
+
+/** A knob step of `share` of its range (at least 1). */
+export function knobStep(control: Control, share: number): number {
+	const range = input(control, "variable_step")?.max_value ?? 65535;
+	return Math.max(1, Math.round(range * share));
+}
+
+/**
+ * Turning a knob from a held key: nothing for the first 300 ms (a short press is one small step),
+ * then a step every 40 ms that grows smoothly from 1% to 5% of the range over the next 1.2 s.
+ * Returns the share of the range to turn for a tick at `heldMs`, or 0 for none.
+ */
+export function knobRamp(heldMs: number): number {
+	const t = (heldMs - 300) / 1200;
+	if (t < 0) return 0;
+	const eased = Math.min(1, t) ** 2 * (3 - 2 * Math.min(1, t));
+	return 0.01 + 0.04 * eased;
+}
+
+/** Positions for INC/DEC from a held key: first repeat after 400 ms, then quicker, down to every 120 ms. */
+export function stepInterval(heldMs: number): number {
+	const t = Math.min(1, Math.max(0, (heldMs - 400) / 1500));
+	return Math.round(400 - 280 * t * t * (3 - 2 * t));
+}
 
 /** The default key mode for a control. */
 export function defaultKeyMode(control: Control): KeyMode {
 	if (isMomentary(control)) return "momentary";
 	if (input(control, "action")?.argument === "TOGGLE") return "toggle";
+	if (isKnob(control)) return "inc";
+	// A rocker that springs back from every end: hold its first end (top or left).
+	if (control.springs?.length && latchedPositions(control).length === 0) {
+		const first = (leverOrder(control) ?? control.springs).find((v) => control.springs!.includes(v));
+		if (first !== undefined) return `hold:${first}`;
+	}
 	return "cycle";
 }
-
 /**
  * Command arguments for turning a dial by `ticks` (negative = counter-clockwise).
  * `step` overrides the DCS-BIOS suggested step for variable_step controls.

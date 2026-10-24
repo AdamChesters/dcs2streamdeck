@@ -2,7 +2,24 @@
  * What a key or dial does and shows. Shared by the Stream Deck plugin and the standalone app.
  */
 import type { Control, KeyMode } from "./dcsbios/controls.ts";
-import { defaultKeyMode, formatValue, intOutput, isMomentary, lampColour, leverAt, pressArgument, RESTING, rotateArguments, stripColour } from "./dcsbios/controls.ts";
+import {
+	defaultKeyMode,
+	formatValue,
+	input,
+	intOutput,
+	isKnob,
+	isMomentary,
+	knobRamp,
+	knobStep,
+	lampColour,
+	leverAt,
+	pressArgument,
+	releaseArgument,
+	RESTING,
+	rotateArguments,
+	stepInterval,
+	stripColour,
+} from "./dcsbios/controls.ts";
 import type { Colour, DialView, Glyph, KeyLook, Light } from "./render.ts";
 
 /** The part of the DCS-BIOS client the bindings use. */
@@ -24,7 +41,7 @@ export type KeySettings = {
 	control?: string;
 	/** Text on the key. Empty = the control's description. */
 	title?: string;
-	/** "" = automatic; "custom" uses `press` / `release`. */
+	/** "" = automatic (see defaultKeyMode); "custom" uses `press` / `release`. */
 	mode?: KeyMode | "custom" | "";
 	press?: string;
 	release?: string;
@@ -32,7 +49,7 @@ export type KeySettings = {
 	lamp?: string;
 	/** Light the key when the lamp control is off. */
 	invert?: boolean;
-	/** "Next position": the positions a press steps through (empty = all). */
+	/** "Next position": the positions a press steps through (empty = all that stay put). */
 	cycle?: number[];
 };
 
@@ -150,6 +167,12 @@ export function keyDown(s: KeySettings, lookup: Lookup, dcs: Dcs): boolean {
 	// A light-only key has nothing to press.
 	if (!c) return !s.control && Boolean(lookup(s.lamp));
 	const mode = s.mode || defaultKeyMode(c);
+	if (mode === "depress") {
+		const push = lookup(c.depress);
+		if (!push) return false;
+		dcs.send(push.identifier, input(push, "set_state") ? "1" : "TOGGLE");
+		return true;
+	}
 	const current = dcs.read(c);
 	const argument =
 		mode === "custom" ? s.press?.trim() : pressArgument(c, mode, typeof current === "number" ? current : undefined, s.cycle);
@@ -162,8 +185,45 @@ export function keyUp(s: KeySettings, lookup: Lookup, dcs: Dcs): void {
 	const c = lookup(s.control);
 	if (!c) return;
 	const mode = s.mode || defaultKeyMode(c);
-	if (mode === "momentary") dcs.send(c.identifier, "0");
-	if (mode === "custom" && s.release?.trim()) dcs.send(c.identifier, s.release.trim());
+	if (mode === "depress") {
+		const push = lookup(c.depress);
+		if (push && input(push, "set_state")) dcs.send(push.identifier, "0");
+		return;
+	}
+	if (mode === "custom") {
+		if (s.release?.trim()) dcs.send(c.identifier, s.release.trim());
+		return;
+	}
+	const argument = releaseArgument(c, mode);
+	if (argument) dcs.send(c.identifier, argument);
+}
+
+/**
+ * While a Step/Turn key is held, keeps going after `keyDown`'s first step: a knob turns on a smooth curve
+ * (small steps at first, then faster), a stepped switch repeats quicker the longer it is held.
+ * Returns the function that stops it (call on key up), or undefined when the key does not repeat.
+ */
+export function keyHold(s: KeySettings, lookup: Lookup, dcs: Dcs, now = () => Date.now()): (() => void) | undefined {
+	const c = lookup(s.control);
+	const mode = c && (s.mode || defaultKeyMode(c));
+	if (!c || (mode !== "inc" && mode !== "dec")) return undefined;
+	if (!isKnob(c) && !input(c, "fixed_step")) return undefined;
+	const sign = mode === "inc" ? "+" : "-";
+	const start = now();
+	let timer: ReturnType<typeof setTimeout>;
+	const tick = (): void => {
+		const held = now() - start;
+		if (isKnob(c)) {
+			const share = knobRamp(held);
+			if (share > 0) dcs.send(c.identifier, `${sign}${knobStep(c, share)}`);
+			timer = setTimeout(tick, 40);
+		} else {
+			if (held >= 400) dcs.send(c.identifier, mode.toUpperCase());
+			timer = setTimeout(tick, held >= 400 ? stepInterval(held) : 400 - held);
+		}
+	};
+	timer = setTimeout(tick, isKnob(c) ? 40 : 400);
+	return () => clearTimeout(timer);
 }
 
 export function parseFunctions(text: string | undefined): DialFunction[] {

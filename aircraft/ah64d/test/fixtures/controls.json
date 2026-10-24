@@ -245,6 +245,50 @@
 				"Off",
 				"R"
 			]
+		},
+		"CPG_CYCLIC_RTS": {
+			"category": "CPG Cyclic",
+			"control_type": "3Pos_2Command_Switch_OpenClose",
+			"description": "PTT/RTS Switch -",
+			"identifier": "CPG_CYCLIC_RTS",
+			"inputs": [
+				{
+					"description": "set the switch position",
+					"interface": "set_state",
+					"max_value": 2
+				}
+			],
+			"outputs": [
+				{
+					"address": 34706,
+					"address_mask_shift_identifier": "AH_64D_CPG_CYCLIC_RTS",
+					"description": "switch position -- 0 = Down, 1 = Mid,  2 = Up",
+					"mask": 12,
+					"max_value": 2,
+					"shift_by": 2,
+					"suffix": "",
+					"type": "integer"
+				}
+			],
+			"positions": [
+				"RADIO",
+				"Off",
+				"ICS"
+			]
+		},
+		"CPG_CYCLIC_RTS_PRESS": {
+			"category": "CPG Cyclic",
+			"control_type": "action",
+			"description": "PTT/RTS Switch - Depress",
+			"identifier": "CPG_CYCLIC_RTS_PRESS",
+			"inputs": [
+				{
+					"argument": "TOGGLE",
+					"description": "Triggers the action",
+					"interface": "action"
+				}
+			],
+			"outputs": []
 		}
 	},
 	"CPG Emergency Panel": {
@@ -1088,6 +1132,50 @@
 				"Off",
 				"R"
 			]
+		},
+		"PLT_CYCLIC_RTS": {
+			"category": "PLT Cyclic",
+			"control_type": "3Pos_2Command_Switch_OpenClose",
+			"description": "PTT/RTS Switch -",
+			"identifier": "PLT_CYCLIC_RTS",
+			"inputs": [
+				{
+					"description": "set the switch position",
+					"interface": "set_state",
+					"max_value": 2
+				}
+			],
+			"outputs": [
+				{
+					"address": 34702,
+					"address_mask_shift_identifier": "AH_64D_PLT_CYCLIC_RTS",
+					"description": "switch position -- 0 = Down, 1 = Mid,  2 = Up",
+					"mask": 24576,
+					"max_value": 2,
+					"shift_by": 13,
+					"suffix": "",
+					"type": "integer"
+				}
+			],
+			"positions": [
+				"RADIO",
+				"Off",
+				"ICS"
+			]
+		},
+		"PLT_CYCLIC_RTS_PRESS": {
+			"category": "PLT Cyclic",
+			"control_type": "action",
+			"description": "PTT/RTS Switch - Depress",
+			"identifier": "PLT_CYCLIC_RTS_PRESS",
+			"inputs": [
+				{
+					"argument": "TOGGLE",
+					"description": "Triggers the action",
+					"interface": "action"
+				}
+			],
+			"outputs": []
 		}
 	},
 	"PLT Emergency Panel": {
@@ -1762,6 +1850,70 @@
 					"suffix": "",
 					"type": "integer"
 				}
+			]
+		}
+	},
+	"CPG Collective (Flight Grip)": {
+		"CPG_COLLECTIVE_SEARCHLIGHT": {
+			"category": "CPG Collective (Flight Grip)",
+			"control_type": "3Pos_2Command_Switch_OpenClose",
+			"description": "Searchlight",
+			"identifier": "CPG_COLLECTIVE_SEARCHLIGHT",
+			"inputs": [
+				{
+					"description": "set the switch position",
+					"interface": "set_state",
+					"max_value": 2
+				}
+			],
+			"outputs": [
+				{
+					"address": 34700,
+					"address_mask_shift_identifier": "AH_64D_CPG_COLLECTIVE_SEARCHLIGHT",
+					"description": "switch position -- 0 = Down, 1 = Mid,  2 = Up",
+					"mask": 48,
+					"max_value": 2,
+					"shift_by": 4,
+					"suffix": "",
+					"type": "integer"
+				}
+			],
+			"positions": [
+				"STOW",
+				"Off",
+				"ON"
+			]
+		}
+	},
+	"PLT Collective (Flight Grip)": {
+		"PLT_COLLECTIVE_SEARCHLIGHT": {
+			"category": "PLT Collective (Flight Grip)",
+			"control_type": "3Pos_2Command_Switch_OpenClose",
+			"description": "Searchlight",
+			"identifier": "PLT_COLLECTIVE_SEARCHLIGHT",
+			"inputs": [
+				{
+					"description": "set the switch position",
+					"interface": "set_state",
+					"max_value": 2
+				}
+			],
+			"outputs": [
+				{
+					"address": 34650,
+					"address_mask_shift_identifier": "AH_64D_PLT_COLLECTIVE_SEARCHLIGHT",
+					"description": "switch position -- 0 = Down, 1 = Mid,  2 = Up",
+					"mask": 24576,
+					"max_value": 2,
+					"shift_by": 13,
+					"suffix": "",
+					"type": "integer"
+				}
+			],
+			"positions": [
+				"STOW",
+				"Off",
+				"ON"
 			]
 		}
 	}
