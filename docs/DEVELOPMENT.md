@@ -39,7 +39,9 @@ springs back), a position that stays gets "Set X", a static switch also gets "Ne
 (one key cycles it) and Step up/down, a knob gets Turn up/down (a short press is a small step;
 holding turns faster on a smooth curve), and a rocker with its own push (`CYCLIC_RTS` and
 `CYCLIC_RTS_PRESS`) gets "Depress". DCS-BIOS's spring-loaded and rocker switches count as
-spring-loaded at both ends; `SPRING_LOADED` in the aircraft data corrects that by value.
+spring-loaded at both ends; `SPRING_LOADED` in the aircraft data corrects that by value. A thumb
+stick that DCS-BIOS only gives as a knob (its axis, e.g. the AH-64D collective cursor) goes in
+`CENTRED`: its keys push it while held, further the longer, and centre it on release.
 
 To add an aircraft: copy an `aircraft/<id>` folder, give it a new id, module (and `dcsName` if DCS
 uses another name) and names,
@@ -48,7 +50,8 @@ add it to `AIRCRAFT_LIST` in `core/aircraft.data.ts`, and replace the data and t
 a bind with the same command and value as DCS-BIOS gives the position's name, and a bind with
 a release means that position springs back. Put names that differ in `POSITION_NAMES`, and
 switches that latch at one end, or that spring back although DCS-BIOS does not treat them as
-spring-loaded, in `SPRING_LOADED`.
+spring-loaded, in `SPRING_LOADED`. Look for knobs whose DCS command is one of DCS's axis commands
+and that spring back in the cockpit (cursor and slew controls): put them in `CENTRED`.
 
 ## Testing without DCS
 

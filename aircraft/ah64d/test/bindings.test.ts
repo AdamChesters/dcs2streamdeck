@@ -95,3 +95,32 @@ test("a knob key: a short press is a small step, holding turns faster and faster
 	wait(500);
 	assert.equal(live.sent.length, count, "stops when the key is let go");
 });
+
+test("the collective cursor: a Push key deflects it while held, further the longer, and centres it on release", (t) => {
+	t.mock.timers.enable({ apis: ["setTimeout"] });
+	let clock = 0;
+	const wait = (ms: number) => {
+		for (let i = 0; i < ms; i += 10) {
+			clock += 10;
+			t.mock.timers.tick(10);
+		}
+	};
+	const live = recorder({ COLLECTIVE_CURSOR_UD: 32768 });
+	const up = { control: "COLLECTIVE_CURSOR_UD", mode: "push:high" as const };
+	assert.equal(keyDown(up, lookup, live), true);
+	const stop = keyHold(up, lookup, live, () => clock);
+	assert.ok(stop);
+	wait(280);
+	assert.deepEqual(live.sent, ["COLLECTIVE_CURSOR_UD 39321"], "a gentle 20% push at first");
+	wait(1500);
+	stop();
+	keyUp(up, lookup, live);
+	const values = live.sent.map((s) => Number(s.split(" ")[1]));
+	assert.ok(values.slice(0, -1).every((v, i) => i === 0 || v >= values[i - 1]), "pushes further, never less");
+	assert.equal(values.at(-2), 65535, "full push after 1.5 s");
+	assert.equal(live.sent.at(-1), "COLLECTIVE_CURSOR_UD 32768", "centred on release");
+	const left = recorder();
+	keyDown({ control: "COLLECTIVE_CURSOR_LR", mode: "push:low" }, lookup, left);
+	keyUp({ control: "COLLECTIVE_CURSOR_LR", mode: "push:low" }, lookup, left);
+	assert.deepEqual(left.sent, ["COLLECTIVE_CURSOR_LR 26214", "COLLECTIVE_CURSOR_LR 32768"]);
+});

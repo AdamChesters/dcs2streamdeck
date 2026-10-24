@@ -14,6 +14,7 @@ import {
 	lampColour,
 	leverAt,
 	pressArgument,
+	pushValue,
 	releaseArgument,
 	RESTING,
 	rotateArguments,
@@ -199,13 +200,28 @@ export function keyUp(s: KeySettings, lookup: Lookup, dcs: Dcs): void {
 }
 
 /**
- * While a Step/Turn key is held, keeps going after `keyDown`'s first step: a knob turns on a smooth curve
- * (small steps at first, then faster), a stepped switch repeats quicker the longer it is held.
+ * While a Step/Turn/Push key is held, keeps going after `keyDown`'s first step: a knob turns on a smooth curve
+ * (small steps at first, then faster), a stepped switch repeats quicker the longer it is held, a thumb stick
+ * is pushed further.
  * Returns the function that stops it (call on key up), or undefined when the key does not repeat.
  */
 export function keyHold(s: KeySettings, lookup: Lookup, dcs: Dcs, now = () => Date.now()): (() => void) | undefined {
 	const c = lookup(s.control);
 	const mode = c && (s.mode || defaultKeyMode(c));
+	if (c && (mode === "push:low" || mode === "push:high") && c.centred) {
+		// A thumb stick: push harder the longer the key is held (keyUp centres it).
+		const start = now();
+		let sent = pressArgument(c, mode, undefined);
+		let timer: ReturnType<typeof setTimeout>;
+		const tick = (): void => {
+			const value = String(pushValue(c, mode, now() - start));
+			if (value !== sent) dcs.send(c.identifier, value);
+			sent = value;
+			timer = setTimeout(tick, 40);
+		};
+		timer = setTimeout(tick, 40);
+		return () => clearTimeout(timer);
+	}
 	if (!c || (mode !== "inc" && mode !== "dec")) return undefined;
 	if (!isKnob(c) && !input(c, "fixed_step")) return undefined;
 	const sign = mode === "inc" ? "+" : "-";

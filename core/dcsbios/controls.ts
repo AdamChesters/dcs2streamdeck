@@ -56,6 +56,8 @@ export type Control = {
 	rest?: number;
 	/** A rocker's own push (CYCLIC_RTS → CYCLIC_RTS_PRESS). */
 	depress?: string;
+	/** A knob that springs back to the middle like a thumb stick (from the aircraft data): its low and high ends. */
+	centred?: [string, string];
 };
 
 /** A lever's direction as seen from the seat ("up" is forward on the consoles). */
@@ -119,6 +121,10 @@ export function parseControls(json: unknown, aircraft: AircraftData): ControlMap
 		c.highEnd = aircraft.HIGH_END[c.identifier] ?? (sideways ? "right" : max === 2 ? aircraft.HIGH_END_OF_THREE : "up");
 	}
 	for (const c of map.values()) springBack(c, aircraft.SPRING_LOADED?.[c.identifier]);
+	for (const [id, ends] of Object.entries(aircraft.CENTRED ?? {})) {
+		const c = map.get(id);
+		if (c && isKnob(c)) c.centred = [...ends];
+	}
 	for (const c of map.values()) {
 		const push = map.get(`${c.identifier}_PRESS`);
 		if (c.springs?.length && push && !push.seatVariant && push.inputs.length > 0) c.depress = push.identifier;
@@ -281,10 +287,21 @@ export function isKnob(control: Control): boolean {
 
 /**
  * What a key press can do: `set:N` puts a switch in position N, `hold:N` holds a spring-loaded one there
- * while pressed, `depress` pushes a rocker's own button, `inc`/`dec` step or turn, `cycle` steps through
- * positions, `toggle` flips, `momentary` presses 1 and releases 0.
+ * while pressed, `depress` pushes a rocker's own button, `inc`/`dec` step or turn, `push:low`/`push:high`
+ * deflect a thumb stick while pressed (centred on release), `cycle` steps through positions, `toggle` flips,
+ * `momentary` presses 1 and releases 0.
  */
-export type KeyMode = "toggle" | "cycle" | "momentary" | "inc" | "dec" | "depress" | `set:${number}` | `hold:${number}`;
+export type KeyMode =
+	| "toggle"
+	| "cycle"
+	| "momentary"
+	| "inc"
+	| "dec"
+	| "depress"
+	| "push:low"
+	| "push:high"
+	| `set:${number}`
+	| `hold:${number}`;
 
 /** "set:2" → ["set", 2]. */
 function positionMode(mode: string): ["set" | "hold", number] | undefined {
@@ -330,7 +347,10 @@ export function keyModes(control: Control): { mode: KeyMode; label: string }[] {
 	if (control.depress) modes.push({ mode: "depress", label: "Depress" });
 	if (max === 1 && latched.length === 2) modes.push({ mode: "toggle", label: "Toggle" });
 	if ((max ?? 0) >= 2 && latched.length >= 2) modes.push({ mode: "cycle", label: "Next position (wraps)" });
-	if (isKnob(control)) {
+	if (control.centred) {
+		// Turning would leave it deflected: a key pushes while held, like a thumb.
+		modes.push({ mode: "push:high", label: `Push ${control.centred[1]}` }, { mode: "push:low", label: `Push ${control.centred[0]}` });
+	} else if (isKnob(control)) {
 		modes.push({ mode: "inc", label: "Turn up" }, { mode: "dec", label: "Turn down" });
 	} else if (input(control, "fixed_step") && !control.springs?.length && (max === undefined || max >= 2)) {
 		// One notch at a time, no wrapping. Not on spring-loaded switches: a step would leave them held.
@@ -379,16 +399,41 @@ export function pressArgument(
 			if (isKnob(control)) return `${sign}${knobStep(control, TAP)}`;
 			return input(control, "fixed_step") ? mode.toUpperCase() : undefined;
 		}
+		case "push:low":
+		case "push:high":
+			return control.centred ? String(pushValue(control, mode, 0)) : undefined;
 		case "depress":
 			return undefined;
 	}
 	return undefined;
 }
 
+/** The middle of a centred knob's range. */
+export function centreOf(control: Control): number {
+	return Math.round((input(control, "set_state")?.max_value ?? 65535) / 2);
+}
+
+/** A thumb-stick push held for `heldMs`: from the middle towards the pushed end, by `pushRamp`. */
+export function pushValue(control: Control, mode: "push:low" | "push:high", heldMs: number): number {
+	const centre = centreOf(control);
+	const reach = Math.round((mode === "push:high" ? (input(control, "set_state")?.max_value ?? 65535) - centre : centre) * pushRamp(heldMs));
+	return mode === "push:high" ? centre + reach : centre - reach;
+}
+
+/**
+ * How far a held Push key deflects a thumb stick (share of the way to the end): a gentle 20% for the
+ * first 300 ms (a short press nudges the cursor), then smoothly to 100% over the next 1.2 s.
+ */
+export function pushRamp(heldMs: number): number {
+	const t = Math.min(1, Math.max(0, (heldMs - 300) / 1200));
+	return 0.2 + 0.8 * t * t * (3 - 2 * t);
+}
+
 /** Command argument when the key is let go, if any: a held switch springs back, a pressed button lifts. */
 export function releaseArgument(control: Control, mode: KeyMode): string | undefined {
 	if (positionMode(mode)?.[0] === "hold") return String(restOf(control));
 	if (mode === "momentary") return "0";
+	if ((mode === "push:low" || mode === "push:high") && control.centred) return String(centreOf(control));
 	return undefined;
 }
 
@@ -423,6 +468,7 @@ export function stepInterval(heldMs: number): number {
 export function defaultKeyMode(control: Control): KeyMode {
 	if (isMomentary(control)) return "momentary";
 	if (input(control, "action")?.argument === "TOGGLE") return "toggle";
+	if (control.centred) return "push:high";
 	if (isKnob(control)) return "inc";
 	// A rocker that springs back from every end: hold its first end (top or left).
 	if (control.springs?.length && latchedPositions(control).length === 0) {

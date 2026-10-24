@@ -1916,5 +1916,137 @@
 				"ON"
 			]
 		}
+	},
+	"CPG Collective (Mission Grip)": {
+		"CPG_COLLECTIVE_CURSOR_LR": {
+			"category": "CPG Collective (Mission Grip)",
+			"control_type": "limited_dial",
+			"description": "Cursor Controller L/R",
+			"identifier": "CPG_COLLECTIVE_CURSOR_LR",
+			"inputs": [
+				{
+					"description": "set the position of the dial",
+					"interface": "set_state",
+					"max_value": 65535
+				},
+				{
+					"description": "turn the dial left or right",
+					"interface": "variable_step",
+					"max_value": 65535,
+					"suggested_step": 3200
+				}
+			],
+			"outputs": [
+				{
+					"address": 34698,
+					"address_identifier": "AH_64D_CPG_COLLECTIVE_CURSOR_LR_A",
+					"address_mask_shift_identifier": "AH_64D_CPG_COLLECTIVE_CURSOR_LR",
+					"description": "position of the potentiometer",
+					"mask": 65535,
+					"max_value": 65535,
+					"shift_by": 0,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		},
+		"CPG_COLLECTIVE_CURSOR_UD": {
+			"category": "CPG Collective (Mission Grip)",
+			"control_type": "limited_dial",
+			"description": "Cursor Controller U/D",
+			"identifier": "CPG_COLLECTIVE_CURSOR_UD",
+			"inputs": [
+				{
+					"description": "set the position of the dial",
+					"interface": "set_state",
+					"max_value": 65535
+				},
+				{
+					"description": "turn the dial left or right",
+					"interface": "variable_step",
+					"max_value": 65535,
+					"suggested_step": 3200
+				}
+			],
+			"outputs": [
+				{
+					"address": 34696,
+					"address_identifier": "AH_64D_CPG_COLLECTIVE_CURSOR_UD_A",
+					"address_mask_shift_identifier": "AH_64D_CPG_COLLECTIVE_CURSOR_UD",
+					"description": "position of the potentiometer",
+					"mask": 65535,
+					"max_value": 65535,
+					"shift_by": 0,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		}
+	},
+	"PLT Collective (Mission Grip)": {
+		"PLT_COLLECTIVE_CURSOR_LR": {
+			"category": "PLT Collective (Mission Grip)",
+			"control_type": "limited_dial",
+			"description": "Cursor Controller L/R",
+			"identifier": "PLT_COLLECTIVE_CURSOR_LR",
+			"inputs": [
+				{
+					"description": "set the position of the dial",
+					"interface": "set_state",
+					"max_value": 65535
+				},
+				{
+					"description": "turn the dial left or right",
+					"interface": "variable_step",
+					"max_value": 65535,
+					"suggested_step": 3200
+				}
+			],
+			"outputs": [
+				{
+					"address": 34692,
+					"address_identifier": "AH_64D_PLT_COLLECTIVE_CURSOR_LR_A",
+					"address_mask_shift_identifier": "AH_64D_PLT_COLLECTIVE_CURSOR_LR",
+					"description": "position of the potentiometer",
+					"mask": 65535,
+					"max_value": 65535,
+					"shift_by": 0,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		},
+		"PLT_COLLECTIVE_CURSOR_UD": {
+			"category": "PLT Collective (Mission Grip)",
+			"control_type": "limited_dial",
+			"description": "Cursor Controller U/D",
+			"identifier": "PLT_COLLECTIVE_CURSOR_UD",
+			"inputs": [
+				{
+					"description": "set the position of the dial",
+					"interface": "set_state",
+					"max_value": 65535
+				},
+				{
+					"description": "turn the dial left or right",
+					"interface": "variable_step",
+					"max_value": 65535,
+					"suggested_step": 3200
+				}
+			],
+			"outputs": [
+				{
+					"address": 34690,
+					"address_identifier": "AH_64D_PLT_COLLECTIVE_CURSOR_UD_A",
+					"address_mask_shift_identifier": "AH_64D_PLT_COLLECTIVE_CURSOR_UD",
+					"description": "position of the potentiometer",
+					"mask": 65535,
+					"max_value": 65535,
+					"shift_by": 0,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		}
 	}
 }

@@ -50,6 +50,10 @@ test("what a key can do: hold a rocker, set what stays, push the RTS rocker", ()
 	assert.deepEqual(labels("COLLECTIVE_SEARCHLIGHT"), ["Set ON", "Set Off", "Hold STOW", "Next position (wraps)"], "STOW springs back, ON stays");
 	assert.deepEqual(labels("PLT_CMWS_PW"), ["Hold Test", "Set On", "Set Off", "Next position (wraps)"]);
 	assert.equal(defaultKeyMode(get("PLT_CMWS_PW")), "cycle", "Next position skips Test");
+	assert.deepEqual(labels("COLLECTIVE_CURSOR_UD"), ["Push Up", "Push Down"], "a thumb stick: no Turn, it would stay pushed");
+	assert.deepEqual(labels("COLLECTIVE_CURSOR_LR"), ["Push Right", "Push Left"]);
+	assert.equal(defaultKeyMode(get("COLLECTIVE_CURSOR_UD")), "push:high");
+	assert.deepEqual(labels("COM_MASTER_VOL"), ["Turn up", "Turn down"], "other knobs still turn");
 	const item = catalog(controls).find((i) => i.id === "CYCLIC_RTS")!;
 	assert.equal(item.auto, "hold:0");
 	assert.deepEqual(item.modes?.map((m) => m.value), ["hold:0", "hold:2", "depress"]);

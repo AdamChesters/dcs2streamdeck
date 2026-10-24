@@ -23,7 +23,7 @@ import { handleInspectorMessage, sendInspectorData } from "./common.ts";
 
 export type SwitchSettings = KeySettings;
 
-type Instance = { action: KeyAction<SwitchSettings>; settings: SwitchSettings; stop?: () => void; release?: () => void };
+type Instance = { action: KeyAction<SwitchSettings>; settings: SwitchSettings; stop?: () => void; release?: () => void; held?: boolean };
 
 export class DcsSwitch extends SingletonAction<SwitchSettings> {
 	override readonly manifestId: string = `${PRODUCT.uuid}.switch`;
@@ -47,6 +47,11 @@ export class DcsSwitch extends SingletonAction<SwitchSettings> {
 		const instance = this.#instances.get(ev.action.id);
 		instance?.stop?.();
 		instance?.release?.();
+		// Gone while pressed (page change): let go, so nothing stays held or pushed.
+		if (instance?.held) {
+			const id = aircraftOf(instance.settings).AIRCRAFT.id;
+			keyUp(instance.settings, fleet.lookup(id), fleet.dcs(id));
+		}
 		this.#instances.delete(ev.action.id);
 		mirror.removeTile(ev.action.id);
 	}
@@ -70,6 +75,7 @@ export class DcsSwitch extends SingletonAction<SwitchSettings> {
 		const id = aircraftOf(ev.payload.settings).AIRCRAFT.id;
 		const instance = this.#instances.get(ev.action.id);
 		instance?.release?.();
+		if (instance) instance.held = true;
 		if (!keyDown(ev.payload.settings, fleet.lookup(id), fleet.dcs(id))) {
 			void ev.action.showAlert();
 			return;
@@ -82,7 +88,7 @@ export class DcsSwitch extends SingletonAction<SwitchSettings> {
 		const id = aircraftOf(ev.payload.settings).AIRCRAFT.id;
 		const instance = this.#instances.get(ev.action.id);
 		instance?.release?.();
-		if (instance) instance.release = undefined;
+		if (instance) Object.assign(instance, { release: undefined, held: false });
 		keyUp(ev.payload.settings, fleet.lookup(id), fleet.dcs(id));
 	}
 

@@ -28,6 +28,8 @@ export type AircraftData = {
 	ROTARY_KNOBS?: Record<string, "cw" | "ccw">;
 	/** Positions that spring back when let go, where the DCS-BIOS switch type does not say (see `springBack`). */
 	SPRING_LOADED?: Record<string, { from: number[]; rest?: number }>;
+	/** Knobs that spring back to the middle like a thumb stick (DCS-BIOS gives them as knobs): low and high end names. */
+	CENTRED?: Record<string, [string, string]>;
 	SEATS?: Seats;
 };
 

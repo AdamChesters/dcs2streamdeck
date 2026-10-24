@@ -137,6 +137,15 @@ export const SPRING_LOADED: Record<string, { from: number[]; rest?: number }> = 
 	CYCLIC_TRIGGER: { from: [1, 2], rest: 0 },
 };
 
+/**
+ * Thumb sticks DCS-BIOS gives as knobs (its axis commands, with no key commands): keys push them while held
+ * and centre them on release. [low end, high end]; high (+1) assumed Up and Right like ED's own keys (not checked in DCS).
+ */
+export const CENTRED: Record<string, [string, string]> = {
+	COLLECTIVE_CURSOR_UD: ["Down", "Up"],
+	COLLECTIVE_CURSOR_LR: ["Left", "Right"],
+};
+
 /** Dial presets: [name, knob list as "IDENTIFIER | Label" lines]. PLT_ knobs are in the pilot's seat only. */
 export const DIAL_PRESETS: [string, string][] = [
 	[
