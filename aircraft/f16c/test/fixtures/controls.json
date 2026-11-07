@@ -85,6 +85,36 @@
 					"type": "integer"
 				}
 			]
+		},
+		"ANTI_SKID_SW": {
+			"category": "Gear System",
+			"control_type": "3Pos_2Command_Switch_OpenClose",
+			"description": "ANTI-SKID Switch",
+			"identifier": "ANTI_SKID_SW",
+			"inputs": [
+				{
+					"description": "set the switch position",
+					"interface": "set_state",
+					"max_value": 2
+				}
+			],
+			"outputs": [
+				{
+					"address": 17438,
+					"address_mask_shift_identifier": "F_16C_50_ANTI_SKID_SW",
+					"description": "switch position -- 0 = Down, 1 = Mid,  2 = Up",
+					"mask": 384,
+					"max_value": 2,
+					"shift_by": 7,
+					"suffix": "",
+					"type": "integer"
+				}
+			],
+			"positions": [
+				"PARKING BRAKE",
+				"ANTI-SKID",
+				"OFF"
+			]
 		}
 	},
 	"Interior Lights": {
@@ -569,6 +599,73 @@
 					"mask": 768,
 					"max_value": 3,
 					"shift_by": 8,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		}
+	},
+	"Control Interface": {
+		"AP_PITCH_SW": {
+			"category": "Control Interface",
+			"control_type": "3Pos_2Command_Switch_OpenClose",
+			"description": "Autopilot PITCH Switch",
+			"identifier": "AP_PITCH_SW",
+			"inputs": [
+				{
+					"description": "set the switch position",
+					"interface": "set_state",
+					"max_value": 2
+				}
+			],
+			"outputs": [
+				{
+					"address": 17408,
+					"address_mask_shift_identifier": "F_16C_50_AP_PITCH_SW",
+					"description": "switch position -- 0 = Down, 1 = Mid,  2 = Up",
+					"mask": 768,
+					"max_value": 2,
+					"shift_by": 8,
+					"suffix": "",
+					"type": "integer"
+				}
+			],
+			"positions": [
+				"ATT HOLD",
+				"A/P OFF",
+				"ALT HOLD"
+			]
+		},
+		"STORES_CONFIG_SW": {
+			"category": "Control Interface",
+			"control_type": "selector",
+			"description": "STORES CONFIG Switch, CAT III/CAT I",
+			"identifier": "STORES_CONFIG_SW",
+			"inputs": [
+				{
+					"description": "switch to previous or next state",
+					"interface": "fixed_step"
+				},
+				{
+					"description": "set position",
+					"interface": "set_state",
+					"max_value": 1
+				},
+				{
+					"argument": "TOGGLE",
+					"description": "Toggle switch state",
+					"interface": "action"
+				}
+			],
+			"outputs": [
+				{
+					"address": 17408,
+					"address_mask_identifier": "F_16C_50_STORES_CONFIG_SW_AM",
+					"address_mask_shift_identifier": "F_16C_50_STORES_CONFIG_SW",
+					"description": "selector position",
+					"mask": 128,
+					"max_value": 1,
+					"shift_by": 7,
 					"suffix": "",
 					"type": "integer"
 				}

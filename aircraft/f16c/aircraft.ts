@@ -65,15 +65,25 @@ export const KNOWN_LAMPS: Record<string, string> = {
 
 /** Position names by DCS-BIOS value (0, 1), where DCS-BIOS has none the parser can read. */
 export const POSITION_NAMES: Record<string, string[]> = {
-	// Descriptions the parser misses ("EPU/GEN /OFF", "NORM/ WING FIRST", "100 percent/NORM"); resting name at 0.
+	// Descriptions the parser misses ("EPU/GEN /OFF", "100 percent/NORM"); resting name at 0 (EPU/GEN not checked).
 	EPU_GEN_TEST_SW: ["OFF", "EPU/GEN"],
-	EXT_FUEL_TRANS_SW: ["NORM", "WING FIRST"],
 	OXY_DILUTER_LVR: ["NORM", "100%"],
+	// The parser puts the resting name at 0, but these go the other way: names by value from ED's key binds
+	// (checked 7 Nov; a tester saw STORES CONFIG reversed in DCS).
+	CANOPY_HANDLE: ["UP", "DOWN"],
+	ENG_CONT_SW: ["PRI", "SEC"],
+	EXT_FUEL_TRANS_SW: ["WING FIRST", "NORM"],
+	FUEL_MASTER_SW: ["MASTER", "OFF"],
+	IFF_M4_MONITOR_SW: ["OUT", "AUDIO"],
+	STORES_CONFIG_SW: ["CAT III", "CAT I"],
+	TRIM_AP_DISC_SW: ["DISC", "NORM"],
 	// No names in DCS; ON/OFF order assumed like the "X/OFF" switches.
 	UHF_SQUELCH_SW: ["OFF", "ON"],
 	// DCS-BIOS lists these 3-position switches top first, but value 0 is the bottom: names by value from
 	// ED's own key binds, which send the same command and value as DCS-BIOS (checked 24 Oct, DCS-BIOS v0.11.7).
 	AB_RESET_SW: ["ENG DATA", "NORM", "AB RESET"],
+	// A tester saw OFF and PARKING BRAKE swapped in DCS (7 Nov).
+	ANTI_SKID_SW: ["OFF", "ANTI-SKID", "PARKING BRAKE"],
 	CANOPY_SW: ["CLOSE", "HOLD", "OPEN"],
 	ENG_ANTI_ICE: ["OFF", "AUTO", "ON"],
 	EPU_SW: ["OFF", "NORM", "ON"],
@@ -146,6 +156,9 @@ export const HIGH_END: Record<string, "up" | "down" | "left" | "right"> = {
 	SEAT_ADJ: "down",
 	// The ICP's sideways rocker: RTN left, SEQ right.
 	ICP_DATA_RTN_SEQ_SW: "right",
+	// Position 0 is up: canopy handle UP, FUEL MASTER on MASTER (not checked in DCS).
+	CANOPY_HANDLE: "down",
+	FUEL_MASTER_SW: "down",
 };
 
 /**
@@ -160,6 +173,8 @@ export const SPRING_LOADED: Record<string, { from: number[]; rest?: number }> = 
 	PROBE_HEAT_SW: { from: [0] },
 	// PARKING BRAKE is held by the aircraft, not by the pilot.
 	ANTI_SKID_SW: { from: [] },
+	// Held by a magnet in the jet, but DCS-BIOS's let-go drops it to A/P OFF (a tester, 7 Nov): keys keep it set.
+	AP_PITCH_SW: { from: [] },
 };
 
 /** Push buttons (press = 1, release = 0) that DCS-BIOS does not mark as momentary. None needed for the F-16C. */

@@ -20,7 +20,7 @@ const single = (identifier: string, description: string, control_type = "selecto
 	}, aircraft).get(identifier)!;
 
 test("loads every control by identifier", () => {
-	assert.equal(controls.size, 21);
+	assert.equal(controls.size, 24);
 	assert.equal(get("JFS_SW").category, "Engine");
 });
 
@@ -60,6 +60,25 @@ test("value text", () => {
 	assert.equal(formatValue(get("PRI_CONSOLES_BRT_KNB"), 32768), "50%");
 	assert.equal(formatValue(get("GEAR_HANDLE"), 1), "UP");
 	assert.equal(formatValue(get("GEAR_HANDLE"), 0), "DN");
+});
+
+test("names by value where DCS-BIOS's order misleads (both seen reversed in DCS)", () => {
+	assert.equal(formatValue(get("STORES_CONFIG_SW"), 0), "CAT III");
+	assert.equal(formatValue(get("STORES_CONFIG_SW"), 1), "CAT I");
+	assert.equal(formatValue(get("ANTI_SKID_SW"), 0), "OFF");
+	assert.equal(formatValue(get("ANTI_SKID_SW"), 2), "PARKING BRAKE");
+});
+
+test("AP PITCH stays where a key sets it, and steps from where it is", () => {
+	const pitch = get("AP_PITCH_SW"); // ATT HOLD = 0, A/P OFF = 1, ALT HOLD = 2
+	assert.deepEqual(keyModes(pitch).map((m) => m.label), ["Set ALT HOLD", "Set A/P OFF", "Set ATT HOLD", "Next position (wraps)", "Step up", "Step down"]);
+	assert.equal(pressArgument(pitch, "set:2", 1), "2");
+	assert.equal(releaseArgument(pitch, "set:2"), undefined, "no let-go: DCS-BIOS's let-go drops it to A/P OFF");
+	assert.equal(pressArgument(pitch, "inc", 1), "2", "A/P OFF -> ALT HOLD");
+	assert.equal(pressArgument(pitch, "dec", 1), "0", "A/P OFF -> ATT HOLD");
+	assert.equal(pressArgument(pitch, "inc", 2), undefined, "already at the top");
+	assert.equal(pressArgument(pitch, "inc", undefined), undefined, "position unknown: nothing");
+	assert.equal(pressArgument(pitch, "cycle", 2), "0");
 });
 
 test("cycle through chosen positions only", () => {

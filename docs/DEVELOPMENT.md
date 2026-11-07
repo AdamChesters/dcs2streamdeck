@@ -53,7 +53,10 @@ add it to `AIRCRAFT_LIST` in `core/aircraft.data.ts`, and replace the data and t
 a bind with the same command and value as DCS-BIOS gives the position's name, and a bind with
 a release means that position springs back. Put names that differ in `POSITION_NAMES`, and
 switches that latch at one end, or that spring back although DCS-BIOS does not treat them as
-spring-loaded, in `SPRING_LOADED`. A control DCS-BIOS gives no names shows bare numbers (or
+spring-loaded, in `SPRING_LOADED`. Names a 2-position switch takes from its description ("ARM/SAFE":
+the resting name at 0) are a guess, and the F-16C has several the other way round: check them too.
+A switch the jet holds with a magnet, but that DCS-BIOS drops when it lets go (F-16C AP PITCH), goes in
+`SPRING_LOADED` as latched (`from: []`). A control DCS-BIOS gives no names shows bare numbers (or
 Up/Down) in its binds: name it too. Where DCS binds a knob only by keyboard command (no device or
 value), or only turns it left and right, name it in panel order and say so in a comment, since
 nothing confirms which value is which. Look for knobs whose DCS command is one of DCS's axis commands

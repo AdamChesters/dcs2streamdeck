@@ -25,7 +25,8 @@ test("press arguments", () => {
 	assert.equal(pressArgument(get("ENGINE_CRANK_SW"), "cycle", 2), "0");
 	assert.equal(pressArgument(get("ENGINE_CRANK_SW"), "toggle", 0), "1", "toggle falls back to cycle");
 	assert.equal(pressArgument(get("LEFT_DDI_BRT_SELECT"), "inc", 0), "INC");
-	assert.equal(pressArgument(get("ENGINE_CRANK_SW"), "inc", 0), undefined);
+	assert.equal(pressArgument(get("ENGINE_CRANK_SW"), "inc", 0), "1", "no step input: one position on from where it is");
+	assert.equal(pressArgument(get("ENGINE_CRANK_SW"), "dec", 0), undefined, "already at the end");
 });
 
 test("dial arguments", () => {
@@ -120,7 +121,7 @@ test("latching buttons are not push buttons", () => {
 test("what a key can do: a rocker holds, a held-by-the-jet switch sets, a static switch also steps", () => {
 	const labels = (id: string) => keyModes(get(id)).map((m) => m.label);
 	assert.deepEqual(labels("SEAT_HEIGHT_SW"), ["Hold UP", "Hold DOWN"]);
-	assert.deepEqual(labels("ENGINE_CRANK_SW"), ["Set LEFT", "Set OFF", "Set RIGHT", "Next position (wraps)"], "the aircraft lets go of it");
+	assert.deepEqual(labels("ENGINE_CRANK_SW"), ["Set LEFT", "Set OFF", "Set RIGHT", "Next position (wraps)", "Step up", "Step down"], "the aircraft lets go of it");
 	assert.equal(defaultKeyMode(get("ENGINE_CRANK_SW")), "cycle");
 	assert.deepEqual(labels("LEFT_DDI_BRT_SELECT").slice(-3), ["Next position (wraps)", "Step up", "Step down"]);
 	assert.deepEqual(labels("SEAT_HEIGHT_SW").includes("Step up"), false, "a step would leave a rocker held");

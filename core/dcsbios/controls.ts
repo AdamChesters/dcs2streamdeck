@@ -377,8 +377,9 @@ export function keyModes(control: Control): { mode: KeyMode; label: string }[] {
 		modes.push({ mode: "push:high", label: `Push ${control.centred[1]}` }, { mode: "push:low", label: `Push ${control.centred[0]}` });
 	} else if (isKnob(control)) {
 		modes.push({ mode: "inc", label: "Turn up" }, { mode: "dec", label: "Turn down" });
-	} else if (input(control, "fixed_step") && !control.springs?.length && (max === undefined || max >= 2)) {
+	} else if ((input(control, "fixed_step") || latched.length) && !control.springs?.length && (max === undefined || max >= 2)) {
 		// One notch at a time, no wrapping. Not on spring-loaded switches: a step would leave them held.
+		// A switch DCS-BIOS gives no step (AP PITCH) steps from where DCS says it is.
 		modes.push({ mode: "inc", label: "Step up" }, { mode: "dec", label: "Step down" });
 	}
 	if (max === 1 && !control.springs?.length) modes.push({ mode: "momentary", label: "Hold (press 1, release 0)" });
@@ -422,7 +423,10 @@ export function pressArgument(
 		case "dec": {
 			const sign = mode === "inc" ? "+" : "-";
 			if (isKnob(control)) return `${sign}${knobStep(control, TAP)}`;
-			return input(control, "fixed_step") ? mode.toUpperCase() : undefined;
+			if (input(control, "fixed_step")) return mode.toUpperCase();
+			// No step input: the next position from where DCS says the switch is, if it stays there.
+			const next = current === undefined ? undefined : current + (mode === "inc" ? 1 : -1);
+			return next !== undefined && latchedPositions(control).includes(next) ? String(next) : undefined;
 		}
 		case "push:low":
 		case "push:high":
