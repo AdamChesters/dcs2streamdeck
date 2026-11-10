@@ -5,6 +5,7 @@
  *   node tools/fake-dcs.ts --aircraft F-16C_50 --json <F-16C_50.json> [--magnetic HDPT_SW_L:10]
  *   node tools/fake-dcs.ts --play <recording.jsonl>
  *
+ * --dcs-name sets what DCS calls the aircraft where a module covers several (--aircraft A-10C --dcs-name A-10C).
  * --aircraft sets the aircraft (DCS-BIOS module name) it flies (default FA-18C_hornet); DCS's own
  * name for it (AH-64D_BLK_II for module AH-64D) goes in the stream.
  * Sim mode keeps a memory map, applies commands sent to UDP 7778 and sends
@@ -28,6 +29,7 @@ const { values } = parseArgs({
 		json: { type: "string" },
 		play: { type: "string" },
 		aircraft: { type: "string", default: DEFAULT_AIRCRAFT.AIRCRAFT.module },
+		"dcs-name": { type: "string" },
 		magnetic: { type: "string", multiple: true, default: [] },
 		group: { type: "string", default: DEFAULT_OPTIONS.exportGroup },
 		port: { type: "string", default: String(DEFAULT_OPTIONS.exportPort) },
@@ -70,7 +72,7 @@ function simulate(jsonPath: string): void {
 	const aircraft = aircraftByModule(values.aircraft!);
 	const controls = loadControls(jsonPath, aircraft ?? DEFAULT_AIRCRAFT);
 	const memory = new Uint8Array(0x10000);
-	const name = new TextEncoder().encode(aircraft ? dcsName(aircraft) : values.aircraft);
+	const name = new TextEncoder().encode(values["dcs-name"] ?? (aircraft ? dcsName(aircraft) : values.aircraft));
 	memory.set(name.subarray(0, 23), 0);
 
 	let low = 0xffff;

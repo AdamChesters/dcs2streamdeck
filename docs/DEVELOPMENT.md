@@ -31,7 +31,8 @@ flying. Keys of another aircraft stay dark and show its name.
 Two-seat aircraft (AH-64D) set `SEATS` in their data: a control both seats have (`PLT_KU_ENT`,
 `CPG_KU_ENT`) is listed once (`KU_ENT`) and reads and sends as the seat DCS-BIOS says the player
 is in (`SEAT_POSITION`). A control only one seat has keeps its identifier. If DCS calls the
-aircraft something other than the DCS-BIOS module, `dcsName` says what (`AH-64D_BLK_II`).
+aircraft something other than the DCS-BIOS module, `dcsName` says what (`AH-64D_BLK_II`). One module
+can cover several DCS aircraft (A-10C and A-10C_2, Ka-50 and Ka-50_3): `dcsNames` lists them, the usual one first.
 
 What a key press can do ("Press does") comes from the control (`keyModes` in
 `core/dcsbios/controls.ts`): a spring-loaded position gets "Hold X" (press goes there, release
@@ -56,7 +57,12 @@ switches that latch at one end, or that spring back although DCS-BIOS does not t
 spring-loaded, in `SPRING_LOADED`. Names a 2-position switch takes from its description ("ARM/SAFE":
 the resting name at 0) are a guess, and the F-16C has several the other way round: check them too.
 A switch the jet holds with a magnet, but that DCS-BIOS drops when it lets go (F-16C AP PITCH), goes in
-`SPRING_LOADED` as latched (`from: []`). A control DCS-BIOS gives no names shows bare numbers (or
+`SPRING_LOADED` as latched (`from: []`). Older modules (A-10C, Ka-50) bind most of the cockpit by keyboard command, with no device or value to match:
+there, take names by value from the Helios interface for the aircraft (it sets each cockpit argument: match
+on the argument number and value in the DCS-BIOS module's Lua), and spring-back from binds with a release
+and from DCS's own switch type for the argument. DCS-BIOS's descriptions and position lists are not all in
+value order ("Flaps Setting DN - MVR - UP" is UP at 0). Buttons DCS-BIOS gives as 2-position switches
+(Ka-50) go in `KNOWN_PUSH_BUTTONS`. A control DCS-BIOS gives no names shows bare numbers (or
 Up/Down) in its binds: name it too. Where DCS binds a knob only by keyboard command (no device or
 value), or only turns it left and right, name it in panel order and say so in a comment, since
 nothing confirms which value is which. Look for knobs whose DCS command is one of DCS's axis commands
@@ -69,7 +75,7 @@ and that spring back in the cockpit (cursor and slew controls): put them in `CEN
   the APU switch after 10 seconds, like the jet. For the F-16C:
   `node tools/fake-dcs.ts --aircraft F-16C_50 --json <path>/F-16C_50.json --magnetic HDPT_SW_L:10`.
   For the AH-64D: `--aircraft AH-64D --json <path>/AH-64D.json`; send it `SEAT_POSITION 1` to
-  move to the front seat.
+  move to the front seat. `--dcs-name A-10C` flies a module under another of its DCS names.
 - `node tools/record.ts recordings/session.jsonl` records a real DCS-BIOS stream;
   `node tools/fake-dcs.ts --play recordings/session.jsonl` plays it back.
 - `D2S_RELEASES_API=<url>` points the plugin's and the app's update check at another releases

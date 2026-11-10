@@ -1,0 +1,1181 @@
+{
+	"AHCP": {
+		"AHCP_MASTER_ARM": {
+			"category": "AHCP",
+			"control_type": "selector",
+			"description": "Master Arm TRAIN - SAFE - ARM",
+			"identifier": "AHCP_MASTER_ARM",
+			"inputs": [
+				{
+					"description": "switch to previous or next state",
+					"interface": "fixed_step"
+				},
+				{
+					"description": "set position",
+					"interface": "set_state",
+					"max_value": 2
+				}
+			],
+			"outputs": [
+				{
+					"address": 4328,
+					"address_mask_shift_identifier": "A_10C_AHCP_MASTER_ARM",
+					"description": "selector position",
+					"mask": 12,
+					"max_value": 2,
+					"shift_by": 2,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		},
+		"AHCP_TGP": {
+			"category": "AHCP",
+			"control_type": "selector",
+			"description": "TGP OFF - ON",
+			"identifier": "AHCP_TGP",
+			"inputs": [
+				{
+					"description": "switch to previous or next state",
+					"interface": "fixed_step"
+				},
+				{
+					"description": "set position",
+					"interface": "set_state",
+					"max_value": 1
+				},
+				{
+					"argument": "TOGGLE",
+					"description": "Toggle switch state",
+					"interface": "action"
+				}
+			],
+			"outputs": [
+				{
+					"address": 4328,
+					"address_mask_identifier": "A_10C_AHCP_TGP_AM",
+					"address_mask_shift_identifier": "A_10C_AHCP_TGP",
+					"description": "selector position",
+					"mask": 256,
+					"max_value": 1,
+					"shift_by": 8,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		}
+	},
+	"ARC-210": {
+		"ARC210_MASTER": {
+			"category": "ARC-210",
+			"control_type": "selector",
+			"description": "ARC-210 Master Switch",
+			"identifier": "ARC210_MASTER",
+			"inputs": [
+				{
+					"description": "switch to previous or next state",
+					"interface": "fixed_step"
+				},
+				{
+					"description": "set position",
+					"interface": "set_state",
+					"max_value": 6
+				}
+			],
+			"outputs": [
+				{
+					"address": 4898,
+					"address_mask_shift_identifier": "A_10C_ARC210_MASTER",
+					"description": "selector position",
+					"mask": 7168,
+					"max_value": 6,
+					"shift_by": 10,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		}
+	},
+	"CDU": {
+		"CDU_PG": {
+			"category": "CDU",
+			"control_type": "selector",
+			"description": "PG Rocker",
+			"identifier": "CDU_PG",
+			"inputs": [
+				{
+					"description": "set the switch position -- 0 = held left/down, 1 = centered, 2 = held right/up",
+					"interface": "set_state",
+					"max_value": 2
+				}
+			],
+			"outputs": [
+				{
+					"address": 4346,
+					"address_mask_shift_identifier": "A_10C_CDU_PG",
+					"description": "selector position",
+					"mask": 12,
+					"max_value": 2,
+					"shift_by": 2,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		}
+	},
+	"CMSP": {
+		"CMSP_MWS": {
+			"category": "CMSP",
+			"control_type": "selector",
+			"description": "Missile Warning System OFF - ON - (MENU)",
+			"identifier": "CMSP_MWS",
+			"inputs": [
+				{
+					"description": "set the switch position -- 0 = down, 1 = centered, 2 = held up",
+					"interface": "set_state",
+					"max_value": 2
+				}
+			],
+			"outputs": [
+				{
+					"address": 4324,
+					"address_mask_shift_identifier": "A_10C_CMSP_MWS",
+					"description": "switch position: 0 - down, 1 - center, 2 - up",
+					"mask": 24,
+					"max_value": 2,
+					"shift_by": 3,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		}
+	},
+	"DVADR": {
+		"DVADR_EOT_REMOTE": {
+			"category": "DVADR",
+			"control_type": "led",
+			"description": "DVADR End of Tape Remote Panel Indicator Light",
+			"identifier": "DVADR_EOT_REMOTE",
+			"inputs": [],
+			"outputs": [
+				{
+					"address": 4892,
+					"address_mask_identifier": "A_10C_DVADR_EOT_REMOTE_AM",
+					"address_mask_shift_identifier": "A_10C_DVADR_EOT_REMOTE",
+					"description": "0 if light is off, 1 if light is on",
+					"mask": 2048,
+					"max_value": 1,
+					"shift_by": 11,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		}
+	},
+	"Electrical Power Panel": {
+		"EPP_BATTERY_PWR": {
+			"category": "Electrical Power Panel",
+			"control_type": "selector",
+			"description": "Battery Power",
+			"identifier": "EPP_BATTERY_PWR",
+			"inputs": [
+				{
+					"description": "switch to previous or next state",
+					"interface": "fixed_step"
+				},
+				{
+					"description": "set position",
+					"interface": "set_state",
+					"max_value": 1
+				},
+				{
+					"argument": "TOGGLE",
+					"description": "Toggle switch state",
+					"interface": "action"
+				}
+			],
+			"outputs": [
+				{
+					"address": 4368,
+					"address_mask_identifier": "A_10C_EPP_BATTERY_PWR_AM",
+					"address_mask_shift_identifier": "A_10C_EPP_BATTERY_PWR",
+					"description": "selector position",
+					"mask": 2,
+					"max_value": 1,
+					"shift_by": 1,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		},
+		"EPP_INVERTER": {
+			"category": "Electrical Power Panel",
+			"control_type": "3Pos_2Command_Switch_OpenClose",
+			"description": "Inverter TEST - OFF - STBY",
+			"identifier": "EPP_INVERTER",
+			"inputs": [
+				{
+					"description": "set the switch position",
+					"interface": "set_state",
+					"max_value": 2
+				}
+			],
+			"outputs": [
+				{
+					"address": 4364,
+					"address_mask_shift_identifier": "A_10C_EPP_INVERTER",
+					"description": "switch position -- 0 = Down, 1 = Mid,  2 = Up",
+					"mask": 24576,
+					"max_value": 2,
+					"shift_by": 13,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		}
+	},
+	"Emergency Flight Control Panel": {
+		"EFCP_EMER_TRIM": {
+			"category": "Emergency Flight Control Panel",
+			"control_type": "selector",
+			"description": "Emergency Trim CENTER - NOSE DN - RWD - NOSE UP - LWD",
+			"identifier": "EFCP_EMER_TRIM",
+			"inputs": [
+				{
+					"description": "switch to previous or next state",
+					"interface": "fixed_step"
+				},
+				{
+					"description": "set position",
+					"interface": "set_state",
+					"max_value": 4
+				}
+			],
+			"outputs": [
+				{
+					"address": 4364,
+					"address_mask_shift_identifier": "A_10C_EFCP_EMER_TRIM",
+					"description": "selector position",
+					"mask": 56,
+					"max_value": 4,
+					"shift_by": 3,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		}
+	},
+	"Environment Control Panel": {
+		"ENVCP_AC_OPER": {
+			"category": "Environment Control Panel",
+			"control_type": "selector",
+			"description": "Air Conditioner",
+			"identifier": "ENVCP_AC_OPER",
+			"inputs": [
+				{
+					"description": "switch to previous or next state",
+					"interface": "fixed_step"
+				},
+				{
+					"description": "set position",
+					"interface": "set_state",
+					"max_value": 3
+				}
+			],
+			"outputs": [
+				{
+					"address": 4408,
+					"address_mask_shift_identifier": "A_10C_ENVCP_AC_OPER",
+					"description": "selector position",
+					"mask": 768,
+					"max_value": 3,
+					"shift_by": 8,
+					"suffix": "",
+					"type": "integer"
+				}
+			],
+			"positions": [
+				"MAN",
+				"AUTO",
+				"COLD",
+				"HOT"
+			]
+		}
+	},
+	"Fuel System Control Panel": {
+		"FSCP_AMPL": {
+			"category": "Fuel System Control Panel",
+			"control_type": "selector",
+			"description": "Signal Amplifier NORM - OVERRIDE",
+			"identifier": "FSCP_AMPL",
+			"inputs": [
+				{
+					"description": "switch to previous or next state",
+					"interface": "fixed_step"
+				},
+				{
+					"description": "set position",
+					"interface": "set_state",
+					"max_value": 1
+				},
+				{
+					"argument": "TOGGLE",
+					"description": "Toggle switch state",
+					"interface": "action"
+				}
+			],
+			"outputs": [
+				{
+					"address": 4348,
+					"address_mask_identifier": "A_10C_FSCP_AMPL_AM",
+					"address_mask_shift_identifier": "A_10C_FSCP_AMPL",
+					"description": "selector position",
+					"mask": 1024,
+					"max_value": 1,
+					"shift_by": 10,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		}
+	},
+	"Glare Shield": {
+		"FIRE_LENG_PULL": {
+			"category": "Glare Shield",
+			"control_type": "selector",
+			"description": "Left Engine Fire T-Handle",
+			"identifier": "FIRE_LENG_PULL",
+			"inputs": [
+				{
+					"description": "switch to previous or next state",
+					"interface": "fixed_step"
+				},
+				{
+					"description": "set position",
+					"interface": "set_state",
+					"max_value": 1
+				},
+				{
+					"argument": "TOGGLE",
+					"description": "Toggle switch state",
+					"interface": "action"
+				}
+			],
+			"outputs": [
+				{
+					"address": 4440,
+					"address_mask_identifier": "A_10C_FIRE_LENG_PULL_AM",
+					"address_mask_shift_identifier": "A_10C_FIRE_LENG_PULL",
+					"description": "selector position",
+					"mask": 2,
+					"max_value": 1,
+					"shift_by": 1,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		},
+		"L_ENG_FIRE": {
+			"category": "Glare Shield",
+			"control_type": "led",
+			"description": "Left Engine Fire Indicator (yellow)",
+			"identifier": "L_ENG_FIRE",
+			"inputs": [],
+			"outputs": [
+				{
+					"address": 4314,
+					"address_mask_identifier": "A_10C_L_ENG_FIRE_AM",
+					"address_mask_shift_identifier": "A_10C_L_ENG_FIRE",
+					"description": "0 if light is off, 1 if light is on",
+					"mask": 8,
+					"max_value": 1,
+					"shift_by": 3,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		}
+	},
+	"HMCS Panel": {
+		"A102_HMCS_PW": {
+			"category": "HMCS Panel",
+			"control_type": "selector",
+			"description": "Scorpion HMCS Power BAT/OFF/ON (A-10C II)",
+			"identifier": "A102_HMCS_PW",
+			"inputs": [
+				{
+					"description": "switch to previous or next state",
+					"interface": "fixed_step"
+				},
+				{
+					"description": "set position",
+					"interface": "set_state",
+					"max_value": 2
+				}
+			],
+			"outputs": [
+				{
+					"address": 4898,
+					"address_mask_shift_identifier": "A_10C_A102_HMCS_PW",
+					"description": "selector position",
+					"mask": 768,
+					"max_value": 2,
+					"shift_by": 8,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		}
+	},
+	"HUD": {
+		"AOA_INDEXER_HIGH": {
+			"category": "HUD",
+			"control_type": "led",
+			"description": "AOA Indexer High (green)",
+			"identifier": "AOA_INDEXER_HIGH",
+			"inputs": [],
+			"outputs": [
+				{
+					"address": 4114,
+					"address_mask_identifier": "A_10C_AOA_INDEXER_HIGH_AM",
+					"address_mask_shift_identifier": "A_10C_AOA_INDEXER_HIGH",
+					"description": "0 if light is off, 1 if light is on",
+					"mask": 4096,
+					"max_value": 1,
+					"shift_by": 12,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		},
+		"AOA_INDEXER_LOW": {
+			"category": "HUD",
+			"control_type": "led",
+			"description": "AOA Indexer Low (green)",
+			"identifier": "AOA_INDEXER_LOW",
+			"inputs": [],
+			"outputs": [
+				{
+					"address": 4114,
+					"address_mask_identifier": "A_10C_AOA_INDEXER_LOW_AM",
+					"address_mask_shift_identifier": "A_10C_AOA_INDEXER_LOW",
+					"description": "0 if light is off, 1 if light is on",
+					"mask": 16384,
+					"max_value": 1,
+					"shift_by": 14,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		},
+		"AOA_INDEXER_NORMAL": {
+			"category": "HUD",
+			"control_type": "led",
+			"description": "AOA Indexer Normal (green)",
+			"identifier": "AOA_INDEXER_NORMAL",
+			"inputs": [],
+			"outputs": [
+				{
+					"address": 4114,
+					"address_mask_identifier": "A_10C_AOA_INDEXER_NORMAL_AM",
+					"address_mask_shift_identifier": "A_10C_AOA_INDEXER_NORMAL",
+					"description": "0 if light is off, 1 if light is on",
+					"mask": 8192,
+					"max_value": 1,
+					"shift_by": 13,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		}
+	},
+	"IFF": {
+		"IFF_TEST_M1": {
+			"category": "IFF",
+			"control_type": "selector",
+			"description": "Test M-1",
+			"identifier": "IFF_TEST_M1",
+			"inputs": [
+				{
+					"description": "set the switch position -- 0 = held left/down, 1 = centered, 2 = held right/up",
+					"interface": "set_state",
+					"max_value": 2
+				}
+			],
+			"outputs": [
+				{
+					"address": 4390,
+					"address_mask_shift_identifier": "A_10C_IFF_TEST_M1",
+					"description": "selector position",
+					"mask": 768,
+					"max_value": 2,
+					"shift_by": 8,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		}
+	},
+	"Intercom Panel": {
+		"INT_UHF_VOL": {
+			"category": "Intercom Panel",
+			"control_type": "limited_dial",
+			"description": "UHF Volume",
+			"identifier": "INT_UHF_VOL",
+			"inputs": [
+				{
+					"description": "set the position of the dial",
+					"interface": "set_state",
+					"max_value": 65535
+				},
+				{
+					"description": "turn the dial left or right",
+					"interface": "variable_step",
+					"max_value": 65535,
+					"suggested_step": 3200
+				}
+			],
+			"outputs": [
+				{
+					"address": 4520,
+					"address_identifier": "A_10C_INT_UHF_VOL_A",
+					"address_mask_shift_identifier": "A_10C_INT_UHF_VOL",
+					"description": "position of the potentiometer",
+					"mask": 65535,
+					"max_value": 65535,
+					"shift_by": 0,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		}
+	},
+	"Landing Gear and Flap Control Panel": {
+		"ANTI_SKID_SWITCH": {
+			"category": "Landing Gear and Flap Control Panel",
+			"control_type": "electrically_held_switch",
+			"description": "Anti-Skid Switch",
+			"identifier": "ANTI_SKID_SWITCH",
+			"inputs": [
+				{
+					"description": "switch to previous or next state",
+					"interface": "fixed_step"
+				},
+				{
+					"description": "set the switch position -- 0 = off, 1 = try to turn it on",
+					"interface": "set_state",
+					"max_value": 1
+				}
+			],
+			"outputs": [
+				{
+					"address": 4368,
+					"address_mask_identifier": "A_10C_ANTI_SKID_SWITCH_AM",
+					"address_mask_shift_identifier": "A_10C_ANTI_SKID_SWITCH",
+					"description": "switch position -- 0 = off, 1 = on",
+					"mask": 128,
+					"max_value": 1,
+					"shift_by": 7,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		},
+		"GEAR_LEVER": {
+			"category": "Landing Gear and Flap Control Panel",
+			"control_type": "selector",
+			"description": "Gear Lever DOWN - UP",
+			"identifier": "GEAR_LEVER",
+			"inputs": [
+				{
+					"description": "switch to previous or next state",
+					"interface": "fixed_step"
+				},
+				{
+					"description": "set position",
+					"interface": "set_state",
+					"max_value": 1
+				},
+				{
+					"argument": "TOGGLE",
+					"description": "Toggle switch state",
+					"interface": "action"
+				}
+			],
+			"outputs": [
+				{
+					"address": 4368,
+					"address_mask_identifier": "A_10C_GEAR_LEVER_AM",
+					"address_mask_shift_identifier": "A_10C_GEAR_LEVER",
+					"description": "selector position",
+					"mask": 8,
+					"max_value": 1,
+					"shift_by": 3,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		},
+		"GEAR_L_SAFE": {
+			"category": "Landing Gear and Flap Control Panel",
+			"control_type": "led",
+			"description": "Left Gear Safe (green)",
+			"identifier": "GEAR_L_SAFE",
+			"inputs": [],
+			"outputs": [
+				{
+					"address": 4134,
+					"address_mask_identifier": "A_10C_GEAR_L_SAFE_AM",
+					"address_mask_shift_identifier": "A_10C_GEAR_L_SAFE",
+					"description": "0 if light is off, 1 if light is on",
+					"mask": 4096,
+					"max_value": 1,
+					"shift_by": 12,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		},
+		"GEAR_N_SAFE": {
+			"category": "Landing Gear and Flap Control Panel",
+			"control_type": "led",
+			"description": "Nose Gear Safe (green)",
+			"identifier": "GEAR_N_SAFE",
+			"inputs": [],
+			"outputs": [
+				{
+					"address": 4134,
+					"address_mask_identifier": "A_10C_GEAR_N_SAFE_AM",
+					"address_mask_shift_identifier": "A_10C_GEAR_N_SAFE",
+					"description": "0 if light is off, 1 if light is on",
+					"mask": 2048,
+					"max_value": 1,
+					"shift_by": 11,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		},
+		"GEAR_R_SAFE": {
+			"category": "Landing Gear and Flap Control Panel",
+			"control_type": "led",
+			"description": "Right Gear Safe (green)",
+			"identifier": "GEAR_R_SAFE",
+			"inputs": [],
+			"outputs": [
+				{
+					"address": 4134,
+					"address_mask_identifier": "A_10C_GEAR_R_SAFE_AM",
+					"address_mask_shift_identifier": "A_10C_GEAR_R_SAFE",
+					"description": "0 if light is off, 1 if light is on",
+					"mask": 8192,
+					"max_value": 1,
+					"shift_by": 13,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		},
+		"HANDLE_GEAR_WARNING": {
+			"category": "Landing Gear and Flap Control Panel",
+			"control_type": "led",
+			"description": "Handle Gear Warning Light (red)",
+			"identifier": "HANDLE_GEAR_WARNING",
+			"inputs": [],
+			"outputs": [
+				{
+					"address": 4134,
+					"address_mask_identifier": "A_10C_HANDLE_GEAR_WARNING_AM",
+					"address_mask_shift_identifier": "A_10C_HANDLE_GEAR_WARNING",
+					"description": "0 if light is off, 1 if light is on",
+					"mask": 16384,
+					"max_value": 1,
+					"shift_by": 14,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		},
+		"LANDING_LIGHTS": {
+			"category": "Landing Gear and Flap Control Panel",
+			"control_type": "selector",
+			"description": "Landing Lights",
+			"identifier": "LANDING_LIGHTS",
+			"inputs": [
+				{
+					"description": "switch to previous or next state",
+					"interface": "fixed_step"
+				},
+				{
+					"description": "set position",
+					"interface": "set_state",
+					"max_value": 2
+				}
+			],
+			"outputs": [
+				{
+					"address": 4420,
+					"address_mask_shift_identifier": "A_10C_LANDING_LIGHTS",
+					"description": "selector position",
+					"mask": 6144,
+					"max_value": 2,
+					"shift_by": 11,
+					"suffix": "",
+					"type": "integer"
+				}
+			],
+			"positions": [
+				"TAXI",
+				"OFF",
+				"LAND"
+			]
+		}
+	},
+	"Light System Control Panel": {
+		"LCP_CONSOLE": {
+			"category": "Light System Control Panel",
+			"control_type": "limited_dial",
+			"description": "Console Lights",
+			"identifier": "LCP_CONSOLE",
+			"inputs": [
+				{
+					"description": "set the position of the dial",
+					"interface": "set_state",
+					"max_value": 65535
+				},
+				{
+					"description": "turn the dial left or right",
+					"interface": "variable_step",
+					"max_value": 65535,
+					"suggested_step": 3200
+				}
+			],
+			"outputs": [
+				{
+					"address": 4432,
+					"address_identifier": "A_10C_LCP_CONSOLE_A",
+					"address_mask_shift_identifier": "A_10C_LCP_CONSOLE",
+					"description": "position of the potentiometer",
+					"mask": 65535,
+					"max_value": 65535,
+					"shift_by": 0,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		},
+		"LCP_POSITION": {
+			"category": "Light System Control Panel",
+			"control_type": "selector",
+			"description": "Position Lights",
+			"identifier": "LCP_POSITION",
+			"inputs": [
+				{
+					"description": "switch to previous or next state",
+					"interface": "fixed_step"
+				},
+				{
+					"description": "set position",
+					"interface": "set_state",
+					"max_value": 2
+				}
+			],
+			"outputs": [
+				{
+					"address": 4420,
+					"address_mask_shift_identifier": "A_10C_LCP_POSITION",
+					"description": "selector position",
+					"mask": 12,
+					"max_value": 2,
+					"shift_by": 2,
+					"suffix": "",
+					"type": "integer"
+				}
+			],
+			"positions": [
+				"FLASH",
+				"OFF",
+				"STEADY"
+			]
+		}
+	},
+	"Misc": {
+		"CANOPY_OPEN": {
+			"category": "Misc",
+			"control_type": "3Pos_2Command_Switch_OpenClose",
+			"description": "Canopy Open Switch",
+			"identifier": "CANOPY_OPEN",
+			"inputs": [
+				{
+					"description": "set the switch position",
+					"interface": "set_state",
+					"max_value": 2
+				}
+			],
+			"outputs": [
+				{
+					"address": 4508,
+					"address_mask_shift_identifier": "A_10C_CANOPY_OPEN",
+					"description": "switch position -- 0 = Down, 1 = Mid ,  2 = UP",
+					"mask": 24576,
+					"max_value": 2,
+					"shift_by": 13,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		},
+		"SEAT_ADJUST": {
+			"category": "Misc",
+			"control_type": "3Pos_2Command_Switch_OpenClose",
+			"description": "Seat Adjust",
+			"identifier": "SEAT_ADJUST",
+			"inputs": [
+				{
+					"description": "set the switch position",
+					"interface": "set_state",
+					"max_value": 2
+				}
+			],
+			"outputs": [
+				{
+					"address": 4508,
+					"address_mask_shift_identifier": "A_10C_SEAT_ADJUST",
+					"description": "switch position -- 0 = Down, 1 = Mid,  2 = Up",
+					"mask": 6144,
+					"max_value": 2,
+					"shift_by": 11,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		}
+	},
+	"NMSP": {
+		"NMSP_HARS_BTN": {
+			"api_variant": "momentary_last_position",
+			"category": "NMSP",
+			"control_type": "selector",
+			"description": "HARS Button",
+			"identifier": "NMSP_HARS_BTN",
+			"inputs": [
+				{
+					"description": "switch to previous or next state",
+					"interface": "fixed_step"
+				},
+				{
+					"description": "set position",
+					"interface": "set_state",
+					"max_value": 1
+				},
+				{
+					"argument": "TOGGLE",
+					"description": "Toggle switch state",
+					"interface": "action"
+				}
+			],
+			"outputs": [
+				{
+					"address": 4368,
+					"address_mask_identifier": "A_10C_NMSP_HARS_BTN_AM",
+					"address_mask_shift_identifier": "A_10C_NMSP_HARS_BTN",
+					"description": "selector position",
+					"mask": 256,
+					"max_value": 1,
+					"shift_by": 8,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		},
+		"NMSP_HARS_LED": {
+			"category": "NMSP",
+			"control_type": "led",
+			"description": "HARS Button LED (green)",
+			"identifier": "NMSP_HARS_LED",
+			"inputs": [],
+			"outputs": [
+				{
+					"address": 4368,
+					"address_mask_identifier": "A_10C_NMSP_HARS_LED_AM",
+					"address_mask_shift_identifier": "A_10C_NMSP_HARS_LED",
+					"description": "0 if light is off, 1 if light is on",
+					"mask": 512,
+					"max_value": 1,
+					"shift_by": 9,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		}
+	},
+	"Oxygen Regulator Panel": {
+		"OXY_EMERGENCY": {
+			"category": "Oxygen Regulator Panel",
+			"control_type": "3Pos_2Command_Switch_OpenClose",
+			"description": "Oxygen Flow",
+			"identifier": "OXY_EMERGENCY",
+			"inputs": [
+				{
+					"description": "set the switch position",
+					"interface": "set_state",
+					"max_value": 2
+				}
+			],
+			"outputs": [
+				{
+					"address": 4394,
+					"address_mask_shift_identifier": "A_10C_OXY_EMERGENCY",
+					"description": "switch position -- 0 = Down, 1 = Mid,  2 = Up",
+					"mask": 384,
+					"max_value": 2,
+					"shift_by": 7,
+					"suffix": "",
+					"type": "integer"
+				}
+			],
+			"positions": [
+				"Emergency",
+				"Normal",
+				"Test"
+			]
+		}
+	},
+	"Throttle": {
+		"ENGINE_OPER_L": {
+			"category": "Throttle",
+			"control_type": "3Pos_2Command_Switch_OpenClose",
+			"description": "ENG OPER L",
+			"identifier": "ENGINE_OPER_L",
+			"inputs": [
+				{
+					"description": "set the switch position",
+					"interface": "set_state",
+					"max_value": 2
+				}
+			],
+			"outputs": [
+				{
+					"address": 4360,
+					"address_mask_shift_identifier": "A_10C_ENGINE_OPER_L",
+					"description": "switch position -- 0 = Down, 1 = Mid,  2 = Up",
+					"mask": 3,
+					"max_value": 2,
+					"shift_by": 0,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		},
+		"FLAPS_SWITCH": {
+			"category": "Throttle",
+			"control_type": "selector",
+			"description": "Flaps Setting DN - MVR - UP",
+			"identifier": "FLAPS_SWITCH",
+			"inputs": [
+				{
+					"description": "switch to previous or next state",
+					"interface": "fixed_step"
+				},
+				{
+					"description": "set position",
+					"interface": "set_state",
+					"max_value": 2
+				}
+			],
+			"outputs": [
+				{
+					"address": 4368,
+					"address_mask_shift_identifier": "A_10C_FLAPS_SWITCH",
+					"description": "selector position",
+					"mask": 96,
+					"max_value": 2,
+					"shift_by": 5,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		}
+	},
+	"UFC": {
+		"MASTER_CAUTION": {
+			"category": "UFC",
+			"control_type": "led",
+			"description": "Master Caution Light (yellow)",
+			"identifier": "MASTER_CAUTION",
+			"inputs": [],
+			"outputs": [
+				{
+					"address": 4114,
+					"address_mask_identifier": "A_10C_MASTER_CAUTION_AM",
+					"address_mask_shift_identifier": "A_10C_MASTER_CAUTION",
+					"description": "0 if light is off, 1 if light is on",
+					"mask": 2048,
+					"max_value": 1,
+					"shift_by": 11,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		},
+		"UFC_1": {
+			"api_variant": "momentary_last_position",
+			"category": "UFC",
+			"control_type": "selector",
+			"description": "1",
+			"identifier": "UFC_1",
+			"inputs": [
+				{
+					"description": "switch to previous or next state",
+					"interface": "fixed_step"
+				},
+				{
+					"description": "set position",
+					"interface": "set_state",
+					"max_value": 1
+				},
+				{
+					"argument": "TOGGLE",
+					"description": "Toggle switch state",
+					"interface": "action"
+				}
+			],
+			"outputs": [
+				{
+					"address": 4328,
+					"address_mask_identifier": "A_10C_UFC_1_AM",
+					"address_mask_shift_identifier": "A_10C_UFC_1",
+					"description": "selector position",
+					"mask": 32768,
+					"max_value": 1,
+					"shift_by": 15,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		},
+		"UFC_INTEN": {
+			"category": "UFC",
+			"control_type": "selector",
+			"description": "INTEN Incr/Decr",
+			"identifier": "UFC_INTEN",
+			"inputs": [
+				{
+					"description": "set the switch position -- 0 = held left/down, 1 = centered, 2 = held right/up",
+					"interface": "set_state",
+					"max_value": 2
+				}
+			],
+			"outputs": [
+				{
+					"address": 4336,
+					"address_mask_shift_identifier": "A_10C_UFC_INTEN",
+					"description": "selector position",
+					"mask": 6144,
+					"max_value": 2,
+					"shift_by": 11,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		},
+		"UFC_MASTER_CAUTION": {
+			"api_variant": "momentary_last_position",
+			"category": "UFC",
+			"control_type": "selector",
+			"description": "Master Caution Reset",
+			"identifier": "UFC_MASTER_CAUTION",
+			"inputs": [
+				{
+					"description": "switch to previous or next state",
+					"interface": "fixed_step"
+				},
+				{
+					"description": "set position",
+					"interface": "set_state",
+					"max_value": 1
+				},
+				{
+					"argument": "TOGGLE",
+					"description": "Toggle switch state",
+					"interface": "action"
+				}
+			],
+			"outputs": [
+				{
+					"address": 4338,
+					"address_mask_identifier": "A_10C_UFC_MASTER_CAUTION_AM",
+					"address_mask_shift_identifier": "A_10C_UFC_MASTER_CAUTION",
+					"description": "selector position",
+					"mask": 8,
+					"max_value": 1,
+					"shift_by": 3,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		},
+		"UFC_STEER": {
+			"category": "UFC",
+			"control_type": "selector",
+			"description": "STEER Up/Down",
+			"identifier": "UFC_STEER",
+			"inputs": [
+				{
+					"description": "set the switch position -- 0 = held left/down, 1 = centered, 2 = held right/up",
+					"interface": "set_state",
+					"max_value": 2
+				}
+			],
+			"outputs": [
+				{
+					"address": 4336,
+					"address_mask_shift_identifier": "A_10C_UFC_STEER",
+					"description": "selector position",
+					"mask": 24,
+					"max_value": 2,
+					"shift_by": 3,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		}
+	},
+	"UHF Radio": {
+		"UHF_SQUELCH": {
+			"category": "UHF Radio",
+			"control_type": "selector",
+			"description": "Squelch Switch",
+			"identifier": "UHF_SQUELCH",
+			"inputs": [
+				{
+					"description": "switch to previous or next state",
+					"interface": "fixed_step"
+				},
+				{
+					"description": "set position",
+					"interface": "set_state",
+					"max_value": 1
+				},
+				{
+					"argument": "TOGGLE",
+					"description": "Toggle switch state",
+					"interface": "action"
+				}
+			],
+			"outputs": [
+				{
+					"address": 4476,
+					"address_mask_identifier": "A_10C_UHF_SQUELCH_AM",
+					"address_mask_shift_identifier": "A_10C_UHF_SQUELCH",
+					"description": "selector position",
+					"mask": 64,
+					"max_value": 1,
+					"shift_by": 6,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		}
+	}
+}

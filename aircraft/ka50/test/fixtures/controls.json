@@ -1,0 +1,1034 @@
+{
+	"ABRIS Display": {
+		"ABRIS_BTN_1": {
+			"api_variant": "momentary_last_position",
+			"category": "ABRIS Display",
+			"control_type": "selector",
+			"description": "Button 1",
+			"identifier": "ABRIS_BTN_1",
+			"inputs": [
+				{
+					"description": "switch to previous or next state",
+					"interface": "fixed_step"
+				},
+				{
+					"description": "set position",
+					"interface": "set_state",
+					"max_value": 1
+				},
+				{
+					"argument": "TOGGLE",
+					"description": "Toggle switch state",
+					"interface": "action"
+				}
+			],
+			"outputs": [
+				{
+					"address": 6294,
+					"address_mask_identifier": "Ka_50_ABRIS_BTN_1_AM",
+					"address_mask_shift_identifier": "Ka_50_ABRIS_BTN_1",
+					"description": "selector position",
+					"mask": 32768,
+					"max_value": 1,
+					"shift_by": 15,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		}
+	},
+	"Autopilot Panel": {
+		"AP_ALT_HOLD_BTN": {
+			"category": "Autopilot Panel",
+			"control_type": "selector",
+			"description": "Altitude hold button",
+			"identifier": "AP_ALT_HOLD_BTN",
+			"inputs": [
+				{
+					"description": "switch to previous or next state",
+					"interface": "fixed_step"
+				},
+				{
+					"description": "set position",
+					"interface": "set_state",
+					"max_value": 1
+				},
+				{
+					"argument": "TOGGLE",
+					"description": "Toggle switch state",
+					"interface": "action"
+				}
+			],
+			"outputs": [
+				{
+					"address": 6454,
+					"address_mask_identifier": "Ka_50_AP_ALT_HOLD_BTN_AM",
+					"address_mask_shift_identifier": "Ka_50_AP_ALT_HOLD_BTN",
+					"description": "selector position",
+					"mask": 16384,
+					"max_value": 1,
+					"shift_by": 14,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		},
+		"AP_ALT_HOLD_LED": {
+			"category": "Autopilot Panel",
+			"control_type": "led",
+			"description": "Altitude hold LED (green)",
+			"identifier": "AP_ALT_HOLD_LED",
+			"inputs": [],
+			"outputs": [
+				{
+					"address": 6454,
+					"address_mask_identifier": "Ka_50_AP_ALT_HOLD_LED_AM",
+					"address_mask_shift_identifier": "Ka_50_AP_ALT_HOLD_LED",
+					"description": "0 if light is off, 1 if light is on",
+					"mask": 32768,
+					"max_value": 1,
+					"shift_by": 15,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		},
+		"AP_BARO_RALT": {
+			"category": "Autopilot Panel",
+			"control_type": "selector",
+			"description": "BARO/RALT altitude hold mode Switch",
+			"identifier": "AP_BARO_RALT",
+			"inputs": [
+				{
+					"description": "switch to previous or next state",
+					"interface": "fixed_step"
+				},
+				{
+					"description": "set position",
+					"interface": "set_state",
+					"max_value": 2
+				}
+			],
+			"outputs": [
+				{
+					"address": 6456,
+					"address_mask_shift_identifier": "Ka_50_AP_BARO_RALT",
+					"description": "selector position",
+					"mask": 3072,
+					"max_value": 2,
+					"shift_by": 10,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		}
+	},
+	"Clock": {
+		"CLK_L_LEVER": {
+			"category": "Clock",
+			"control_type": "selector",
+			"description": "Left lever push/pull",
+			"identifier": "CLK_L_LEVER",
+			"inputs": [
+				{
+					"description": "switch to previous or next state",
+					"interface": "fixed_step"
+				},
+				{
+					"description": "set position",
+					"interface": "set_state",
+					"max_value": 2
+				}
+			],
+			"outputs": [
+				{
+					"address": 6220,
+					"address_mask_shift_identifier": "Ka_50_CLK_L_LEVER",
+					"description": "selector position",
+					"mask": 24576,
+					"max_value": 2,
+					"shift_by": 13,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		}
+	},
+	"Ejection System": {
+		"EJECT_POWER_1": {
+			"category": "Ejection System",
+			"control_type": "selector",
+			"description": "Ejecting system power 1 Switch",
+			"identifier": "EJECT_POWER_1",
+			"inputs": [
+				{
+					"description": "switch to previous or next state",
+					"interface": "fixed_step"
+				},
+				{
+					"description": "set position",
+					"interface": "set_state",
+					"max_value": 1
+				},
+				{
+					"argument": "TOGGLE",
+					"description": "Toggle switch state",
+					"interface": "action"
+				}
+			],
+			"outputs": [
+				{
+					"address": 6486,
+					"address_mask_identifier": "Ka_50_EJECT_POWER_1_AM",
+					"address_mask_shift_identifier": "Ka_50_EJECT_POWER_1",
+					"description": "selector position",
+					"mask": 2,
+					"max_value": 1,
+					"shift_by": 1,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		}
+	},
+	"Electrics Power": {
+		"ELEC_BATTERY_1": {
+			"category": "Electrics Power",
+			"control_type": "selector",
+			"description": "Battery 1 Switch",
+			"identifier": "ELEC_BATTERY_1",
+			"inputs": [
+				{
+					"description": "switch to previous or next state",
+					"interface": "fixed_step"
+				},
+				{
+					"description": "set position",
+					"interface": "set_state",
+					"max_value": 1
+				},
+				{
+					"argument": "TOGGLE",
+					"description": "Toggle switch state",
+					"interface": "action"
+				}
+			],
+			"outputs": [
+				{
+					"address": 6480,
+					"address_mask_identifier": "Ka_50_ELEC_BATTERY_1_AM",
+					"address_mask_shift_identifier": "Ka_50_ELEC_BATTERY_1",
+					"description": "selector position",
+					"mask": 16,
+					"max_value": 1,
+					"shift_by": 4,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		},
+		"ELEC_BATTERY_1_COVER": {
+			"category": "Electrics Power",
+			"control_type": "selector",
+			"description": "Battery 1 Switch cover",
+			"identifier": "ELEC_BATTERY_1_COVER",
+			"inputs": [
+				{
+					"description": "switch to previous or next state",
+					"interface": "fixed_step"
+				},
+				{
+					"description": "set position",
+					"interface": "set_state",
+					"max_value": 1
+				},
+				{
+					"argument": "TOGGLE",
+					"description": "Toggle switch state",
+					"interface": "action"
+				}
+			],
+			"outputs": [
+				{
+					"address": 6480,
+					"address_mask_identifier": "Ka_50_ELEC_BATTERY_1_COVER_AM",
+					"address_mask_shift_identifier": "Ka_50_ELEC_BATTERY_1_COVER",
+					"description": "selector position",
+					"mask": 32,
+					"max_value": 1,
+					"shift_by": 5,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		},
+		"ELEC_DC_GROUND_POWER": {
+			"category": "Electrics Power",
+			"control_type": "selector",
+			"description": "DC ground power Switch",
+			"identifier": "ELEC_DC_GROUND_POWER",
+			"inputs": [
+				{
+					"description": "switch to previous or next state",
+					"interface": "fixed_step"
+				},
+				{
+					"description": "set position",
+					"interface": "set_state",
+					"max_value": 1
+				},
+				{
+					"argument": "TOGGLE",
+					"description": "Toggle switch state",
+					"interface": "action"
+				}
+			],
+			"outputs": [
+				{
+					"address": 6480,
+					"address_mask_identifier": "Ka_50_ELEC_DC_GROUND_POWER_AM",
+					"address_mask_shift_identifier": "Ka_50_ELEC_DC_GROUND_POWER",
+					"description": "selector position",
+					"mask": 1,
+					"max_value": 1,
+					"shift_by": 0,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		},
+		"ELEC_LAMP_DC_GROUND_POWER": {
+			"category": "Electrics Power",
+			"control_type": "led",
+			"description": "DC ground power Lamp",
+			"identifier": "ELEC_LAMP_DC_GROUND_POWER",
+			"inputs": [],
+			"outputs": [
+				{
+					"address": 6474,
+					"address_mask_identifier": "Ka_50_ELEC_LAMP_DC_GROUND_POWER_AM",
+					"address_mask_shift_identifier": "Ka_50_ELEC_LAMP_DC_GROUND_POWER",
+					"description": "0 if light is off, 1 if light is on",
+					"mask": 32768,
+					"max_value": 1,
+					"shift_by": 15,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		}
+	},
+	"Engines Start-Up Control Panel": {
+		"ENG_SELECTOR": {
+			"category": "Engines Start-Up Control Panel",
+			"control_type": "selector",
+			"description": "Engine selector",
+			"identifier": "ENG_SELECTOR",
+			"inputs": [
+				{
+					"description": "switch to previous or next state",
+					"interface": "fixed_step"
+				},
+				{
+					"description": "set position",
+					"interface": "set_state",
+					"max_value": 3
+				}
+			],
+			"outputs": [
+				{
+					"address": 6424,
+					"address_mask_shift_identifier": "Ka_50_ENG_SELECTOR",
+					"description": "selector position",
+					"mask": 12288,
+					"max_value": 3,
+					"shift_by": 12,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		}
+	},
+	"Fire Extinguishers Control Panel": {
+		"FIREEXT_WARN_TEST": {
+			"category": "Fire Extinguishers Control Panel",
+			"control_type": "selector",
+			"description": "Fire warning sensors groUp BIT Switch",
+			"identifier": "FIREEXT_WARN_TEST",
+			"inputs": [
+				{
+					"description": "switch to previous or next state",
+					"interface": "fixed_step"
+				},
+				{
+					"description": "set position",
+					"interface": "set_state",
+					"max_value": 3
+				}
+			],
+			"outputs": [
+				{
+					"address": 6484,
+					"address_mask_shift_identifier": "Ka_50_FIREEXT_WARN_TEST",
+					"description": "selector position",
+					"mask": 384,
+					"max_value": 3,
+					"shift_by": 7,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		}
+	},
+	"HUD": {
+		"HUD_BRIGHTNESS": {
+			"category": "HUD",
+			"control_type": "limited_dial",
+			"description": "Brightness Knob",
+			"identifier": "HUD_BRIGHTNESS",
+			"inputs": [
+				{
+					"description": "set the position of the dial",
+					"interface": "set_state",
+					"max_value": 65535
+				},
+				{
+					"description": "turn the dial left or right",
+					"interface": "variable_step",
+					"max_value": 65535,
+					"suggested_step": 3200
+				}
+			],
+			"outputs": [
+				{
+					"address": 6276,
+					"address_identifier": "Ka_50_HUD_BRIGHTNESS_A",
+					"address_mask_shift_identifier": "Ka_50_HUD_BRIGHTNESS",
+					"description": "position of the potentiometer",
+					"mask": 65535,
+					"max_value": 65535,
+					"shift_by": 0,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		},
+		"HUD_MODE": {
+			"category": "HUD",
+			"control_type": "selector",
+			"description": "Reticle/Night/Day mode selector",
+			"identifier": "HUD_MODE",
+			"inputs": [
+				{
+					"description": "switch to previous or next state",
+					"interface": "fixed_step"
+				},
+				{
+					"description": "set position",
+					"interface": "set_state",
+					"max_value": 2
+				}
+			],
+			"outputs": [
+				{
+					"address": 6264,
+					"address_mask_shift_identifier": "Ka_50_HUD_MODE",
+					"description": "selector position",
+					"mask": 3072,
+					"max_value": 2,
+					"shift_by": 10,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		}
+	},
+	"Landing Gear Control Panel": {
+		"GEAR_LEVER": {
+			"category": "Landing Gear Control Panel",
+			"control_type": "selector",
+			"description": "Gear lever",
+			"identifier": "GEAR_LEVER",
+			"inputs": [
+				{
+					"description": "switch to previous or next state",
+					"interface": "fixed_step"
+				},
+				{
+					"description": "set position",
+					"interface": "set_state",
+					"max_value": 1
+				},
+				{
+					"argument": "TOGGLE",
+					"description": "Toggle switch state",
+					"interface": "action"
+				}
+			],
+			"outputs": [
+				{
+					"address": 6236,
+					"address_mask_identifier": "Ka_50_GEAR_LEVER_AM",
+					"address_mask_shift_identifier": "Ka_50_GEAR_LEVER",
+					"description": "selector position",
+					"mask": 512,
+					"max_value": 1,
+					"shift_by": 9,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		},
+		"GEAR_L_MAIN_DOWN": {
+			"category": "Landing Gear Control Panel",
+			"control_type": "led",
+			"description": "Left main Gear down Lamp (green)",
+			"identifier": "GEAR_L_MAIN_DOWN",
+			"inputs": [],
+			"outputs": [
+				{
+					"address": 6264,
+					"address_mask_identifier": "Ka_50_GEAR_L_MAIN_DOWN_AM",
+					"address_mask_shift_identifier": "Ka_50_GEAR_L_MAIN_DOWN",
+					"description": "0 if light is off, 1 if light is on",
+					"mask": 512,
+					"max_value": 1,
+					"shift_by": 9,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		},
+		"GEAR_NOSE_DOWN": {
+			"category": "Landing Gear Control Panel",
+			"control_type": "led",
+			"description": "Nose Gear down Lamp (green)",
+			"identifier": "GEAR_NOSE_DOWN",
+			"inputs": [],
+			"outputs": [
+				{
+					"address": 6236,
+					"address_mask_identifier": "Ka_50_GEAR_NOSE_DOWN_AM",
+					"address_mask_shift_identifier": "Ka_50_GEAR_NOSE_DOWN",
+					"description": "0 if light is off, 1 if light is on",
+					"mask": 8192,
+					"max_value": 1,
+					"shift_by": 13,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		},
+		"GEAR_NOSE_UP": {
+			"category": "Landing Gear Control Panel",
+			"control_type": "led",
+			"description": "Nose Gear Up Lamp (red)",
+			"identifier": "GEAR_NOSE_UP",
+			"inputs": [],
+			"outputs": [
+				{
+					"address": 6236,
+					"address_mask_identifier": "Ka_50_GEAR_NOSE_UP_AM",
+					"address_mask_shift_identifier": "Ka_50_GEAR_NOSE_UP",
+					"description": "0 if light is off, 1 if light is on",
+					"mask": 4096,
+					"max_value": 1,
+					"shift_by": 12,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		},
+		"GEAR_R_MAIN_DOWN": {
+			"category": "Landing Gear Control Panel",
+			"control_type": "led",
+			"description": "Right main Gear down Lamp (green)",
+			"identifier": "GEAR_R_MAIN_DOWN",
+			"inputs": [],
+			"outputs": [
+				{
+					"address": 6236,
+					"address_mask_identifier": "Ka_50_GEAR_R_MAIN_DOWN_AM",
+					"address_mask_shift_identifier": "Ka_50_GEAR_R_MAIN_DOWN",
+					"description": "0 if light is off, 1 if light is on",
+					"mask": 32768,
+					"max_value": 1,
+					"shift_by": 15,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		}
+	},
+	"Laser Designator Panel": {
+		"LASER_MODE_COVER": {
+			"category": "Laser Designator Panel",
+			"control_type": "selector",
+			"description": "Laser rangefinder / designator - mode Switch cover",
+			"identifier": "LASER_MODE_COVER",
+			"inputs": [
+				{
+					"description": "switch to previous or next state",
+					"interface": "fixed_step"
+				},
+				{
+					"description": "set position",
+					"interface": "set_state",
+					"max_value": 1
+				},
+				{
+					"argument": "TOGGLE",
+					"description": "Toggle switch state",
+					"interface": "action"
+				}
+			],
+			"outputs": [
+				{
+					"address": 6220,
+					"address_mask_identifier": "Ka_50_LASER_MODE_COVER_AM",
+					"address_mask_shift_identifier": "Ka_50_LASER_MODE_COVER",
+					"description": "selector position",
+					"mask": 256,
+					"max_value": 1,
+					"shift_by": 8,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		}
+	},
+	"Lighting Brightness Control Panel": {
+		"LIGHT_COCKPIT_BRIGHTNESS": {
+			"category": "Lighting Brightness Control Panel",
+			"control_type": "limited_dial",
+			"description": "Lighting cockpit panel Brightness Knob",
+			"identifier": "LIGHT_COCKPIT_BRIGHTNESS",
+			"inputs": [
+				{
+					"description": "set the position of the dial",
+					"interface": "set_state",
+					"max_value": 65535
+				},
+				{
+					"description": "turn the dial left or right",
+					"interface": "variable_step",
+					"max_value": 65535,
+					"suggested_step": 3200
+				}
+			],
+			"outputs": [
+				{
+					"address": 6530,
+					"address_identifier": "Ka_50_LIGHT_COCKPIT_BRIGHTNESS_A",
+					"address_mask_shift_identifier": "Ka_50_LIGHT_COCKPIT_BRIGHTNESS",
+					"description": "position of the potentiometer",
+					"mask": 65535,
+					"max_value": 65535,
+					"shift_by": 0,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		}
+	},
+	"Message Lamps": {
+		"ML_MASTER_ARM": {
+			"category": "Message Lamps",
+			"control_type": "led",
+			"description": "Master ARM is ON (green)",
+			"identifier": "ML_MASTER_ARM",
+			"inputs": [],
+			"outputs": [
+				{
+					"address": 6152,
+					"address_mask_identifier": "Ka_50_ML_MASTER_ARM_AM",
+					"address_mask_shift_identifier": "Ka_50_ML_MASTER_ARM",
+					"description": "0 if light is off, 1 if light is on",
+					"mask": 4096,
+					"max_value": 1,
+					"shift_by": 12,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		}
+	},
+	"Overhead Panel": {
+		"OP_NAV_LIGHTS": {
+			"category": "Overhead Panel",
+			"control_type": "selector",
+			"description": "Navigation Lights 10% / 30% / 100% / Off Switch",
+			"identifier": "OP_NAV_LIGHTS",
+			"inputs": [
+				{
+					"description": "switch to previous or next state",
+					"interface": "fixed_step"
+				},
+				{
+					"description": "set position",
+					"interface": "set_state",
+					"max_value": 4
+				}
+			],
+			"outputs": [
+				{
+					"address": 6144,
+					"address_mask_shift_identifier": "Ka_50_OP_NAV_LIGHTS",
+					"description": "selector position",
+					"mask": 7,
+					"max_value": 4,
+					"shift_by": 0,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		}
+	},
+	"PVI-800 Control Panel": {
+		"PVI_1": {
+			"category": "PVI-800 Control Panel",
+			"control_type": "selector",
+			"description": "'1' button",
+			"identifier": "PVI_1",
+			"inputs": [
+				{
+					"description": "switch to previous or next state",
+					"interface": "fixed_step"
+				},
+				{
+					"description": "set position",
+					"interface": "set_state",
+					"max_value": 1
+				},
+				{
+					"argument": "TOGGLE",
+					"description": "Toggle switch state",
+					"interface": "action"
+				}
+			],
+			"outputs": [
+				{
+					"address": 6430,
+					"address_mask_identifier": "Ka_50_PVI_1_AM",
+					"address_mask_shift_identifier": "Ka_50_PVI_1",
+					"description": "selector position",
+					"mask": 256,
+					"max_value": 1,
+					"shift_by": 8,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		},
+		"PVI_MODES": {
+			"category": "PVI-800 Control Panel",
+			"control_type": "selector",
+			"description": "Master mode selector",
+			"identifier": "PVI_MODES",
+			"inputs": [
+				{
+					"description": "switch to previous or next state",
+					"interface": "fixed_step"
+				},
+				{
+					"description": "set position",
+					"interface": "set_state",
+					"max_value": 6
+				}
+			],
+			"outputs": [
+				{
+					"address": 6452,
+					"address_mask_shift_identifier": "Ka_50_PVI_MODES",
+					"description": "selector position",
+					"mask": 3584,
+					"max_value": 6,
+					"shift_by": 9,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		},
+		"PVI_WAYPOINTS_BTN": {
+			"category": "PVI-800 Control Panel",
+			"control_type": "selector",
+			"description": "Waypoints button",
+			"identifier": "PVI_WAYPOINTS_BTN",
+			"inputs": [
+				{
+					"description": "switch to previous or next state",
+					"interface": "fixed_step"
+				},
+				{
+					"description": "set position",
+					"interface": "set_state",
+					"max_value": 1
+				},
+				{
+					"argument": "TOGGLE",
+					"description": "Toggle switch state",
+					"interface": "action"
+				}
+			],
+			"outputs": [
+				{
+					"address": 6432,
+					"address_mask_identifier": "Ka_50_PVI_WAYPOINTS_BTN_AM",
+					"address_mask_shift_identifier": "Ka_50_PVI_WAYPOINTS_BTN",
+					"description": "selector position",
+					"mask": 512,
+					"max_value": 1,
+					"shift_by": 9,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		},
+		"PVI_WAYPOINTS_LED": {
+			"category": "PVI-800 Control Panel",
+			"control_type": "led",
+			"description": "Waypoints LED (green)",
+			"identifier": "PVI_WAYPOINTS_LED",
+			"inputs": [],
+			"outputs": [
+				{
+					"address": 6432,
+					"address_mask_identifier": "Ka_50_PVI_WAYPOINTS_LED_AM",
+					"address_mask_shift_identifier": "Ka_50_PVI_WAYPOINTS_LED",
+					"description": "0 if light is off, 1 if light is on",
+					"mask": 1024,
+					"max_value": 1,
+					"shift_by": 10,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		}
+	},
+	"Signal Flares": {
+		"FLARES_RED": {
+			"category": "Signal Flares",
+			"control_type": "selector",
+			"description": "Signal flare red button",
+			"identifier": "FLARES_RED",
+			"inputs": [
+				{
+					"description": "switch to previous or next state",
+					"interface": "fixed_step"
+				},
+				{
+					"description": "set position",
+					"interface": "set_state",
+					"max_value": 1
+				},
+				{
+					"argument": "TOGGLE",
+					"description": "Toggle switch state",
+					"interface": "action"
+				}
+			],
+			"outputs": [
+				{
+					"address": 6474,
+					"address_mask_identifier": "Ka_50_FLARES_RED_AM",
+					"address_mask_shift_identifier": "Ka_50_FLARES_RED",
+					"description": "selector position",
+					"mask": 512,
+					"max_value": 1,
+					"shift_by": 9,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		}
+	},
+	"System Controller": {
+		"SC_MASTER_CAUTION_BTN": {
+			"category": "System Controller",
+			"control_type": "selector",
+			"description": "Master Caution Button",
+			"identifier": "SC_MASTER_CAUTION_BTN",
+			"inputs": [
+				{
+					"description": "switch to previous or next state",
+					"interface": "fixed_step"
+				},
+				{
+					"description": "set position",
+					"interface": "set_state",
+					"max_value": 1
+				},
+				{
+					"argument": "TOGGLE",
+					"description": "Toggle switch state",
+					"interface": "action"
+				}
+			],
+			"outputs": [
+				{
+					"address": 6164,
+					"address_mask_identifier": "Ka_50_SC_MASTER_CAUTION_BTN_AM",
+					"address_mask_shift_identifier": "Ka_50_SC_MASTER_CAUTION_BTN",
+					"description": "selector position",
+					"mask": 1024,
+					"max_value": 1,
+					"shift_by": 10,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		},
+		"SC_MASTER_CAUTION_LED": {
+			"category": "System Controller",
+			"control_type": "led",
+			"description": "MasterCaution Button LED Brightness (red)",
+			"identifier": "SC_MASTER_CAUTION_LED",
+			"inputs": [],
+			"outputs": [
+				{
+					"address": 6164,
+					"address_mask_identifier": "Ka_50_SC_MASTER_CAUTION_LED_AM",
+					"address_mask_shift_identifier": "Ka_50_SC_MASTER_CAUTION_LED",
+					"description": "0 if light is off, 1 if light is on",
+					"mask": 2048,
+					"max_value": 1,
+					"shift_by": 11,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		}
+	},
+	"Targeting Mode Control Panel": {
+		"WEAPONS_MODE": {
+			"category": "Targeting Mode Control Panel",
+			"control_type": "selector",
+			"description": "Weapon system mode selector",
+			"identifier": "WEAPONS_MODE",
+			"inputs": [
+				{
+					"description": "switch to previous or next state",
+					"interface": "fixed_step"
+				},
+				{
+					"description": "set position",
+					"interface": "set_state",
+					"max_value": 4
+				}
+			],
+			"outputs": [
+				{
+					"address": 6424,
+					"address_mask_shift_identifier": "Ka_50_WEAPONS_MODE",
+					"description": "selector position",
+					"mask": 56,
+					"max_value": 4,
+					"shift_by": 3,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		}
+	},
+	"Weapons Control Panel": {
+		"WEAPONS_CANNON_BURST": {
+			"category": "Weapons Control Panel",
+			"control_type": "selector",
+			"description": "Long-medium-short cannon burst mode Switch",
+			"identifier": "WEAPONS_CANNON_BURST",
+			"inputs": [
+				{
+					"description": "switch to previous or next state",
+					"interface": "fixed_step"
+				},
+				{
+					"description": "set position",
+					"interface": "set_state",
+					"max_value": 2
+				}
+			],
+			"outputs": [
+				{
+					"address": 6278,
+					"address_mask_shift_identifier": "Ka_50_WEAPONS_CANNON_BURST",
+					"description": "selector position",
+					"mask": 48,
+					"max_value": 2,
+					"shift_by": 4,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		},
+		"WEAPONS_CANNON_RATE": {
+			"category": "Weapons Control Panel",
+			"control_type": "selector",
+			"description": "Cannon rate of fire setting Switch",
+			"identifier": "WEAPONS_CANNON_RATE",
+			"inputs": [
+				{
+					"description": "switch to previous or next state",
+					"interface": "fixed_step"
+				},
+				{
+					"description": "set position",
+					"interface": "set_state",
+					"max_value": 1
+				},
+				{
+					"argument": "TOGGLE",
+					"description": "Toggle switch state",
+					"interface": "action"
+				}
+			],
+			"outputs": [
+				{
+					"address": 6278,
+					"address_mask_identifier": "Ka_50_WEAPONS_CANNON_RATE_AM",
+					"address_mask_shift_identifier": "Ka_50_WEAPONS_CANNON_RATE",
+					"description": "selector position",
+					"mask": 64,
+					"max_value": 1,
+					"shift_by": 6,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		},
+		"WEAPONS_MASTER_ARM": {
+			"category": "Weapons Control Panel",
+			"control_type": "selector",
+			"description": "Master arm Switch",
+			"identifier": "WEAPONS_MASTER_ARM",
+			"inputs": [
+				{
+					"description": "switch to previous or next state",
+					"interface": "fixed_step"
+				},
+				{
+					"description": "set position",
+					"interface": "set_state",
+					"max_value": 1
+				},
+				{
+					"argument": "TOGGLE",
+					"description": "Toggle switch state",
+					"interface": "action"
+				}
+			],
+			"outputs": [
+				{
+					"address": 6264,
+					"address_mask_identifier": "Ka_50_WEAPONS_MASTER_ARM_AM",
+					"address_mask_shift_identifier": "Ka_50_WEAPONS_MASTER_ARM",
+					"description": "selector position",
+					"mask": 16384,
+					"max_value": 1,
+					"shift_by": 14,
+					"suffix": "",
+					"type": "integer"
+				}
+			]
+		}
+	}
+}

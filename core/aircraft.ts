@@ -7,7 +7,7 @@ import os from "node:os";
 import path from "node:path";
 
 import type { AircraftData } from "./aircraft.data.ts";
-import { AIRCRAFT_LIST, aircraftByDcsName, aircraftById, aircraftByModule, dcsName } from "./aircraft.data.ts";
+import { AIRCRAFT_LIST, aircraftByDcsName, aircraftById, aircraftByModule, dcsNames } from "./aircraft.data.ts";
 import type { Dcs, Lookup } from "./bindings.ts";
 import type { DcsBiosClient } from "./dcsbios/client.ts";
 import type { ControlMap } from "./dcsbios/controls.ts";
@@ -80,7 +80,7 @@ export class Fleet {
 
 	/** True when DCS is flying this aircraft. Keys of other aircraft stay dark and send nothing. */
 	isFlying(id: string): boolean {
-		return this.client.aircraft === dcsName(aircraftById(id));
+		return dcsNames(aircraftById(id)).includes(this.client.aircraft);
 	}
 
 	/** DCS as this aircraft's keys see it: live only while DCS flies it. */

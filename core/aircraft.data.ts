@@ -2,9 +2,11 @@
  * Every aircraft the plugin and app support (aircraft/<id>/aircraft.ts), and the product's IDs.
  * One plugin and one app cover them all; each key picks its own aircraft.
  */
+import * as a10c from "../aircraft/a10c/aircraft.ts";
 import * as ah64d from "../aircraft/ah64d/aircraft.ts";
 import * as f16c from "../aircraft/f16c/aircraft.ts";
 import * as fa18c from "../aircraft/fa18c/aircraft.ts";
+import * as ka50 from "../aircraft/ka50/aircraft.ts";
 import type { LampColour, LeverEnd, Seats } from "./dcsbios/controls.ts";
 
 export type AircraftData = {
@@ -13,6 +15,8 @@ export type AircraftData = {
 		readonly module: string;
 		/** What DCS calls the aircraft, when it differs from the DCS-BIOS module name. */
 		readonly dcsName?: string;
+		/** Every DCS aircraft the module covers, when it covers several (A-10C and A-10C_2): the first is the usual one. */
+		readonly dcsNames?: readonly string[];
 		readonly name: string;
 		readonly fullName: string;
 	};
@@ -43,7 +47,7 @@ export const PRODUCT = {
 	mirrorPort: 31730,
 } as const;
 
-export const AIRCRAFT_LIST: readonly AircraftData[] = [fa18c, f16c, ah64d];
+export const AIRCRAFT_LIST: readonly AircraftData[] = [fa18c, f16c, ah64d, a10c, ka50];
 
 /** Keys saved before 0.4.0 have no aircraft setting: they came from the F/A-18C plugin. */
 export const DEFAULT_AIRCRAFT: AircraftData = fa18c;
@@ -57,14 +61,19 @@ export function aircraftByModule(module: string): AircraftData | undefined {
 	return AIRCRAFT_LIST.find((a) => a.AIRCRAFT.module === module);
 }
 
-/** What DCS calls the aircraft (DCS-BIOS reports it as the aircraft being flown). */
+/** What DCS calls the aircraft (DCS-BIOS reports it as the aircraft being flown): its usual name. */
 export function dcsName(aircraft: AircraftData): string {
-	return aircraft.AIRCRAFT.dcsName ?? aircraft.AIRCRAFT.module;
+	return dcsNames(aircraft)[0];
+}
+
+/** Every name DCS has for the aircraft: one DCS-BIOS module can cover several DCS aircraft. */
+export function dcsNames(aircraft: AircraftData): readonly string[] {
+	return aircraft.AIRCRAFT.dcsNames ?? [aircraft.AIRCRAFT.dcsName ?? aircraft.AIRCRAFT.module];
 }
 
 /** The aircraft DCS reports it is flying, if supported. */
 export function aircraftByDcsName(name: string): AircraftData | undefined {
-	return AIRCRAFT_LIST.find((a) => dcsName(a) === name);
+	return AIRCRAFT_LIST.find((a) => dcsNames(a).includes(name));
 }
 
 /**
