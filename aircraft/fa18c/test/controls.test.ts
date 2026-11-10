@@ -8,7 +8,7 @@ const controls = loadControls(new URL("fixtures/controls.json", import.meta.url)
 const get = (id: string) => controls.get(id)!;
 
 test("loads every control by identifier", () => {
-	assert.equal(controls.size, 29);
+	assert.equal(controls.size, 31);
 	assert.equal(get("APU_CONTROL_SW").category, "Auxiliary Power Unit Panel");
 });
 
@@ -125,6 +125,12 @@ test("what a key can do: a rocker holds, a held-by-the-jet switch sets, a static
 	assert.equal(defaultKeyMode(get("ENGINE_CRANK_SW")), "cycle");
 	assert.deepEqual(labels("LEFT_DDI_BRT_SELECT").slice(-3), ["Next position (wraps)", "Step up", "Step down"]);
 	assert.deepEqual(labels("SEAT_HEIGHT_SW").includes("Step up"), false, "a step would leave a rocker held");
+});
+
+test("knobs DCS-BIOS lists the other way round are named by value", () => {
+	assert.deepEqual(get("ECM_MODE_SW").positions, ["OFF", "STBY", "BIT", "REC", "XMIT"]);
+	assert.equal(formatValue(get("BLEED_AIR_KNOB"), 2), "NORM");
+	assert.equal(formatValue(get("BLEED_AIR_KNOB"), 0), "OFF");
 });
 
 test("knobs DCS-BIOS gives no names get DCS's names, not numbers", () => {

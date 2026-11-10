@@ -76,6 +76,9 @@ export const POSITION_NAMES: Record<string, string[]> = {
 	EMERGENCY_PARKING_BRAKE_ROTATE: ["EMERG", "PARK", "RELEASE"],
 	WING_FOLD_PULL: ["STOW", "PULL"],
 	RADAR_SW: ["OFF", "STBY", "OPR", "EMERG"],
+	// DCS-BIOS lists these knobs the other way round from their values (DCS's key binds by value, checked 10 Nov).
+	ECM_MODE_SW: ["OFF", "STBY", "BIT", "REC", "XMIT"],
+	BLEED_AIR_KNOB: ["OFF", "L OFF", "NORM", "R OFF"],
 	// DCS binds the ILS channel only as CW/CCW: channel 1 at value 0 (panel order, not checked in DCS).
 	COM_ILS_CHANNEL_SW: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20"],
 };

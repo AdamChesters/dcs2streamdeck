@@ -767,5 +767,80 @@
 				}
 			]
 		}
+	},
+	"Dispenser/EMC Panel": {
+		"ECM_MODE_SW": {
+			"category": "Dispenser/EMC Panel",
+			"control_type": "selector",
+			"description": "ECM Mode Switch",
+			"identifier": "ECM_MODE_SW",
+			"inputs": [
+				{
+					"description": "switch to previous or next state",
+					"interface": "fixed_step"
+				},
+				{
+					"description": "set position",
+					"interface": "set_state",
+					"max_value": 4
+				}
+			],
+			"outputs": [
+				{
+					"address": 29832,
+					"address_mask_shift_identifier": "FA_18C_hornet_ECM_MODE_SW",
+					"description": "selector position",
+					"mask": 1792,
+					"max_value": 4,
+					"shift_by": 8,
+					"suffix": "",
+					"type": "integer"
+				}
+			],
+			"positions": [
+				"XMIT",
+				"REC",
+				"BIT",
+				"STBY",
+				"OFF"
+			]
+		}
+	},
+	"Environment Control System Panel": {
+		"BLEED_AIR_KNOB": {
+			"category": "Environment Control System Panel",
+			"control_type": "selector",
+			"description": "Bleed Air Knob",
+			"identifier": "BLEED_AIR_KNOB",
+			"inputs": [
+				{
+					"description": "switch to previous or next state",
+					"interface": "fixed_step"
+				},
+				{
+					"description": "set position",
+					"interface": "set_state",
+					"max_value": 3
+				}
+			],
+			"outputs": [
+				{
+					"address": 29894,
+					"address_mask_shift_identifier": "FA_18C_hornet_BLEED_AIR_KNOB",
+					"description": "selector position",
+					"mask": 768,
+					"max_value": 3,
+					"shift_by": 8,
+					"suffix": "",
+					"type": "integer"
+				}
+			],
+			"positions": [
+				"R OFF",
+				"NORM",
+				"L OFF",
+				"OFF"
+			]
+		}
 	}
 }
