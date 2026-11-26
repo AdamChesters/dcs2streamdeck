@@ -1,15 +1,30 @@
 # Third-party licences
 
 dcs2streamdeck is licensed under the GNU General Public License v3.0 (see [LICENSE](LICENSE)).
-It includes or is built on the open-source projects below. Thank you to their authors.
+It includes, is built on or refers to the projects below. Thank you to their authors.
 
 ## Data and interfaces (not bundled)
 
 | Project | Licence | Use |
 |---|---|---|
 | [DCS-BIOS](https://github.com/DCS-Skunkworks/dcs-bios) (DCS-Skunkworks) | GPL-3.0 | Cockpit data and command interface. The plugin reads the control lists from your DCS-BIOS install at run time. The test fixtures in `aircraft/*/test/fixtures/` contain control definitions taken from DCS-BIOS. |
+| [DCS World](https://www.digitalcombatsimulator.com) (Eagle Dynamics) | Proprietary | The simulator. Switch position names follow its key binds. No DCS files are included. |
+| [Helios](https://github.com/HeliosVirtualCockpit/Helios) (Helios Virtual Cockpit) | GPL-3.0 | The A-10C and Ka-50 switch position names in `aircraft/a10c/` and `aircraft/ka50/` are taken from its DCS interfaces. |
 | [Elgato Stream Deck](https://docs.elgato.com/streamdeck/sdk/introduction/getting-started) | Elgato SDK terms | Stream Deck app and plugin interface. |
-| [OpenKneeboard](https://openkneeboard.com) | MIT | Shows the VR mirror page in the headset (separate install). |
+| [OpenKneeboard](https://openkneeboard.com) (Fred Emmott) | OpenKneeboard Public License | Shows the VR mirror page in the headset (separate install). |
+
+## References (not bundled)
+
+Used to look up DCS's key binds and cockpit layouts when checking switch names and directions.
+
+| Project | Licence |
+|---|---|
+| [Chuck's Guides](https://chucksguides.com) | Not stated |
+| [JoystickProfiler](https://github.com/Holdi601/JoystickProfiler) (Holdi601) | Not stated |
+| [VEAF Mission Creation Tools](https://github.com/VEAF/VEAF-Mission-Creation-Tools) (VEAF) | Apache-2.0 |
+| [DCSAutoMate](https://github.com/SlipHavoc/DCSAutoMate) (SlipHavoc) | MIT |
+| [DCS Community Keybinds](https://github.com/Munkwolf/dcs-community-keybinds) (Munkwolf) | Not stated |
+| [RigReady](https://github.com/MCheli/RigReady) (MCheli) | MIT |
 
 ## Stream Deck plugin (bundled into `bin/plugin.js`)
 
@@ -33,14 +48,14 @@ It includes or is built on the open-source projects below. Thank you to their au
 | [@elgato-stream-deck/webhid](https://github.com/julusian/node-elgato-stream-deck) | 7.8.0 | MIT |
 | [@elgato-stream-deck/core](https://github.com/julusian/node-elgato-stream-deck) | 7.8.0 | MIT |
 | [eventemitter3](https://github.com/primus/eventemitter3) | 5.0.4 | MIT |
-| [p-queue](sindresorhus/p-queue) | 6.6.2 | MIT |
-| [p-timeout](sindresorhus/p-timeout) | 3.2.0 | MIT |
-| [p-finally](sindresorhus/p-finally) | 1.0.0 | MIT |
+| [p-queue](https://github.com/sindresorhus/p-queue) | 6.6.2 | MIT |
+| [p-timeout](https://github.com/sindresorhus/p-timeout) | 3.2.0 | MIT |
+| [p-finally](https://github.com/sindresorhus/p-finally) | 1.0.0 | MIT |
 | [tslib](https://www.typescriptlang.org/) | 2.8.1 | 0BSD |
 
 The standalone app installer also contains Electron's and Chromium's own licence files (`LICENSE.electron.txt`, `LICENSES.chromium.html`).
 
-Build tools (not shipped): esbuild, Vite, TypeScript, electron-builder and the Elgato CLI, each under its own open-source licence.
+Build tools (not shipped): [Node.js](https://nodejs.org), [TypeScript](https://www.typescriptlang.org), [esbuild](https://esbuild.github.io), [Vite](https://vite.dev), [electron-builder](https://www.electron.build) and the [Elgato CLI](https://github.com/elgatosf/cli), each under its own open-source licence.
 
 ## Licence texts
 

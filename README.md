@@ -57,9 +57,13 @@ The DCS Streamdeck projects I tried had gone quiet. Most no longer worked with t
 ## Credits
 
 - [DCS-BIOS](https://github.com/DCS-Skunkworks/dcs-bios) by DCS-Skunkworks: the cockpit data and controls everything runs on.
+- [DCS World](https://www.digitalcombatsimulator.com) by Eagle Dynamics: the sim itself. Switch position names follow its key binds.
 - [Stream Deck SDK](https://github.com/elgatosf/streamdeck) by Elgato.
 - [OpenKneeboard](https://openkneeboard.com) by Fred Emmott, for putting the deck in your headset.
+- [Helios](https://github.com/HeliosVirtualCockpit/Helios) by Helios Virtual Cockpit: the A-10C and Ka-50 switch position names.
+- References for switch names and directions: [Chuck's Guides](https://chucksguides.com), [JoystickProfiler](https://github.com/Holdi601/JoystickProfiler) by Holdi601, [VEAF Mission Creation Tools](https://github.com/VEAF/VEAF-Mission-Creation-Tools) by VEAF, [DCSAutoMate](https://github.com/SlipHavoc/DCSAutoMate) by SlipHavoc, [DCS Community Keybinds](https://github.com/Munkwolf/dcs-community-keybinds) by Munkwolf and [RigReady](https://github.com/MCheli/RigReady) by MCheli.
 - [node-elgato-stream-deck](https://github.com/julusian/node-elgato-stream-deck) by Julian Waller, [Electron](https://www.electronjs.org), [React](https://react.dev), [Lucide](https://lucide.dev), [ws](https://github.com/websockets/ws) and [Zod](https://zod.dev).
+- Built with [Node.js](https://nodejs.org), [TypeScript](https://www.typescriptlang.org), [esbuild](https://esbuild.github.io), [Vite](https://vite.dev), [electron-builder](https://www.electron.build) and the [Elgato CLI](https://github.com/elgatosf/cli).
 
 Licence notices: [LICENSES.md](LICENSES.md). dcs2streamdeck is licensed under the [GPL-3.0](LICENSE).
 
