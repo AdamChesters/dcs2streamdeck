@@ -54,19 +54,6 @@ The DCS Streamdeck projects I tried had gone quiet. Most no longer worked with t
 - **Automatic** - Both Plugin and Standalone app check for updates and install them for you. Plugin: the top row of any key's settings shows your version, green with a tick when up to date, red when a newer one is out; click it and the Stream Deck app installs the new plugin (confirm in its window). App: click the version in the top bar, then "Install and restart"; the app downloads the new version, puts it in its folder and starts again.
 - **Manual** - Plugin, download, open. It'll launch the stream deck up, update. All buttons will be saved. Standalone, unzip the new zip over your install folder, run from there. Your keys are saved in your Windows profile, not the app folder. 
 
-## Credits
-
-- [DCS-BIOS](https://github.com/DCS-Skunkworks/dcs-bios) by DCS-Skunkworks: the cockpit data and controls everything runs on.
-- [DCS World](https://www.digitalcombatsimulator.com) by Eagle Dynamics: the sim itself. Switch position names follow its key binds.
-- [Stream Deck SDK](https://github.com/elgatosf/streamdeck) by Elgato.
-- [OpenKneeboard](https://openkneeboard.com) by Fred Emmott, for putting the deck in your headset.
-- [Helios](https://github.com/HeliosVirtualCockpit/Helios) by Helios Virtual Cockpit: the A-10C and Ka-50 switch position names.
-- References for switch names and directions: [Chuck's Guides](https://chucksguides.com), [JoystickProfiler](https://github.com/Holdi601/JoystickProfiler) by Holdi601, [VEAF Mission Creation Tools](https://github.com/VEAF/VEAF-Mission-Creation-Tools) by VEAF, [DCSAutoMate](https://github.com/SlipHavoc/DCSAutoMate) by SlipHavoc, [DCS Community Keybinds](https://github.com/Munkwolf/dcs-community-keybinds) by Munkwolf and [RigReady](https://github.com/MCheli/RigReady) by MCheli.
-- [node-elgato-stream-deck](https://github.com/julusian/node-elgato-stream-deck) by Julian Waller, [Electron](https://www.electronjs.org), [React](https://react.dev), [Lucide](https://lucide.dev), [ws](https://github.com/websockets/ws) and [Zod](https://zod.dev).
-- Built with [Node.js](https://nodejs.org), [TypeScript](https://www.typescriptlang.org), [esbuild](https://esbuild.github.io), [Vite](https://vite.dev), [electron-builder](https://www.electron.build) and the [Elgato CLI](https://github.com/elgatosf/cli).
-
-Licence notices: [LICENSES.md](LICENSES.md). dcs2streamdeck is licensed under the [GPL-3.0](LICENSE).
-
 ## Feedback and support
 
 <p align="center">
@@ -88,3 +75,7 @@ Licence notices: [LICENSES.md](LICENSES.md). dcs2streamdeck is licensed under th
   <a href="https://buymeacoffee.com/adamch"><img src="assets/support/support-buymeacoffee.svg" width="220" height="86" alt="Buy Me a Coffee" title="Buy Me a Coffee"></a>
   <a href="https://www.paypal.com/donate/?business=KLHSZPXTSVSAU&amp;no_recurring=0&amp;item_name=I%27ve+donated+to+lots+of+small+creators+for+their+useful+little+tools%2C+now+I+create+them.+Dig+one?+I%27d+love+your+support.&amp;currency_code=AUD"><img src="assets/support/support-paypal.svg" width="220" height="86" alt="Support with PayPal" title="Support with PayPal"></a>
 </p>
+
+## Credits
+
+Built on [DCS-BIOS](https://github.com/DCS-Skunkworks/dcs-bios) by DCS-Skunkworks, for [DCS World](https://www.digitalcombatsimulator.com) by Eagle Dynamics, with the [Stream Deck SDK](https://github.com/elgatosf/streamdeck) by Elgato, [OpenKneeboard](https://openkneeboard.com) by Fred Emmott and switch names from [Helios](https://github.com/HeliosVirtualCockpit/Helios). Everything else we use or refer to, with licences: [LICENSES.md](LICENSES.md). dcs2streamdeck is licensed under the [GPL-3.0](LICENSE).
